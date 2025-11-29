@@ -1,0 +1,81 @@
+.sidebar {
+    width: 260px;
+    background: #1f2227 !important;
+    border-right: 1px solid #2a2d33;
+}
+
+.sidebar h3 {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.sidebar .accordion-button {
+    background: transparent !important;
+    color: #d1d1d1 !important;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border: none;
+    padding-left: 4px;
+    transition: background 0.2s ease;
+}
+
+.sidebar .accordion-button:hover {
+    background: #292d33 !important;
+    color: white !important;
+}
+
+.sidebar .accordion-button:focus {
+    box-shadow: none !important;
+}
+
+/* Quando aberto */
+.sidebar .accordion-button:not(.collapsed) {
+    background: #292d33 !important;
+    color: #fff !important;
+}
+
+.sidebar .accordion-item {
+    border: none;
+    background: transparent;
+}
+
+.sidebar .accordion-body {
+    background: transparent;
+    padding-left: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Links */
+.sidebar a {
+    color: #bfc2c7;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 6px;
+    border-radius: 6px;
+    transition: 0.2s ease;
+}
+
+.sidebar a:hover {
+    background: #32363d;
+    color: white;
+}
+
+/* Submenu container */
+.submenu {
+    padding-left: 12px;
+    margin-bottom: 8px;
+}
+
+/* Ícones opcionais */
+.sidebar-icon {
+    width: 18px;
+    margin-right: 8px;
+    opacity: 0.8;
+}
+
+/* Remove a seta padrão */
+.sidebar .accordion-button::after {
+    display: none !important;
+}

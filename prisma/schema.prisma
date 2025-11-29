@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./local.db"
+}
+
+// prisma/schema.prisma
+
+model Client {
+  // PK
+  id Int @id @default(autoincrement())
+
+  // Fields
+  cpf       String  @unique @default("")
+  cnpj      String  @unique @default("")
+  name      String
+  phone     String  @unique
+  email     String? @unique
+  fee       Float
+  feeDueDay Int
+
+  // Relations
+  billings Billing[]
+
+  @@map("Clientes")
+}
+
+model Billing {
+  id      Int       @id @default(autoincrement())
+  fee     Float
+  status  String    @default("Pending")
+  dueDate DateTime
+  paidAt  DateTime?
+
+  // FK (DocumentoCliente)
+  clientId Int
+  client   Client @relation(fields: [clientId], references: [id])
+
+  // Relation: Billing → ServiceBilling
+  serviceBillings ServiceBilling[]
+
+  @@unique([dueDate, clientId])
+  @@map("Cobrancas")
+}
+
+model Service {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  value Float
+
+  @@map("Servicos")
+}
+
+model ServiceBilling {
+  id Int @id @default(autoincrement())
+
+  serviceOriginId Int
+  name            String
+  value           Float
+  quantity        Int
+
+  // FK → Billing
+  billingId Int?
+  billing   Billing? @relation(fields: [billingId], references: [id])
+
+  @@unique([billingId, serviceOriginId])
+  @@map("ServicosCobranca")
+}
