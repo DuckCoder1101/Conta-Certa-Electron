@@ -1,46 +1,47 @@
-export interface ClientFormDTO {
-	cpf: string;
-	cnpj: string;
+export interface IClientFormDTO {
+	cpf: string | null;
+	cnpj: string | null;
 	name: string;
-	email: string;
+	email: string | null;
 	phone: string;
 	fee: number;
 	feeDueDay: number;
 }
 
-export interface Client {
+export interface IClient {
 	id: number;
-	cpf?: string;
-	cnpj?: string;
+	cpf: string | null;
+	cnpj: string | null;
 	name: string;
-	email: string;
+	email: string | null;
 	phone: string;
 	fee: number;
 	feeDueDay: number;
 }
 
-export interface ClientResumeDTO {
+export interface IClientResumeDTO {
 	id: number;
 	name: string;
 }
 
-export interface FetchDataDTO<T> {
-	data: T[] | null;
-	error: string | null;
+export interface IAppError {
+	status: number;
+	message: string;
 }
 
-export interface SaveDataResponseDTO {
+export interface IAppResponseDTO<T> {
 	success: boolean;
-	error: string | null;
+	data: T | null;
+	error: IAppError | null;
 }
 
-export interface Service {
+export interface IService {
 	id: number;
 	name: string;
 	value: number;
 }
 
-export interface ServiceBilling {
+export interface IServiceBilling {
 	id: number;
 	name: string;
 	value: number;
@@ -50,33 +51,33 @@ export interface ServiceBilling {
 	billingId: number;
 }
 
-export interface ServiceBillingFormDTO {
+export interface IServiceBillingFormDTO {
 	id: number | null;
 	name: string;
 	value: number;
-	quantity: number
+	quantity: number;
 	serviceOriginId: number;
 }
 
 export type BillingStatus = 'pending' | 'paid';
-export interface Billing {
+export interface IBilling {
 	id: number;
 	fee: number;
 	status: BillingStatus;
 	dueDate: Date;
 	paidAt: Date | null;
-	
-	client: ClientResumeDTO;
-	serviceBillings: ServiceBilling[];
+
+	client: IClientResumeDTO;
+	serviceBillings: IServiceBilling[];
 }
 
-export interface BillingFormDTO {
+export interface IBillingFormDTO {
 	id: number;
 	fee: number;
 	status: BillingStatus;
-	dueDate: Date;
-	paidAt: Date | null;
-	
+	dueDate: string;
+	paidAt: string | null;
+
 	clientId: number;
-	serviceBillings: ServiceBillingFormDTO[];
+	serviceBillings: IServiceBillingFormDTO[];
 }

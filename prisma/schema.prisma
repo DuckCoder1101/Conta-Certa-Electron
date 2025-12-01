@@ -20,8 +20,8 @@ model Client {
   id Int @id @default(autoincrement())
 
   // Fields
-  cpf       String  @unique @default("")
-  cnpj      String  @unique @default("")
+  cpf       String?  @unique
+  cnpj      String?  @unique
   name      String
   phone     String  @unique
   email     String? @unique

@@ -1,10 +1,47 @@
-export interface ClientCadDTO {
-	id?: number;
-	cpf?: string;
-	cnpj?: string;
-	name: string;
-	email?: string;
-	phone: string;
-	fee: number;
-	feeDueDay: number;
+export interface IClientCadDTO {
+  id: number | null;
+  cpf: string | null;
+  cnpj: string | null;
+  name: string;
+  email: string | null;
+  phone: string;
+  fee: number;
+  feeDueDay: number;
+}
+
+export interface IServiceBillingCadDTO {
+  id: number | null;
+  serviceOriginId: number;
+  name: string;
+  value: number;
+  quantity: number;
+}
+
+
+export type BillingStatus = "pending" | "paid";
+export interface IBillingCadDTO {
+  id: number | null;
+  clientId: number;
+  fee: number;
+  status: BillingStatus;
+  dueDate: string;
+  paidAt: string | null;
+
+  serviceBillings: IServiceBillingCadDTO[];
+}
+
+export interface ICLientResumoDTO {
+  id: number;
+  name: string;
+}
+
+export interface IAppError {
+  status: number;
+  message: string;
+}
+
+export interface IAppResponseDTO<T> {
+  success: boolean;
+  data: T | null;
+  error: IAppError | null;
 }
