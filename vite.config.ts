@@ -28,6 +28,7 @@ export default defineConfig({
 			'@components': path.resolve(__dirname, './src/components'),
 			'@pages': path.resolve(__dirname, './src/pages'),
 			'@assets': path.resolve(__dirname, './src/assets'),
+			'@contexts': path.resolve(__dirname, './src/contexts')
 		}
 	}
 });

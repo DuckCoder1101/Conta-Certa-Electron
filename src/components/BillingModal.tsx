@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import ModalBase from '@/components/ModalBase';
-import { BillingStatus, IAppResponseDTO, IBilling, IBillingFormDTO, IClient, IClientResumeDTO, IService, IServiceBillingFormDTO } from '@t/dtos';
+import { IAppResponseDTO, IBilling, IBillingFormDTO, IClient, IClientResumeDTO, IService, IServiceBillingFormDTO } from '@t/dtos';
 
 import { MdClose } from 'react-icons/md';
 
@@ -12,37 +12,33 @@ interface Props {
   onClose: (success: boolean, errorMessage: string | null) => void;
 }
 
-const todayLocalISODate = () => {
-  const date = new Date();
-  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-  return date.toISOString().split("T")[0];
-}
-
 export default function BillingModal({ open, billing, onClose }: Props) {
   const [formError, setFormError] = useState<string | null>(null);
 
   const [clients, setClients] = useState<IClientResumeDTO[]>([]);
   const [search, setSearch] = useState('');
 
-  const [status, setStatus] = useState<BillingStatus>('pending');
-  const [clientId, setClientId] = useState<number | null>(null);
-  const [servicesBilling, setServicesBilling] = useState<IServiceBillingFormDTO[]>([]);
-
-  const { register, handleSubmit, reset, setValue } = useForm<IBillingFormDTO>({
-    defaultValues: {
+  const { register, handleSubmit, reset, setValue, watch } = useForm<IBillingFormDTO>({
+    values: {
+      id: null,
+      clientId: -1,
       fee: 1,
       status: 'pending',
       paidAt: null,
-      dueDate: todayLocalISODate(),
+      dueDate: new Date().toLocaleDateString(),
       serviceBillings: [],
     },
   });
 
-  const filteredClients = clients.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()));
+  const status = watch('status');
+  const clientId = watch('clientId');
+  const [servicesBilling, setServicesBilling] = useState<IServiceBillingFormDTO[]>([]);
+
+  const filteredClients = clients.filter((c) => c.name.toLowerCase().startsWith(search.toLowerCase()));
 
   // Fetch resumido de clientes
   const fetchClientResumes = async () => {
-    setClientId(null);
+    setValue('clientId', -1);
 
     const { data, error } = (await window.api.invoke('fetch-clients-resume')) as IAppResponseDTO<IClientResumeDTO>;
 
@@ -51,28 +47,27 @@ export default function BillingModal({ open, billing, onClose }: Props) {
   };
 
   // Buscar cliente completo e atualizar campos
-  const fetchFullClient = async (id: number) => {
-    const now = new Date();
+  useEffect(() => {
+    (async () => {
+      const now = new Date();
 
-    if (id != -1) {
-      const { data, error } = (await window.api.invoke('fetch-client-by-id', id)) as IAppResponseDTO<IClient>;
+      if (clientId != null && clientId != -1) {
+        const { data, error } = (await window.api.invoke('fetch-client-by-id', clientId)) as IAppResponseDTO<IClient>;
 
-      if (error) return setFormError(error.message);
-      if (!data || Array.isArray(data)) return;
+        if (error) return setFormError(error.message);
+        if (!data || Array.isArray(data)) return;
 
-      const client = data;
-      setClientId(client.id);
+        // Dados padrão do cliente
+        now.setDate(data.feeDueDay);
 
-      // Dados padrão do cliente
-      now.setDate(client.feeDueDay);
-
-      setValue('fee', client.fee);
-      setValue("dueDate", now.toISOString().split("T")[0]);
-    } else {
-      setValue('fee', 0);
-      setValue("dueDate", now.toISOString().split("T")[0]);
-    }
-  };
+        setValue('fee', data.fee);
+        setValue('dueDate', now.toISOString().split('T')[0]);
+      } else {
+        setValue('fee', 0);
+        setValue('dueDate', now.toISOString().split('T')[0]);
+      }
+    })();
+  }, [clientId, setValue]);
 
   // Fetch dos serviços + merge com billing (se editando)
   const prepareServices = async (billing: IBilling | null) => {
@@ -127,35 +122,45 @@ export default function BillingModal({ open, billing, onClose }: Props) {
 
   // Quando abrir modal
   useEffect(() => {
-    if (!open) return;
+    (async () => {
+      if (!open) return;
 
-    setFormError(null);
-    fetchClientResumes();
-    prepareServices(billing);
+      setFormError(null);
 
-    if (billing) {
-      setClientId(billing.client.id);
-      setServicesBilling(billing.serviceBillings);
+      await fetchClientResumes();
+      prepareServices(billing);
 
-      reset({
-        id: billing.id,
-        fee: billing.fee,
-        status: billing.status,
-        dueDate: todayLocalISODate(),
-        paidAt: todayLocalISODate()
-      });
+      if (billing) {
+        reset({
+          id: billing.id,
+          clientId: billing.client.id,
+          fee: billing.fee,
+          status: billing.status,
+          dueDate: billing.dueDate,
+          paidAt: billing.status === 'paid' ? billing.paidAt! : null,
+        });
 
-      fetchFullClient(billing.client.id);
-    } else {
-      reset({
-        fee: 1,
-        status: 'pending',
-        paidAt: null,
-        dueDate: new Date().toISOString().split("T")[0],
-      });
-    }
+        setServicesBilling(billing.serviceBillings);
+      } else {
+        reset({
+          id: null,
+          clientId: -1,
+          fee: 1,
+          status: 'pending',
+          paidAt: null,
+          dueDate: new Date().toISOString().split('T')[0],
+        });
+      }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  // Quanto o status do pagamento muda para pendente, reseta o valor da data
+  useEffect(() => {
+    if (status === "pending") {
+      setValue("paidAt", null);
+    }
+  }, [status, setValue]);
 
   // Salvar cobrança
   const saveBilling = handleSubmit(async (data) => {
@@ -199,15 +204,15 @@ export default function BillingModal({ open, billing, onClose }: Props) {
           <label className="mb-1 block">Cliente:</label>
 
           {/* Busca */}
-          <input className="bg-sidebar-hover text-sidebar-text w-full rounded p-2 outline-none" placeholder="Buscar cliente..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          <input className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none" placeholder="Buscar cliente..." value={search} onChange={(e) => setSearch(e.target.value)} />
 
           {/* Lista */}
-          <select onChange={(e) => fetchFullClient(parseInt(e.target.value))} className="bg-sidebar-hover mt-2 max-h-48 w-full overflow-auto rounded p-2 outline-none">
-            <option value="-1" selected>
-              Selecione um cliente
-            </option>
-            {filteredClients.map(({ id, name }) => (
-              <option value={id}>{name}</option>
+          <select {...register('clientId', { required: true, setValueAs: (v) => Number(v) })} className="mt-2 max-h-48 w-full overflow-auto rounded bg-sidebar-hover p-2 outline-none">
+            <option value={-1}>Selecione um cliente</option>
+            {filteredClients.map(({ id, name }, i) => (
+              <option key={i} value={id}>
+                {name}
+              </option>
             ))}
           </select>
         </div>
@@ -215,16 +220,14 @@ export default function BillingModal({ open, billing, onClose }: Props) {
         {/* fee */}
         <div>
           <label className="mb-1 block">Valor:</label>
-          <input type="number" step={0.01} min={1} {...register('fee', { required: true })} className="bg-sidebar-hover text-sidebar-text w-full rounded p-2 outline-none" />
+          <input type="number" step={0.01} min={1} {...register('fee', { required: true })} className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none" />
         </div>
 
         {/* status */}
         <div>
           <label className="mb-1 block">Status:</label>
-          <select onChange={(ev) => setStatus(ev.target.value as BillingStatus)} className="bg-sidebar-hover text-sidebar-text w-full rounded p-2 outline-none">
-            <option value="pending" selected>
-              Pendente
-            </option>
+          <select {...register('status', { required: true })} className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none">
+            <option value="pending">Pendente</option>
             <option value="paid">Paga</option>
           </select>
         </div>
@@ -232,13 +235,13 @@ export default function BillingModal({ open, billing, onClose }: Props) {
         {/* pago em */}
         <div>
           <label className="mb-1 block">Data de Pagamento:</label>
-          <input type="date" {...register('paidAt', { required: status === 'paid' })} disabled={status === "pending"} className="bg-sidebar-hover text-sidebar-text w-full rounded p-2 outline-none" />
+          <input type="date" {...register('paidAt', { required: status === 'paid' })} disabled={status === 'pending'} className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none" />
         </div>
 
         {/* vencimento */}
         <div>
           <label className="mb-1 block">Data de Vencimento:</label>
-          <input type="date" {...register('dueDate', { required: true })} className="bg-sidebar-hover text-sidebar-text w-full rounded p-2 outline-none" />
+          <input type="date" {...register('dueDate', { required: true })} className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none" />
         </div>
 
         {/* SERVIÇOS */}
@@ -247,27 +250,27 @@ export default function BillingModal({ open, billing, onClose }: Props) {
 
           <ul className="flex flex-col gap-2">
             {servicesBilling.map((s, index) => (
-              <li key={s.serviceOriginId} className="bg-sidebar-hover flex items-center justify-between rounded p-2">
+              <li key={s.serviceOriginId} className="flex items-center justify-between rounded bg-sidebar-hover p-2">
                 <div>
-                  <p className="text-sidebar-text font-medium">{s.name}</p>
-                  <p className="text-sidebar-text text-xs opacity-60">R$ {s.value.toFixed(2)}</p>
+                  <p className="font-medium text-sidebar-text">{s.name}</p>
+                  <p className="text-xs text-sidebar-text opacity-60">R$ {s.value.toFixed(2)}</p>
                 </div>
 
                 {/* CONTROLES DE QUANTIDADE */}
                 <div className="flex items-center gap-2">
-                  <button type="button" className="bg-sidebar-hover2 hover:bg-sidebar-bg text-sidebar-text rounded px-2 py-1" onClick={() => updateQuantity(index, Math.max(0, s.quantity - 1))}>
+                  <button type="button" className="rounded bg-sidebar-hover2 px-2 py-1 text-sidebar-text hover:bg-sidebar-bg" onClick={() => updateQuantity(index, Math.max(0, s.quantity - 1))}>
                     -
                   </button>
 
                   <input
                     type="number"
                     min={0}
-                    className="bg-sidebar-hover2 text-sidebar-text w-16 rounded p-1 text-center outline-none"
+                    className="w-16 rounded bg-sidebar-hover2 p-1 text-center text-sidebar-text outline-none"
                     value={s.quantity}
                     onChange={(e) => updateQuantity(index, Number(e.target.value))}
                   />
 
-                  <button type="button" className="bg-sidebar-hover2 hover:bg-sidebar-bg text-sidebar-text rounded px-2 py-1" onClick={() => updateQuantity(index, s.quantity + 1)}>
+                  <button type="button" className="rounded bg-sidebar-hover2 px-2 py-1 text-sidebar-text hover:bg-sidebar-bg" onClick={() => updateQuantity(index, s.quantity + 1)}>
                     +
                   </button>
                 </div>

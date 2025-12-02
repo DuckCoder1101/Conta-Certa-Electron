@@ -6,7 +6,7 @@ import ErrorModal from '@/components/ErrorModal';
 import DangerHoldButton from '@/components/DangerHoldButton';
 import ClientModal from '@components/ClientModal';
 
-import { formatCnpj, formatCpf, formatPhone } from '@utils/Formatters';
+import { formatCnpj, formatCpf, formatMoney, formatPhone } from '@/utils/formatters';
 
 // Ícones
 import { IoMdSearch } from 'react-icons/io';
@@ -89,7 +89,7 @@ export default function ClientsList() {
   };
 
   return (
-    <div className="bg-light-bg m-0 flex min-h-screen p-0">
+    <div className="m-0 flex min-h-screen bg-light-bg p-0">
       {/* MODAIS */}
       {error && <ErrorModal error={error} onClose={() => setError(null)} />}
 
@@ -108,19 +108,21 @@ export default function ClientsList() {
       <Sidebar />
 
       {/* CONTEÚDO */}
-      <div className="bg-light-bg2 text-light-text flex-grow p-4">
+      <div className="flex-grow bg-light-bg2 p-4 text-light-text">
         <h2 className="mt-5 text-center text-2xl font-semibold">SEUS CLIENTES</h2>
 
         {/* BARRA DE BUSCA */}
-        <form className="bg-sidebar-hover border-sidebar-border my-5 flex items-center gap-3 rounded-md border p-2 shadow-sm hover:bg-sidebar-bg">
+        <form className="my-5 flex items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg">
           <div className="flex flex-grow items-center gap-2">
-            <IoMdSearch className="text-sidebar-text mx-1 text-xl" />
+            <span className="flex h-10 w-10 items-center justify-center text-lg text-white">
+              <IoMdSearch />
+            </span>
 
             <input
               type="search"
-              className="text-sidebar-text placeholder:text-light-placeholder w-full bg-transparent outline-none"
-              placeholder="BUSCAR CLIENTE POR NOME, CPF E CNPJ"
+              placeholder="BUSCAR CLIENTES POR NOME, CPF E CNPJ"
               onChange={(e) => setFilter(e.currentTarget.value)}
+              className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
             />
           </div>
 
@@ -128,7 +130,7 @@ export default function ClientsList() {
             type="button"
             onClick={() => OpenModal()}
             title="Cadastrar cliente"
-            className="bg-sidebar-hover2 hover:bg-sidebar-hover flex h-10 w-10 items-center justify-center rounded-md text-white transition"
+            className="flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-hover2 text-white transition hover:bg-sidebar-hover"
           >
             <FaPlus />
           </button>
@@ -137,7 +139,7 @@ export default function ClientsList() {
             type="button"
             onClick={() => ImportClients()}
             title="Importar clientes"
-            className="bg-sidebar-hover2 hover:bg-sidebar-hover flex h-10 w-10 items-center justify-center rounded-md text-white transition"
+            className="flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-hover2 text-white transition hover:bg-sidebar-hover"
           >
             <FaFileUpload />
           </button>
@@ -146,7 +148,7 @@ export default function ClientsList() {
         {/* TABELA */}
         <table className="w-full table-fixed border-collapse text-sm shadow-sm">
           <thead>
-            <tr className="bg-sidebar-hover2 text-sidebar-text text-left border-b">
+            <tr className="border-b bg-sidebar-hover2 text-left text-sidebar-text">
               <th className="px-4 py-3 font-semibold">CPF</th>
               <th className="px-4 py-3 font-semibold">CNPJ</th>
               <th className="px-4 py-3 font-semibold">Nome</th>
@@ -160,14 +162,14 @@ export default function ClientsList() {
 
           <tbody onScroll={handleScroll}>
             {clients.map((client, i) => (
-              <tr key={i} className="odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2 text-sidebar-text border-b">
+              <tr key={i} className="border-b text-sidebar-text odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2">
                 <td className="px-4 py-3">{formatCpf(client.cpf)}</td>
                 <td className="px-4 py-3">{formatCnpj(client.cnpj) || '-'}</td>
                 <td className="px-4 py-3">{client.name}</td>
                 <td className="px-4 py-3">{client.email}</td>
                 <td className="px-4 py-3">{formatPhone(client.phone)}</td>
 
-                <td className="px-4 py-3 text-center">{client.fee}</td>
+                <td className="px-4 py-3 text-center">{formatMoney(client.fee)}</td>
 
                 <td className="px-4 py-3 text-center">{client.feeDueDay}</td>
 

@@ -89,7 +89,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
             render={({ field }) => (
               <InputMask
                 mask="999.999.999-99"
-                className="bg-sidebar-hover text-sidebar-text w-full rounded p-2 outline-none"
+                className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none"
                 value={field.value || ''}
                 readOnly={client != null}
                 onChange={field.onChange}
@@ -107,7 +107,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
             render={({ field }) => (
               <InputMask
                 mask="99.999.999/9999-99"
-                className="bg-sidebar-hover text-sidebar-text w-full rounded p-2 outline-none"
+                className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none"
                 value={field.value || ''}
                 readOnly={client != null}
                 onChange={field.onChange}
@@ -119,13 +119,13 @@ export default function ClientModal({ open, onClose, client }: Props) {
         {/* Nome */}
         <div>
           <label className="mb-1 block">Nome:</label>
-          <input className="bg-sidebar-hover w-full rounded p-2 outline-none" {...register('name', { required: true })} />
+          <input className="w-full rounded bg-sidebar-hover p-2 outline-none" {...register('name', { required: true })} />
         </div>
 
         {/* Email */}
         <div>
           <label className="mb-1 block">Email:</label>
-          <input type="email" className="bg-sidebar-hover w-full rounded p-2 outline-none" {...register('email', { required: false })} />
+          <input type="email" className="w-full rounded bg-sidebar-hover p-2 outline-none" {...register('email', { required: false })} />
         </div>
 
         {/* Telefone */}
@@ -134,22 +134,20 @@ export default function ClientModal({ open, onClose, client }: Props) {
           <Controller
             name="phone"
             control={control}
-            render={({ field }) => (
-              <InputMask mask="(99) 99999-9999" className="bg-sidebar-hover w-full rounded p-2 outline-none" value={field.value} readOnly={client != null} onChange={field.onChange} />
-            )}
+            render={({ field }) => <InputMask mask="(99) 99999-9999" className="w-full rounded bg-sidebar-hover p-2 outline-none" value={field.value} onChange={field.onChange} />}
           />
         </div>
 
         {/* Honorário */}
         <div>
           <label className="mb-1 block">Honorário:</label>
-          <input type="number" min={1} step="0.01" className="bg-sidebar-hover w-full rounded p-2 outline-none" {...register('fee', { required: true, valueAsNumber: true })} />
+          <input type="number" min={1} step="0.01" className="w-full rounded bg-sidebar-hover p-2 outline-none" {...register('fee', { required: true, valueAsNumber: true })} />
         </div>
 
         {/* Vencimento */}
         <div>
           <label className="mb-1 block">Vencimento:</label>
-          <input type="number" min={1} max={31} className="bg-sidebar-hover w-full rounded p-2 outline-none" {...register('feeDueDay', { required: true, valueAsNumber: true })} />
+          <input type="number" min={1} max={31} className="w-full rounded bg-sidebar-hover p-2 outline-none" {...register('feeDueDay', { required: true, valueAsNumber: true })} />
         </div>
       </form>
 

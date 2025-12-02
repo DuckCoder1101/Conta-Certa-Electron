@@ -1,5 +1,4 @@
-import { ipcMain } from 'electron';
-
+import { BrowserWindow, dialog, ipcMain } from 'electron';
 import { Billing, Client, PrismaClient, Service } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
@@ -7,6 +6,7 @@ import { IAppResponseDTO, IBillingCadDTO, IClientCadDTO, ICLientResumoDTO } from
 
 import AppError from './errors/AppError';
 import HandlePrismaErrors from './errors/HandlePrismaErrors';
+import { ImportCSV } from './utils/csvImporter';
 
 const prisma = new PrismaClient();
 
@@ -45,7 +45,7 @@ export default async function HandleIPCEvents() {
     }
   });
 
-  ipcMain.handle('save-client', async (_event, data: IClientCadDTO): Promise<IAppResponseDTO<Client>> => {
+  ipcMain.handle('save-client', async (_event, data: IClientCadDTO): Promise<IAppResponseDTO<null>> => {
     console.log('Saving client:', data.name);
 
     try {
@@ -133,7 +133,7 @@ export default async function HandleIPCEvents() {
     }
   });
 
-  ipcMain.handle('delete-client', async (_event, clientId: number): Promise<IAppResponseDTO<Client>> => {
+  ipcMain.handle('delete-client', async (_event, clientId: number): Promise<IAppResponseDTO<null>> => {
     console.log('Deleting client: ' + clientId);
 
     try {
@@ -236,6 +236,31 @@ export default async function HandleIPCEvents() {
     }
   });
 
+  ipcMain.on('import-clients-csv', async () => {
+    const mainWindow = BrowserWindow.getAllWindows()[0];
+    const result = await dialog.showOpenDialog(mainWindow, {
+      title: 'Importar clientes',
+      message: 'Selecione o arquivo CSV contendo os dados dos clientes.',
+      properties: ['openFile'],
+      filters: [
+        {
+          name: 'CSV',
+          extensions: ['csv'],
+        },
+      ],
+    });
+
+    if (result.canceled || result.filePaths.length === 0) {
+      return {
+        data: null,
+        success: false,
+        error: null,
+      };
+    }
+
+    ImportCSV(result.filePaths[0]);
+  });
+
   // --- FATURAMENTOS ---
   ipcMain.handle('fetch-all-billings', async (_event, offset = 0, limit = 30, filter = ''): Promise<IAppResponseDTO<Billing[]>> => {
     console.log('Fetching billings.');
@@ -302,7 +327,7 @@ export default async function HandleIPCEvents() {
     }
   });
 
-  ipcMain.handle('save-billing', async (_event, data: IBillingCadDTO): Promise<IAppResponseDTO<Billing>> => {
+  ipcMain.handle('save-billing', async (_event, data: IBillingCadDTO): Promise<IAppResponseDTO<null>> => {
     console.log('Saving billing for: ' + data.clientId);
 
     try {
@@ -328,9 +353,6 @@ export default async function HandleIPCEvents() {
         throw new AppError(400, 'Data de pagamento inválida!');
       }
 
-      const isoDueDate = `${data.dueDate}T00:00:00Z`;
-      const isoPaidAt = data.status === 'paid' ? `${data.paidAt}T00:00:00Z` : null;
-
       // -------- CREATE OU UPDATE --------
       let billingId = data.id ?? null;
 
@@ -341,8 +363,8 @@ export default async function HandleIPCEvents() {
             clientId: data.clientId,
             fee: data.fee,
             status: data.status,
-            dueDate: isoDueDate,
-            paidAt: isoPaidAt,
+            dueDate: data.dueDate,
+            paidAt: data.status === 'paid' ? data.paidAt : null,
           },
         });
 
@@ -355,8 +377,8 @@ export default async function HandleIPCEvents() {
             clientId: data.clientId,
             fee: data.fee,
             status: data.status,
-            dueDate: isoDueDate,
-            paidAt: isoPaidAt,
+            dueDate: data.dueDate,
+            paidAt: data.status === 'paid' ? data.paidAt : null,
           },
         });
 
@@ -422,7 +444,7 @@ export default async function HandleIPCEvents() {
     }
   });
 
-  ipcMain.handle('delete-billing', async (_event, billingId: number): Promise<IAppResponseDTO<Billing>> => {
+  ipcMain.handle('delete-billing', async (_event, billingId: number): Promise<IAppResponseDTO<null>> => {
     console.log('Deleting billing: ' + billingId);
 
     try {

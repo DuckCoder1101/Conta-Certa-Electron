@@ -8,12 +8,7 @@ import { IoMdSearch } from 'react-icons/io';
 import { FaPencil, FaPlus } from 'react-icons/fa6';
 import BillingModal from '@/components/BillingModal';
 import DangerHoldButton from '@/components/DangerHoldButton';
-
-const dateFormat = new Intl.DateTimeFormat('pt-BR', {
-  year: '2-digit',
-  month: '2-digit',
-  day: '2-digit',
-});
+import { formatDate, formatMoney } from '@/utils/formatters';
 
 export default function BillingsList() {
   const [error, setError] = useState<string | null>(null);
@@ -109,7 +104,10 @@ export default function BillingsList() {
 
         {/* BARRA DE BUSCA */}
         <form className="my-5 flex items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg">
-          <IoMdSearch className="mx-1 text-xl text-sidebar-text" />
+          <span className="flex h-10 w-10 items-center justify-center text-lg text-white">
+            <IoMdSearch />
+          </span>
+
           <input
             type="search"
             className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
@@ -144,10 +142,10 @@ export default function BillingsList() {
             {billings.map((b, i) => (
               <tr key={i} className="border-b text-sidebar-text odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2">
                 <td className="px-4 py-3">{b.client.name}</td>
-                <td className="px-4 py-3">{b.fee}</td>
-                <td className="px-4 py-3">{b.status === 'paid' ? 'PAGO' : 'PENDENTE'}</td>
-                <td className="px-4 py-3">{b.paidAt ? dateFormat.format(b.paidAt) : '-'}</td>
-                <td className="px-4 py-3">{dateFormat.format(b.dueDate)}</td>
+                <td className="px-4 py-3">{formatMoney(b.fee)}</td>
+                <td className={`px-4 py-3 ${b.status === 'paid' ? 'text-green-500' : 'text-red-500'}`}>{b.status === 'paid' ? 'PAGO' : 'PENDENTE'}</td>
+                <td className="px-4 py-3">{b.paidAt ? formatDate(b.paidAt) : '-'}</td>
+                <td className="px-4 py-3">{formatDate(b.dueDate)}</td>
 
                 <td className="px-4 py-3 text-center">
                   <div className="flex justify-center gap-2">

@@ -64,20 +64,20 @@ export interface IBilling {
 	id: number;
 	fee: number;
 	status: BillingStatus;
-	dueDate: Date;
-	paidAt: Date | null;
+	dueDate: string;
+	paidAt: string | null;
 
 	client: IClientResumeDTO;
 	serviceBillings: IServiceBilling[];
 }
 
 export interface IBillingFormDTO {
-	id: number;
+	id: number | null;
 	fee: number;
 	status: BillingStatus;
 	dueDate: string;
 	paidAt: string | null;
 
-	clientId: number;
+	clientId: number | null;
 	serviceBillings: IServiceBillingFormDTO[];
 }

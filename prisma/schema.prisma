@@ -38,8 +38,8 @@ model Billing {
   id      Int       @id @default(autoincrement())
   fee     Float
   status  String    @default("Pending")
-  dueDate DateTime
-  paidAt  DateTime?
+  dueDate String
+  paidAt  String?
 
   // FK (DocumentoCliente)
   clientId Int
