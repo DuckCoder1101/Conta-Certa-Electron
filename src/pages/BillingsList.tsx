@@ -5,8 +5,9 @@ import Sidebar from '@/components/Sidebar';
 import ErrorModal from '@/components/ErrorModal';
 
 import { IoMdSearch } from 'react-icons/io';
-import { FaPencil, FaPlus, FaTrash } from 'react-icons/fa6';
+import { FaPencil, FaPlus } from 'react-icons/fa6';
 import BillingModal from '@/components/BillingModal';
+import DangerHoldButton from '@/components/DangerHoldButton';
 
 const dateFormat = new Intl.DateTimeFormat('pt-BR', {
   year: '2-digit',
@@ -85,7 +86,7 @@ export default function BillingsList() {
 
   // RENDER
   return (
-    <div className="bg-light-bg flex min-h-screen p-0">
+    <div className="flex min-h-screen bg-light-bg p-0">
       {/* MODAIS */}
       {error && <ErrorModal error={error} onClose={() => setError(null)} />}
 
@@ -103,15 +104,15 @@ export default function BillingsList() {
       <Sidebar />
 
       {/* CONTEÚDO */}
-      <div className="bg-light-bg2 text-light-text flex-grow p-4">
+      <div className="flex-grow bg-light-bg2 p-4 text-light-text">
         <h2 className="mt-5 text-center text-2xl font-semibold">SUAS COBRANÇAS</h2>
 
         {/* BARRA DE BUSCA */}
-        <form className="bg-sidebar-hover border-sidebar-border hover:bg-sidebar-bg my-5 flex items-center gap-3 rounded-md border p-2 shadow-sm">
-          <IoMdSearch className="text-sidebar-text mx-1 text-xl" />
+        <form className="my-5 flex items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg">
+          <IoMdSearch className="mx-1 text-xl text-sidebar-text" />
           <input
             type="search"
-            className="text-sidebar-text placeholder:text-light-placeholder w-full bg-transparent outline-none"
+            className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
             placeholder="BUSCAR POR CLIENTE"
             onChange={(ev) => setFilter(ev.target.value)}
           />
@@ -120,7 +121,7 @@ export default function BillingsList() {
             type="button"
             onClick={() => openModal()}
             title="Cadastrar cobrança"
-            className="bg-sidebar-hover2 hover:bg-sidebar-hover flex h-10 w-10 items-center justify-center rounded-md text-white transition"
+            className="flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-hover2 text-white transition hover:bg-sidebar-hover"
           >
             <FaPlus />
           </button>
@@ -129,7 +130,7 @@ export default function BillingsList() {
         {/* TABELA */}
         <table className="w-full table-fixed border-collapse text-sm shadow-sm">
           <thead>
-            <tr className="bg-sidebar-hover2 text-sidebar-text border-b text-left">
+            <tr className="border-b bg-sidebar-hover2 text-left text-sidebar-text">
               <th className="px-4 py-3 font-semibold">Cliente</th>
               <th className="px-4 py-3 font-semibold">Valor</th>
               <th className="px-4 py-3 font-semibold">Status</th>
@@ -141,7 +142,7 @@ export default function BillingsList() {
 
           <tbody onScroll={handleScroll}>
             {billings.map((b, i) => (
-              <tr key={i} className="odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2 text-sidebar-text border-b">
+              <tr key={i} className="border-b text-sidebar-text odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2">
                 <td className="px-4 py-3">{b.client.name}</td>
                 <td className="px-4 py-3">{b.fee}</td>
                 <td className="px-4 py-3">{b.status === 'paid' ? 'PAGO' : 'PENDENTE'}</td>
@@ -154,9 +155,7 @@ export default function BillingsList() {
                       <FaPencil />
                     </button>
 
-                    <button onClick={() => deleteBilling(b.id)} className="flex h-9 w-9 items-center justify-center rounded-md bg-red-600 text-white transition hover:bg-red-700">
-                      <FaTrash />
-                    </button>
+                    <DangerHoldButton onComplete={() => deleteBilling(b.id)} seconds={1} />
                   </div>
                 </td>
               </tr>

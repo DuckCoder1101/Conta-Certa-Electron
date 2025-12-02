@@ -328,12 +328,10 @@ export default async function HandleIPCEvents() {
         throw new AppError(400, 'Data de pagamento inválida!');
       }
 
-      // Transformar dueDate/paiAt em Date válido
-      const dueDate = new Date(data.dueDate);
-      const paidAt = data.status === 'paid' ? new Date(data.paidAt!) : null;
+      const isoDueDate = `${data.dueDate}T00:00:00Z`;
+      const isoPaidAt = data.status === 'paid' ? `${data.paidAt}T00:00:00Z` : null;
 
       // -------- CREATE OU UPDATE --------
-
       let billingId = data.id ?? null;
 
       if (!billingId) {
@@ -343,8 +341,8 @@ export default async function HandleIPCEvents() {
             clientId: data.clientId,
             fee: data.fee,
             status: data.status,
-            dueDate,
-            paidAt,
+            dueDate: isoDueDate,
+            paidAt: isoPaidAt,
           },
         });
 
@@ -357,8 +355,8 @@ export default async function HandleIPCEvents() {
             clientId: data.clientId,
             fee: data.fee,
             status: data.status,
-            dueDate,
-            paidAt,
+            dueDate: isoDueDate,
+            paidAt: isoPaidAt,
           },
         });
 
@@ -369,7 +367,6 @@ export default async function HandleIPCEvents() {
       }
 
       // -------- SALVAR SERVIÇOS DA COBRANÇA --------
-
       if (data.serviceBillings && data.serviceBillings.length > 0) {
         const servicesToCreate = data.serviceBillings
           .filter((s) => s.quantity > 0)
@@ -413,6 +410,44 @@ export default async function HandleIPCEvents() {
       }
 
       console.error(error);
+
+      return {
+        success: false,
+        data: null,
+        error: {
+          status: 500,
+          message: 'Erro desconhecido ao salvar cobrança. Contate o suporte!',
+        },
+      };
+    }
+  });
+
+  ipcMain.handle('delete-billing', async (_event, billingId: number): Promise<IAppResponseDTO<Billing>> => {
+    console.log('Deleting billing: ' + billingId);
+
+    try {
+      await prisma.billing.delete({
+        where: {
+          id: billingId,
+        },
+      });
+
+      return {
+        success: true,
+        data: null,
+        error: null,
+      };
+    } catch (error) {
+      if (error instanceof AppError) {
+        return {
+          success: false,
+          data: null,
+          error,
+        };
+      }
+
+      console.error(error);
+
       return {
         success: false,
         data: null,

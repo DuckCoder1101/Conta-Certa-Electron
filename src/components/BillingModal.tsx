@@ -12,6 +12,12 @@ interface Props {
   onClose: (success: boolean, errorMessage: string | null) => void;
 }
 
+const todayLocalISODate = () => {
+  const date = new Date();
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  return date.toISOString().split("T")[0];
+}
+
 export default function BillingModal({ open, billing, onClose }: Props) {
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -27,7 +33,7 @@ export default function BillingModal({ open, billing, onClose }: Props) {
       fee: 1,
       status: 'pending',
       paidAt: null,
-      dueDate: new Date().toISOString().split("T")[0],
+      dueDate: todayLocalISODate(),
       serviceBillings: [],
     },
   });
@@ -135,8 +141,8 @@ export default function BillingModal({ open, billing, onClose }: Props) {
         id: billing.id,
         fee: billing.fee,
         status: billing.status,
-        dueDate: billing.dueDate.toISOString().split("T")[0],
-        paidAt: billing.paidAt?.toISOString().split("T")[0]
+        dueDate: todayLocalISODate(),
+        paidAt: todayLocalISODate()
       });
 
       fetchFullClient(billing.client.id);

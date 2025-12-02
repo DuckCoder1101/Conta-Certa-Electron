@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { FaTrash } from 'react-icons/fa';
 
 interface Props {
@@ -12,33 +12,40 @@ export default function DangerHoldButton({ seconds = 3, onComplete }: Props) {
 
   const startHold = () => {
     let p = 0;
-    const step = 100 / (seconds * 20); // 20 updates por segundo
+    const step = 100 / (seconds * 20);
+
+    if (intervalRef.current) clearInterval(intervalRef.current);
 
     intervalRef.current = setInterval(() => {
       p += step;
       setProgress(p);
 
       if (p >= 100) {
-        p = 100;
         clearInterval(intervalRef.current!);
+        setProgress(100);
         onComplete();
       }
     }, 50);
   };
 
   const cancelHold = () => {
-    clearInterval(intervalRef.current!);
+    if (intervalRef.current) clearInterval(intervalRef.current);
     setProgress(0);
   };
 
+  // limpeza em caso de desmontagem
+  useEffect(() => {
+    return () => cancelHold();
+  }, []);
+
   return (
     <button
-      onMouseDown={startHold}
-      onMouseUp={cancelHold}
-      onMouseLeave={cancelHold}
+      onPointerDown={startHold}
+      onPointerUp={cancelHold}
+      onPointerCancel={cancelHold}
+      onPointerLeave={cancelHold}
       className="relative flex h-10 w-10 select-none items-center justify-center overflow-hidden rounded-md bg-red-600 text-white transition hover:bg-red-700"
     >
-      {/* Progresso */}
       <div
         className="pointer-events-none absolute inset-0 bg-black/20"
         style={{
@@ -47,7 +54,6 @@ export default function DangerHoldButton({ seconds = 3, onComplete }: Props) {
         }}
       ></div>
 
-      {/* Ícone */}
       <FaTrash className="relative z-10" />
     </button>
   );

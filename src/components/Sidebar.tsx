@@ -39,7 +39,7 @@ export default function Sidebar() {
           <div className="flex animate-fadeIn flex-col gap-1 pl-4">
             <Link to="/clients/list" className="hover:bg-sidebar-hover2 flex items-center gap-2 rounded py-2">
               <FaList />
-              Lista de clientes
+              Listar clientes
             </Link>
 
             <Link to="/clients/new" className="hover:bg-sidebar-hover2 flex items-center gap-2 rounded py-2">
@@ -59,7 +59,7 @@ export default function Sidebar() {
           <div className="flex animate-fadeIn flex-col gap-1 pl-4">
             <Link to="/billings/list" className="hover:bg-sidebar-hover2 flex items-center gap-2 rounded py-2">
               <FaList />
-              Todas os faturamentos
+              Listar faturamentos
             </Link>
 
             <Link to="/billings/new" className="hover:bg-sidebar-hover2 flex items-center gap-2 rounded py-2">
