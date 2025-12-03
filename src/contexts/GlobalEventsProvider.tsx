@@ -1,26 +1,22 @@
-import React, { useEffect, useState, createContext } from "react";
-import { subscribeToCsvImportEvents } from "@utils/globalEvents";
-import ErrorModal from "@/components/ErrorModal";
+import React, { useEffect, useState } from 'react';
+import { subscribeToCsvImportEvents } from '@utils/globalEvents';
 
-export const GlobalEventsContext = createContext({
-  setGlobalError: (msg: string | null) => {},
-});
+import ErrorModal from '@components/ErrorModal';
+import { GlobalEventsContext } from './GlobalEventsContext';
 
 export function GlobalEventsProvider({ children }: { children: React.ReactNode }) {
-  const [globalError, setGlobalError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = subscribeToCsvImportEvents(setGlobalError);
+    const unsubscribe = subscribeToCsvImportEvents(setError);
     return () => {
-      if (typeof unsubscribe === "function") unsubscribe();
+      if (typeof unsubscribe === 'function') unsubscribe();
     };
   }, []);
 
   return (
-    <GlobalEventsContext.Provider value={{ setGlobalError }}>
-      {globalError && (
-        <ErrorModal error={globalError} onClose={() => setGlobalError(null)} />
-      )}
+    <GlobalEventsContext.Provider value={{ setError }}>
+      {error && <ErrorModal error={error} onClose={() => setError(null)} />}
       {children}
     </GlobalEventsContext.Provider>
   );

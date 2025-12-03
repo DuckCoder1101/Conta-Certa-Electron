@@ -1,17 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { IBilling, IAppResponseDTO } from '@t/dtos';
-
-import Sidebar from '@/components/Sidebar';
-import ErrorModal from '@/components/ErrorModal';
 
 import { IoMdSearch } from 'react-icons/io';
 import { FaPencil, FaPlus } from 'react-icons/fa6';
-import BillingModal from '@/components/BillingModal';
-import DangerHoldButton from '@/components/DangerHoldButton';
-import { formatDate, formatMoney } from '@/utils/formatters';
+
+import Sidebar from '@components/Sidebar';
+import BillingModal from '@components/BillingModal';
+import DangerHoldButton from '@components/DangerHoldButton';
+import { formatDate, formatMoney } from '@utils/formatters';
+import { GlobalEventsContext } from '@contexts/GlobalEventsContext';
 
 export default function BillingsList() {
-  const [error, setError] = useState<string | null>(null);
+  // Contexto global
+  const { setError } = useContext(GlobalEventsContext);
+
   const [billings, setBillings] = useState<IBilling[]>([]);
 
   // Paginação e filtro
@@ -83,8 +85,6 @@ export default function BillingsList() {
   return (
     <div className="flex min-h-screen bg-light-bg p-0">
       {/* MODAIS */}
-      {error && <ErrorModal error={error} onClose={() => setError(null)} />}
-
       <BillingModal
         open={isModalOpen}
         billing={modalBilling}
@@ -99,7 +99,7 @@ export default function BillingsList() {
       <Sidebar />
 
       {/* CONTEÚDO */}
-      <div className="flex-grow bg-light-bg2 p-4 text-light-text">
+      <div className="w-full bg-light-bg2 py-8 px-4 text-light-textj">
         <h2 className="mt-5 text-center text-2xl font-semibold">SUAS COBRANÇAS</h2>
 
         {/* BARRA DE BUSCA */}
@@ -141,11 +141,25 @@ export default function BillingsList() {
           <tbody onScroll={handleScroll}>
             {billings.map((b, i) => (
               <tr key={i} className="border-b text-sidebar-text odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2">
-                <td className="px-4 py-3">{b.client.name}</td>
-                <td className="px-4 py-3">{formatMoney(b.fee)}</td>
-                <td className={`px-4 py-3 ${b.status === 'paid' ? 'text-green-500' : 'text-red-500'}`}>{b.status === 'paid' ? 'PAGO' : 'PENDENTE'}</td>
-                <td className="px-4 py-3">{b.paidAt ? formatDate(b.paidAt) : '-'}</td>
-                <td className="px-4 py-3">{formatDate(b.dueDate)}</td>
+                <td className="max-w-[180px] truncate whitespace-nowrap px-4 py-3" title={b.client.name}>
+                  {b.client.name}
+                </td>
+
+                <td className="max-w-[100px] truncate whitespace-nowrap px-4 py-3" title={formatMoney(b.fee)}>
+                  {formatMoney(b.fee)}
+                </td>
+
+                <td className={`max-w-[120px] truncate whitespace-nowrap px-4 py-3 ${b.status === 'paid' ? 'text-green-500' : 'text-red-500'}`} title={b.status === 'paid' ? 'PAGO' : 'PENDENTE'}>
+                  {b.status === 'paid' ? 'PAGO' : 'PENDENTE'}
+                </td>
+
+                <td className="max-w-[120px] truncate whitespace-nowrap px-4 py-3" title={b.paidAt ? formatDate(b.paidAt) : '-'}>
+                  {b.paidAt ? formatDate(b.paidAt) : '-'}
+                </td>
+
+                <td className="max-w-[120px] truncate whitespace-nowrap px-4 py-3" title={formatDate(b.dueDate)}>
+                  {formatDate(b.dueDate)}
+                </td>
 
                 <td className="px-4 py-3 text-center">
                   <div className="flex justify-center gap-2">

@@ -69,29 +69,28 @@ export default function ClientModal({ open, onClose, client }: Props) {
   return (
     <ModalBase isOpen={open} onClose={() => onClose(false, null)}>
       {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">{client ? 'Editar Cliente' : 'Cadastrar Cliente'}</h2>
+      <div className="mb-4 flex items-center justify-between text-light-text">
+        <h2 className="mb-6 text-center text-2xl font-semibold uppercase">{client ? 'Editar Cliente' : 'Cadastrar Cliente'}</h2>
         <button onClick={() => onClose(false, null)} className="text-xl font-bold hover:text-red-400">
           <MdClose />
         </button>
       </div>
 
       {/* Form */}
-      <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <form className="grid grid-cols-1 gap-4 text-light-text md:grid-cols-2">
         {formError && <p className="col-span-full text-center text-red-400">{formError}</p>}
 
         {/* CPF */}
         <div>
-          <label className="mb-1 block">CPF:</label>
+          <label className="mb-1 block text-sm font-semibold">CPF</label>
           <Controller
             name="cpf"
             control={control}
             render={({ field }) => (
               <InputMask
                 mask="999.999.999-99"
-                className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none"
+                className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
                 value={field.value || ''}
-                readOnly={client != null}
                 onChange={field.onChange}
               />
             )}
@@ -100,16 +99,15 @@ export default function ClientModal({ open, onClose, client }: Props) {
 
         {/* CNPJ */}
         <div>
-          <label className="mb-1 block">CNPJ:</label>
+          <label className="mb-1 block text-sm font-semibold">CNPJ</label>
           <Controller
             name="cnpj"
             control={control}
             render={({ field }) => (
               <InputMask
                 mask="99.999.999/9999-99"
-                className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none"
+                className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
                 value={field.value || ''}
-                readOnly={client != null}
                 onChange={field.onChange}
               />
             )}
@@ -118,44 +116,59 @@ export default function ClientModal({ open, onClose, client }: Props) {
 
         {/* Nome */}
         <div>
-          <label className="mb-1 block">Nome:</label>
-          <input className="w-full rounded bg-sidebar-hover p-2 outline-none" {...register('name', { required: true })} />
+          <label className="mb-1 block text-sm font-semibold">Nome</label>
+          <input className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('name', { required: true })} />
         </div>
 
         {/* Email */}
         <div>
-          <label className="mb-1 block">Email:</label>
-          <input type="email" className="w-full rounded bg-sidebar-hover p-2 outline-none" {...register('email', { required: false })} />
+          <label className="mb-1 block text-sm font-semibold">Email</label>
+          <input type="email" className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('email')} />
         </div>
 
         {/* Telefone */}
         <div>
-          <label className="mb-1 block">Telefone:</label>
+          <label className="mb-1 block text-sm font-semibold">Telefone</label>
           <Controller
             name="phone"
             control={control}
-            render={({ field }) => <InputMask mask="(99) 99999-9999" className="w-full rounded bg-sidebar-hover p-2 outline-none" value={field.value} onChange={field.onChange} />}
+            render={({ field }) => (
+              <InputMask mask="(99) 99999-9999" className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...field} />
+            )}
           />
         </div>
 
         {/* Honorário */}
         <div>
-          <label className="mb-1 block">Honorário:</label>
-          <input type="number" min={1} step="0.01" className="w-full rounded bg-sidebar-hover p-2 outline-none" {...register('fee', { required: true, valueAsNumber: true })} />
+          <label className="mb-1 block text-sm font-semibold">Honorário</label>
+          <input
+            type="number"
+            min={1}
+            step="0.01"
+            className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            {...register('fee', { required: true, valueAsNumber: true })}
+          />
         </div>
 
         {/* Vencimento */}
         <div>
-          <label className="mb-1 block">Vencimento:</label>
-          <input type="number" min={1} max={31} className="w-full rounded bg-sidebar-hover p-2 outline-none" {...register('feeDueDay', { required: true, valueAsNumber: true })} />
+          <label className="mb-1 block text-sm font-semibold">Vencimento</label>
+          <input
+            type="number"
+            min={1}
+            max={31}
+            className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            {...register('feeDueDay', { required: true, valueAsNumber: true })}
+          />
+        </div>
+
+        {/* Botão */}
+        <div className="col-span-full mt-4 flex justify-end">
+          <button type="button" onClick={SaveClient} className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-md transition hover:bg-blue-700">
+            Salvar Cliente
+          </button>
         </div>
       </form>
-
-      <div className="mt-6 text-right">
-        <button onClick={SaveClient} className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-          Salvar Cliente
-        </button>
-      </div>
     </ModalBase>
   );
 }

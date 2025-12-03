@@ -3,12 +3,9 @@ import { Controller, useForm } from 'react-hook-form';
 import InputMask from 'react-input-mask';
 
 import { IAppResponseDTO, IClient, IClientFormDTO } from '@/@types/dtos';
-
-import ErrorModal from '@/components/ErrorModal';
 import Sidebar from '@/components/Sidebar';
 
 export default function ClientForm() {
-  const [error, setError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
   const { register, handleSubmit, reset, control } = useForm<IClientFormDTO>({
@@ -49,18 +46,15 @@ export default function ClientForm() {
   });
 
   return (
-    <div className="m-0 flex min-h-screen bg-light-bg p-0">
-      {/* MODAIS */}
-      {error && <ErrorModal error={error} onClose={() => setError(null)} />}
-
+    <div className="flex min-h-screen p-0 m-0">
       {/* SIDEBAR */}
       <Sidebar />
 
       {/* CONTEÚDO */}
-      <div className="d-flex justify-center align-middle flex-grow bg-light-bg2 p-6 text-light-text">
-        <h2 className="mb-8 mt-2 text-center text-3xl font-bold tracking-wide">Cadastrar Clientes</h2>
+      <div className="w-full flex justify-center align-middle p-12 bg-light-bg2">
+        <form className="mx-auto grid grid-cols-1 gap-x-8 gap-y-6 text-light-text md:grid-cols-2">
+          <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">Cadastrar Clientes</h2>
 
-        <form className="mx-auto grid max-w-5xl grid-cols-1 gap-6 rounded-xl p-8 shadow-lg backdrop-blur-md md:grid-cols-2">
           {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-red-400">{formError}</p>}
 
           {/* CPF */}
@@ -70,7 +64,12 @@ export default function ClientForm() {
               name="cpf"
               control={control}
               render={({ field }) => (
-                <InputMask mask="999.999.999-99" className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none" value={field.value || ''} onChange={field.onChange} />
+                <InputMask
+                  mask="999.999.999-99"
+                  className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+                  value={field.value || ''}
+                  onChange={field.onChange}
+                />
               )}
             />
           </div>
@@ -82,7 +81,12 @@ export default function ClientForm() {
               name="cnpj"
               control={control}
               render={({ field }) => (
-                <InputMask mask="99.999.999/9999-99" className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none" value={field.value || ''} onChange={field.onChange} />
+                <InputMask
+                  mask="99.999.999/9999-99"
+                  className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+                  value={field.value || ''}
+                  onChange={field.onChange}
+                />
               )}
             />
           </div>
@@ -90,20 +94,13 @@ export default function ClientForm() {
           {/* Nome */}
           <div>
             <label className="mb-1 block text-sm font-semibold">Nome</label>
-            <input
-              className="w-full rounded-lg border border-sidebar-border bg-sidebar-hover p-3 text-sidebar-text outline-none focus:ring-2 focus:ring-blue-500"
-              {...register('name', { required: true })}
-            />
+            <input className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('name', { required: true })} />
           </div>
 
           {/* Email */}
           <div>
             <label className="mb-1 block text-sm font-semibold">Email</label>
-            <input
-              type="email"
-              className="w-full rounded-lg border border-sidebar-border bg-sidebar-hover p-3 text-sidebar-text outline-none focus:ring-2 focus:ring-blue-500"
-              {...register('email')}
-            />
+            <input type="email" className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('email')} />
           </div>
 
           {/* Telefone */}
@@ -113,11 +110,7 @@ export default function ClientForm() {
               name="phone"
               control={control}
               render={({ field }) => (
-                <InputMask
-                  mask="(99) 99999-9999"
-                  className="w-full rounded-lg border border-sidebar-border bg-sidebar-hover p-3 text-sidebar-text outline-none focus:ring-2 focus:ring-blue-500"
-                  {...field}
-                />
+                <InputMask mask="(99) 99999-9999" className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...field} />
               )}
             />
           </div>
@@ -129,7 +122,7 @@ export default function ClientForm() {
               type="number"
               min={1}
               step="0.01"
-              className="w-full rounded-lg border border-sidebar-border bg-sidebar-hover p-3 text-sidebar-text outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
               {...register('fee', { required: true, valueAsNumber: true })}
             />
           </div>
@@ -141,7 +134,7 @@ export default function ClientForm() {
               type="number"
               min={1}
               max={31}
-              className="w-full rounded-lg border border-sidebar-border bg-sidebar-hover p-3 text-sidebar-text outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
               {...register('feeDueDay', { required: true, valueAsNumber: true })}
             />
           </div>

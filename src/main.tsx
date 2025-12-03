@@ -1,3 +1,5 @@
+import "./index.css";
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter, Routes, Route } from "react-router-dom";
@@ -8,6 +10,7 @@ import BillingsList from "@/pages/BillingsList";
 import ClientForm from "@/pages/ClientForm";
 
 import { GlobalEventsProvider } from "@contexts/GlobalEventsProvider";
+import BillingForm from "./pages/BillingForm";
 
 ReactDOM.createRoot(document.querySelector("#root")!).render(
   <React.StrictMode>
@@ -18,6 +21,7 @@ ReactDOM.createRoot(document.querySelector("#root")!).render(
           <Route path="/clients/list" element={<ClientsList />} />
           <Route path="/clients/new" element={<ClientForm />} />
           <Route path="/billings/list" element={<BillingsList />} />
+          <Route path="/billings/new" element={<BillingForm />} />
         </Routes>
       </HashRouter>
     </GlobalEventsProvider>

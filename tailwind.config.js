@@ -19,12 +19,13 @@ export default {
         },
         light: {
           bg: '#f6f7f9',
-          bg2: '#edeff2',
+          bg2: '#2b3035',
           border: '#d4d7db',
-          text: '#1f1f22',
+          text: '#ffffff',
           text2: '#3a3d42',
           muted: '#6b6e74',
           placeholder: '#9da1a8',
+          input: '#f1f3f5'
         },
         soft: {
           blue: '#e7effe',

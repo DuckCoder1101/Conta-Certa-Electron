@@ -1,21 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { IClient, IAppResponseDTO } from '@t/dtos';
 
-import Sidebar from '@/components/Sidebar';
-import ErrorModal from '@/components/ErrorModal';
-import DangerHoldButton from '@/components/DangerHoldButton';
+import Sidebar from '@components/Sidebar';
+import DangerHoldButton from '@components/DangerHoldButton';
 import ClientModal from '@components/ClientModal';
-
-import { formatCnpj, formatCpf, formatMoney, formatPhone } from '@/utils/formatters';
+import { formatCnpj, formatCpf, formatMoney, formatPhone } from '@utils/formatters';
 
 // Ícones
 import { IoMdSearch } from 'react-icons/io';
 import { FaPencil, FaPlus } from 'react-icons/fa6';
 import { FaFileUpload } from 'react-icons/fa';
+import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
 
 export default function ClientsList() {
-  // Erros
-  const [error, setError] = useState<string | null>(null);
+  // Contexto global
+  const { setError } = useContext(GlobalEventsContext);
 
   // Clientes
   const [clients, setClients] = useState<IClient[]>([]);
@@ -74,8 +73,10 @@ export default function ClientsList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
-  // Abrir modal de importação
-  const ImportClients = () => {};
+  // Requisita importação de clientes
+  const ImportClients = () => {
+    window.api.send('import-clients-csv');
+  };
 
   // Deletar cliente
   const DeleteClient = async (clientId: number) => {
@@ -90,9 +91,6 @@ export default function ClientsList() {
 
   return (
     <div className="m-0 flex min-h-screen bg-light-bg p-0">
-      {/* MODAIS */}
-      {error && <ErrorModal error={error} onClose={() => setError(null)} />}
-
       {/* MODAL DE CLIENTE */}
       <ClientModal
         open={isModalOpen}
@@ -108,7 +106,7 @@ export default function ClientsList() {
       <Sidebar />
 
       {/* CONTEÚDO */}
-      <div className="flex-grow bg-light-bg2 p-4 text-light-text">
+      <div className="w-full bg-light-bg2 py-8 px-4 text-light-text">
         <h2 className="mt-5 text-center text-2xl font-semibold">SEUS CLIENTES</h2>
 
         {/* BARRA DE BUSCA */}
@@ -163,14 +161,27 @@ export default function ClientsList() {
           <tbody onScroll={handleScroll}>
             {clients.map((client, i) => (
               <tr key={i} className="border-b text-sidebar-text odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2">
-                <td className="px-4 py-3">{formatCpf(client.cpf)}</td>
-                <td className="px-4 py-3">{formatCnpj(client.cnpj) || '-'}</td>
-                <td className="px-4 py-3">{client.name}</td>
-                <td className="px-4 py-3">{client.email}</td>
-                <td className="px-4 py-3">{formatPhone(client.phone)}</td>
+                <td className="max-w-[130px] truncate whitespace-nowrap px-4 py-3" title={formatCpf(client.cpf)}>
+                  {formatCpf(client.cpf)}
+                </td>
+
+                <td className="max-w-[130px] truncate whitespace-nowrap px-4 py-3" title={formatCnpj(client.cnpj) ?? '-'}>
+                  {formatCnpj(client.cnpj) ?? '-'}
+                </td>
+
+                <td className="max-w-[160px] truncate whitespace-nowrap px-4 py-3" title={client.name}>
+                  {client.name}
+                </td>
+
+                <td className="max-w-[200px] truncate whitespace-nowrap px-4 py-3" title={client.email ?? ''}>
+                  {client.email}
+                </td>
+
+                <td className="max-w-[140px] truncate whitespace-nowrap px-4 py-3" title={formatPhone(client.phone)}>
+                  {formatPhone(client.phone)}
+                </td>
 
                 <td className="px-4 py-3 text-center">{formatMoney(client.fee)}</td>
-
                 <td className="px-4 py-3 text-center">{client.feeDueDay}</td>
 
                 <td className="px-4 py-3 text-center">

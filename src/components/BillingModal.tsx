@@ -188,8 +188,8 @@ export default function BillingModal({ open, billing, onClose }: Props) {
   return (
     <ModalBase isOpen={open} onClose={() => onClose(false, null)}>
       {/* HEADER */}
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold uppercase">{billing ? 'Editar Conta' : 'Cadastrar Conta'}</h2>
+      <div className="mb-4 flex items-center justify-between text-light-text">
+        <h2 className="mb-6 text-center text-2xl font-semibold uppercase">{billing ? 'Editar Conta' : 'Cadastrar Conta'}</h2>
         <button onClick={() => onClose(false, null)} className="text-xl font-bold hover:text-red-400">
           <MdClose />
         </button>
@@ -198,16 +198,24 @@ export default function BillingModal({ open, billing, onClose }: Props) {
       {formError && <p className="mb-3 text-center text-red-400">{formError}</p>}
 
       {/* FORM */}
-      <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <form className="grid grid-cols-1 gap-4 text-light-text md:grid-cols-2">
         {/* Cliente */}
         <div className="col-span-full">
           <label className="mb-1 block">Cliente:</label>
 
           {/* Busca */}
-          <input className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none" placeholder="Buscar cliente..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          <input
+            className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-black"
+            placeholder="Buscar cliente..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
 
           {/* Lista */}
-          <select {...register('clientId', { required: true, setValueAs: (v) => Number(v) })} className="mt-2 max-h-48 w-full overflow-auto rounded bg-sidebar-hover p-2 outline-none">
+          <select
+            {...register('clientId', { required: true, setValueAs: (v) => Number(v) })}
+            className="bg-light-input mt-2 max-h-48 w-full rounded-xl border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+          >
             <option value={-1}>Selecione um cliente</option>
             {filteredClients.map(({ id, name }, i) => (
               <option key={i} value={id}>
@@ -220,13 +228,19 @@ export default function BillingModal({ open, billing, onClose }: Props) {
         {/* fee */}
         <div>
           <label className="mb-1 block">Valor:</label>
-          <input type="number" step={0.01} min={1} {...register('fee', { required: true })} className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none" />
+          <input
+            type="number"
+            step={0.01}
+            min={1}
+            {...register('fee', { required: true })}
+            className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
 
         {/* status */}
         <div>
           <label className="mb-1 block">Status:</label>
-          <select {...register('status', { required: true })} className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none">
+          <select {...register('status', { required: true })} className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500">
             <option value="pending">Pendente</option>
             <option value="paid">Paga</option>
           </select>
@@ -235,13 +249,22 @@ export default function BillingModal({ open, billing, onClose }: Props) {
         {/* pago em */}
         <div>
           <label className="mb-1 block">Data de Pagamento:</label>
-          <input type="date" {...register('paidAt', { required: status === 'paid' })} disabled={status === 'pending'} className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none" />
+          <input
+            type="date"
+            {...register('paidAt', { required: status === 'paid' })}
+            disabled={status === 'pending'}
+            className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
 
         {/* vencimento */}
         <div>
           <label className="mb-1 block">Data de Vencimento:</label>
-          <input type="date" {...register('dueDate', { required: true })} className="w-full rounded bg-sidebar-hover p-2 text-sidebar-text outline-none" />
+          <input
+            type="date"
+            {...register('dueDate', { required: true })}
+            className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
 
         {/* SERVIÇOS */}
