@@ -42,8 +42,8 @@ model Billing {
   paidAt  String?
 
   // FK (DocumentoCliente)
-  clientId Int
-  client   Client @relation(fields: [clientId], references: [id])
+  clientId Int?
+  client   Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
 
   // Relation: Billing → ServiceBilling
   serviceBillings ServiceBilling[]
@@ -57,20 +57,27 @@ model Service {
   name  String @unique
   value Float
 
+  // Relation: Service -> ServicesBilling
+  serviceBillings ServiceBilling[]
+
   @@map("Servicos")
 }
 
 model ServiceBilling {
   id Int @id @default(autoincrement())
 
-  serviceOriginId Int
   name            String
   value           Float
   quantity        Int
 
+  // FK -> Service
+  serviceOriginId Int?
+  service Service? @relation(fields: [serviceOriginId], references: [id], onDelete: SetNull)
+  
+
   // FK → Billing
   billingId Int?
-  billing   Billing? @relation(fields: [billingId], references: [id])
+  billing   Billing? @relation(fields: [billingId], references: [id], onDelete: Cascade)
 
   @@unique([billingId, serviceOriginId])
   @@map("ServicosCobranca")

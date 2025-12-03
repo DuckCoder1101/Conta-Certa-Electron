@@ -47,7 +47,7 @@ export interface IServiceBilling {
 	value: number;
 	quantity: number;
 
-	serviceOriginId: number;
+	serviceOriginId: number | null;
 	billingId: number;
 }
 
@@ -56,19 +56,29 @@ export interface IServiceBillingFormDTO {
 	name: string;
 	value: number;
 	quantity: number;
-	serviceOriginId: number;
+
+	serviceOriginId: number | null;
 }
 
 export type BillingStatus = 'pending' | 'paid';
 export interface IBilling {
 	id: number;
 	fee: number;
+	totalFee: number;
 	status: BillingStatus;
 	dueDate: string;
 	paidAt: string | null;
 
-	client: IClientResumeDTO;
+	client: IClientResumeDTO | null;
 	serviceBillings: IServiceBilling[];
+}
+
+export interface IBillingResumeDTO {
+  status: BillingStatus;
+  fee: number;
+  totalFee: number;
+	dueDate: string;
+	paidAt: string | null;
 }
 
 export interface IBillingFormDTO {

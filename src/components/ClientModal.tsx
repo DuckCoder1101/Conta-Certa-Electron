@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { IAppResponseDTO, IClient, IClientFormDTO } from '@t/dtos';
+import { IClient, IClientFormDTO } from '@t/dtos';
+import { NumericFormat } from 'react-number-format';
 
 // Ícones
 import { MdClose } from 'react-icons/md';
 
 import InputMask from 'react-input-mask';
-import ModalBase from '@/components/ModalBase';
+import ModalBase from '@components/ModalBase';
+import { useClients } from '@hooks/useClients';
+import SaveButton from './SaveButton';
 
 interface Props {
   open: boolean;
@@ -15,6 +18,7 @@ interface Props {
 }
 
 export default function ClientModal({ open, onClose, client }: Props) {
+  const { save } = useClients();
   const [formError, setFormError] = useState<string | null>(null);
 
   const { register, handleSubmit, reset, control } = useForm<IClientFormDTO>({
@@ -46,7 +50,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
     }
   }, [open, client, reset]);
 
-  const SaveClient = handleSubmit(async (data) => {
+  const saveClient = handleSubmit(async (data) => {
     data.name = data.name.trim();
     data.email = data.email?.trim() || null;
 
@@ -54,22 +58,20 @@ export default function ClientModal({ open, onClose, client }: Props) {
     data.cnpj = data.cnpj?.match(/\d/g)?.join('') || null;
     data.phone = data.phone?.match(/\d/g)?.join('') ?? '';
 
-    const { success, error } = (await window.api.invoke('save-client', {
-      id: client?.id,
-      ...data,
-    })) as IAppResponseDTO<IClient>;
+    const { success, error } = await save(data);
 
     if (error && error.status === 400) {
       return setFormError(error.message);
     }
 
+    setFormError(null);
     onClose(success, error?.message ?? null);
   });
 
   return (
     <ModalBase isOpen={open} onClose={() => onClose(false, null)}>
       {/* Header */}
-      <div className="mb-4 flex items-center justify-between text-light-text">
+      <div className="mb-4 flex items-center justify-between">
         <h2 className="mb-6 text-center text-2xl font-semibold uppercase">{client ? 'Editar Cliente' : 'Cadastrar Cliente'}</h2>
         <button onClick={() => onClose(false, null)} className="text-xl font-bold hover:text-red-400">
           <MdClose />
@@ -77,7 +79,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
       </div>
 
       {/* Form */}
-      <form className="grid grid-cols-1 gap-4 text-light-text md:grid-cols-2">
+      <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {formError && <p className="col-span-full text-center text-red-400">{formError}</p>}
 
         {/* CPF */}
@@ -89,7 +91,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
             render={({ field }) => (
               <InputMask
                 mask="999.999.999-99"
-                className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
                 value={field.value || ''}
                 onChange={field.onChange}
               />
@@ -106,7 +108,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
             render={({ field }) => (
               <InputMask
                 mask="99.999.999/9999-99"
-                className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
                 value={field.value || ''}
                 onChange={field.onChange}
               />
@@ -117,13 +119,13 @@ export default function ClientModal({ open, onClose, client }: Props) {
         {/* Nome */}
         <div>
           <label className="mb-1 block text-sm font-semibold">Nome</label>
-          <input className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('name', { required: true })} />
+          <input className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('name', { required: true })} />
         </div>
 
         {/* Email */}
         <div>
           <label className="mb-1 block text-sm font-semibold">Email</label>
-          <input type="email" className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('email')} />
+          <input type="email" className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('email')} />
         </div>
 
         {/* Telefone */}
@@ -133,7 +135,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
             name="phone"
             control={control}
             render={({ field }) => (
-              <InputMask mask="(99) 99999-9999" className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...field} />
+              <InputMask mask="(99) 99999-9999" className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...field} />
             )}
           />
         </div>
@@ -141,12 +143,22 @@ export default function ClientModal({ open, onClose, client }: Props) {
         {/* Honorário */}
         <div>
           <label className="mb-1 block text-sm font-semibold">Honorário</label>
-          <input
-            type="number"
-            min={1}
-            step="0.01"
-            className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
-            {...register('fee', { required: true, valueAsNumber: true })}
+          <Controller
+            name="fee"
+            control={control}
+            render={({ field }) => (
+              <NumericFormat
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$"
+                decimalScale={2}
+                fixedDecimalScale={true}
+                allowNegative={false}
+                value={field.value}
+                onValueChange={(values) => field.onChange(values.floatValue ?? 0)}
+                className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            )}
           />
         </div>
 
@@ -157,16 +169,14 @@ export default function ClientModal({ open, onClose, client }: Props) {
             type="number"
             min={1}
             max={31}
-            className="bg-light-input w-full rounded-lg border border-sidebar-border p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
             {...register('feeDueDay', { required: true, valueAsNumber: true })}
           />
         </div>
 
         {/* Botão */}
         <div className="col-span-full mt-4 flex justify-end">
-          <button type="button" onClick={SaveClient} className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-md transition hover:bg-blue-700">
-            Salvar Cliente
-          </button>
+          <SaveButton onClick={saveClient} />
         </div>
       </form>
     </ModalBase>

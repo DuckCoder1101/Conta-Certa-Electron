@@ -1,24 +1,18 @@
 import { defineConfig } from 'vite';
 import path from 'path';
-import electron from 'vite-plugin-electron/simple';
+import electron from 'vite-plugin-electron';
 import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [
 		react(),
-		electron({
-			main: {
-				entry: 'electron/main.ts',
-			},
-			preload: {
-				input: path.join(__dirname, 'electron/preload.ts'),
-			},
-			renderer:
-				process.env.NODE_ENV === 'test'
-					? undefined
-					: {},
-		}),
+    electron({
+      entry: {
+        main: 'electron/main.ts',
+        preload: 'electron/preload.ts',
+      },
+    }),
 	],
 	resolve: {
 		alias: {
@@ -28,7 +22,8 @@ export default defineConfig({
 			'@components': path.resolve(__dirname, './src/components'),
 			'@pages': path.resolve(__dirname, './src/pages'),
 			'@assets': path.resolve(__dirname, './src/assets'),
-			'@contexts': path.resolve(__dirname, './src/contexts')
+			'@contexts': path.resolve(__dirname, './src/contexts'),
+			'@hooks': path.resolve(__dirname, './src/hooks')
 		}
 	}
 });

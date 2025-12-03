@@ -1,12 +1,12 @@
 import { BrowserWindow, dialog, ipcMain } from 'electron';
-import { Billing, Client, PrismaClient, Service } from '@prisma/client';
+import { Client, PrismaClient, Service } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
-import { IAppResponseDTO, IBillingCadDTO, IClientCadDTO, ICLientResumoDTO } from './@types/dtos';
+import { BillingStatus, IAppResponseDTO, IBillingCadDTO, IBillingResumeDTO, IBillingWithTotalDTO, IClientCadDTO, ICLientResumoDTO } from './@types/dtos';
 
 import AppError from './errors/AppError';
 import HandlePrismaErrors from './errors/HandlePrismaErrors';
-import { ImportCSV } from './utils/csvImporter';
+import { ImportCSV } from './csvImporter';
 
 const prisma = new PrismaClient();
 
@@ -40,6 +40,29 @@ export default async function HandleIPCEvents() {
         error: {
           status: 500,
           message: 'Erro desconhecido ao carregar os clientes. Entre em contato com o suporte!',
+        },
+      };
+    }
+  });
+
+  ipcMain.handle('count-clients', async (): Promise<IAppResponseDTO<number>> => {
+    console.log('Counting clients.');
+
+    try {
+      const count = await prisma.client.count();
+      return {
+        success: true,
+        data: count,
+        error: null,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        data: null,
+        error: {
+          status: 500,
+          message: 'Erro desconhecido ao salvar cliente. Entre em contato com o suporte!',
         },
       };
     }
@@ -262,45 +285,71 @@ export default async function HandleIPCEvents() {
   });
 
   // --- FATURAMENTOS ---
-  ipcMain.handle('fetch-all-billings', async (_event, offset = 0, limit = 30, filter = ''): Promise<IAppResponseDTO<Billing[]>> => {
+  ipcMain.handle('fetch-all-billings', async (_event, offset = 0, limit = 30, filter = ''): Promise<IAppResponseDTO<IBillingWithTotalDTO[]>> => {
     console.log('Fetching billings.');
 
     try {
-      const billings = await prisma.billing.findMany({
+      const billingsRaw = await prisma.billing.findMany({
         orderBy: { id: 'asc' },
         skip: offset,
         take: limit,
-
         where: {
-          OR: [
-            {
-              client: {
-                name: {
-                  startsWith: filter,
-                },
-              },
-            },
-            {},
-            {
-              status: {
-                equals: filter,
-              },
-            },
+          AND: [
+            filter
+              ? {
+                  OR: [{ client: { name: { startsWith: filter } } }, { status: filter }],
+                }
+              : {},
           ],
         },
-
         include: {
+          serviceBillings: true,
           client: {
             select: {
               id: true,
               name: true,
             },
           },
+        },
+      });
+
+      const billings: IBillingWithTotalDTO[] = billingsRaw.map((b) => ({
+        ...b,
+        totalFee: b.fee + b.serviceBillings.reduce((acc, s) => acc + s.value * s.quantity, 0),
+      }));
+
+      return {
+        success: true,
+        data: billings,
+        error: null,
+      };
+    } catch (error) {
+      console.error('Error fetching billings:', error);
+
+      return {
+        success: false,
+        data: null,
+        error: {
+          status: 500,
+          message: 'Erro desconhecido ao carregar os faturamentos. Entre em contato com o suporte!',
+        },
+      };
+    }
+  });
+
+  ipcMain.handle('fetch-all-billings-resume', async (): Promise<IAppResponseDTO<IBillingResumeDTO[]>> => {
+    console.log('Fetching billings resume.');
+
+    try {
+      const billingsRaw = await prisma.billing.findMany({
+        orderBy: { id: 'asc' },
+        select: {
+          fee: true,
+          status: true,
+          dueDate: true,
+          paidAt: true,
           serviceBillings: {
             select: {
-              id: true,
-              serviceOriginId: true,
-              name: true,
               value: true,
               quantity: true,
             },
@@ -308,9 +357,17 @@ export default async function HandleIPCEvents() {
         },
       });
 
+      const resumes: IBillingResumeDTO[] = billingsRaw.map((b) => ({
+        fee: b.fee,
+        status: b.status as BillingStatus,
+        dueDate: b.dueDate,
+        paidAt: b.paidAt,
+        totalFee: b.fee + b.serviceBillings.reduce((acc, s) => acc + s.value * s.quantity, 0),
+      }));
+
       return {
         success: true,
-        data: billings,
+        data: resumes,
         error: null,
       };
     } catch (error) {

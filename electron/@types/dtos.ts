@@ -1,3 +1,5 @@
+import { Billing } from "@prisma/client";
+
 export interface IClientCadDTO {
   id: number | null;
   cpf: string | null;
@@ -17,7 +19,6 @@ export interface IServiceBillingCadDTO {
   quantity: number;
 }
 
-
 export type BillingStatus = "pending" | "paid";
 export interface IBillingCadDTO {
   id: number | null;
@@ -28,6 +29,18 @@ export interface IBillingCadDTO {
   paidAt: string | null;
 
   serviceBillings: IServiceBillingCadDTO[];
+}
+
+export interface IBillingResumeDTO {
+  status: BillingStatus;
+  fee: number;
+  totalFee: number;
+  dueDate: string;
+  paidAt: string | null;
+}
+
+export interface IBillingWithTotalDTO extends Billing {
+  totalFee: number;
 }
 
 export interface ICLientResumoDTO {

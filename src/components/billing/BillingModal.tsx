@@ -2,18 +2,26 @@ import { useContext, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
 
-import { IBillingFormDTO, IClientResumeDTO, IServiceBillingFormDTO } from '@t/dtos';
+import { MdClose } from 'react-icons/md';
 
-import { ServicesSelector } from '@components/billing/ServicesSelector';
+import ModalBase from '@components/ModalBase';
+import SaveButton from '../SaveButton';
+
+import { IBilling, IBillingFormDTO, IClientResumeDTO, IServiceBillingFormDTO } from '@t/dtos';
 
 import { GlobalEventsContext } from '@contexts/GlobalEventsContext';
 
 import { useClients } from '@hooks/useClients';
 import { useBillings } from '@hooks/useBillings';
-import AppLayout from '@/components/AppLayout';
-import SaveButton from '@/components/SaveButton';
+import { ServicesSelector } from './ServicesSelector';
 
-export default function BillingForm() {
+interface Props {
+  open: boolean;
+  billing: IBilling | null;
+  onClose: (success: boolean, errorMessage: string | null) => void;
+}
+
+export default function BillingModal({ open, billing, onClose }: Props) {
   const { fetchResume, fetchById } = useClients();
   const { prepareServices, save } = useBillings();
 
@@ -59,8 +67,7 @@ export default function BillingForm() {
         setValue('dueDate', now.toISOString().split('T')[0]);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientId]);
+  }, [clientId, setValue, fetchById]);
 
   // Quando abrir modal
   useEffect(() => {
@@ -77,16 +84,29 @@ export default function BillingForm() {
         setError(error.message);
       }
 
-      prepareServices(null);
+      prepareServices(billing);
 
-      reset({
-        id: null,
-        clientId: -1,
-        fee: 1,
-        status: 'pending',
-        paidAt: null,
-        dueDate: new Date().toISOString().split('T')[0],
-      });
+      if (billing) {
+        reset({
+          id: billing.id,
+          clientId: billing.client?.id ?? -1,
+          fee: billing.fee,
+          status: billing.status,
+          dueDate: billing.dueDate,
+          paidAt: billing.status === 'paid' ? billing.paidAt! : null,
+        });
+
+        setServicesBilling(billing.serviceBillings);
+      } else {
+        reset({
+          id: null,
+          clientId: -1,
+          fee: 1,
+          status: 'pending',
+          paidAt: null,
+          dueDate: new Date().toISOString().split('T')[0],
+        });
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -96,8 +116,7 @@ export default function BillingForm() {
     if (status === 'pending') {
       setValue('paidAt', null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+  }, [status, setValue]);
 
   // Salvar cobrança
   const saveBilling = handleSubmit(async (data) => {
@@ -107,15 +126,10 @@ export default function BillingForm() {
     data.serviceBillings = servicesBilling; // carregar serviços modificados
 
     const { success, error } = await save(data);
-    if (!success && error) {
-      if (error.status == 400) {
-        setFormError(error.message);
-      } else {
-        setError(error.message);
-      }
-    } else {
-      reset();
-    }
+    if (!success && error) return setFormError(error.message);
+
+    setFormError(null);
+    onClose(true, null);
   });
 
   // Atualiza quantidade dos serviços
@@ -128,12 +142,19 @@ export default function BillingForm() {
   };
 
   return (
-    <AppLayout>
-      <form className="mx-auto grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
-        <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">Cadastrar faturamentos</h2>
+    <ModalBase isOpen={open} onClose={() => onClose(false, null)}>
+      {/* HEADER */}
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="mb-6 text-center text-2xl font-semibold uppercase">{billing ? 'Editar Conta' : 'Cadastrar Conta'}</h2>
+        <button onClick={() => onClose(false, null)} className="text-xl font-bold hover:text-red-400">
+          <MdClose />
+        </button>
+      </div>
 
-        {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-red-400">{formError}</p>}
+      {formError && <p className="mb-3 text-center text-red-400">{formError}</p>}
 
+      {/* FORM */}
+      <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Cliente */}
         <div className="col-span-full">
           <label className="mb-1 block">Cliente:</label>
@@ -149,6 +170,7 @@ export default function BillingForm() {
           {/* Lista */}
           <select
             {...register('clientId', { required: true, setValueAs: (v) => Number(v) })}
+            disabled={billing != null}
             className="mt-2 max-h-48 w-full rounded-xl border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value={-1}>Selecione um cliente</option>
@@ -217,11 +239,12 @@ export default function BillingForm() {
           <label className="mb-1 block">Serviços:</label>
           <ServicesSelector services={servicesBilling} onChange={updateQuantity} />
         </div>
-
-        <div className="col-span-full flex justify-center md:mt-4 md:justify-end">
-          <SaveButton onClick={saveBilling} />
-        </div>
       </form>
-    </AppLayout>
+
+      {/* FOOTER */}
+      <div className="mt-6 text-right">
+        <SaveButton onClick={saveBilling} />
+      </div>
+    </ModalBase>
   );
 }

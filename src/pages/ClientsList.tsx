@@ -1,132 +1,99 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { IClient, IAppResponseDTO } from '@t/dtos';
 
-import Sidebar from '@components/Sidebar';
 import DangerHoldButton from '@components/DangerHoldButton';
 import ClientModal from '@components/ClientModal';
+
 import { formatCnpj, formatCpf, formatMoney, formatPhone } from '@utils/formatters';
 
 // Ícones
 import { IoMdSearch } from 'react-icons/io';
 import { FaPencil, FaPlus } from 'react-icons/fa6';
 import { FaFileUpload } from 'react-icons/fa';
+
 import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
+
+import { useInfiniteScroll } from '@/hooks/useInfinityScroll';
+import { useClients } from '@/hooks/useClients';
+import AppLayout from '@/components/AppLayout';
 
 export default function ClientsList() {
   // Contexto global
   const { setError } = useContext(GlobalEventsContext);
+  const { fetchAll } = useClients();
 
-  // Clientes
-  const [clients, setClients] = useState<IClient[]>([]);
+  // Filtro digitado
+  const [filter, setFilter] = useState('');
 
-  // Paginação e filtro
-  const [filter, setFilter] = useState<string>('');
-  const isLoading = useRef<boolean>(false);
-  const [offset, setOffset] = useState(0);
-  const limit = 30;
+  // Infinite scroll usando Electron API
+  const { items: clients, load, handleScroll } = useInfiniteScroll<IClient>((offset) => fetchAll(offset, 30, filter).then((r) => r.data ?? []));
 
-  // Modal
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [modalClient, setModalClient] = useState<IClient | null>(null);
-
-  // Carrega os clientes
-  const loadClients = async (newOffset: number) => {
-    if (isLoading.current) return;
-    isLoading.current = true;
-
-    const { data, error } = (await window.api.invoke('fetch-clients', offset, limit, filter)) as IAppResponseDTO<IClient[]>;
-
-    if (data) {
-      setClients(data);
-      setOffset(newOffset);
-    } else if (error) {
-      setError(error.message);
-    }
-
-    isLoading.current = false;
-  };
-
-  // Atualiza a lista sempre que o scroll mudar
-  const handleScroll = async (e: React.UIEvent) => {
-    const el = e.currentTarget;
-
-    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 50;
-    const atTop = el.scrollTop < 50;
-
-    if (atBottom) {
-      loadClients(offset + limit);
-    } else if (atTop && offset > 0) {
-      loadClients(Math.max(offset - limit, 0));
-    }
-  };
-
-  // Abre o modal
-  const OpenModal = (client: IClient | null = null) => {
-    setModalClient(client);
-    setIsModalOpen(true);
-  };
-
-  // Atualiza a lista
+  // Filtro -> reset
   useEffect(() => {
-    loadClients(0);
-
+    load(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
-  // Requisita importação de clientes
-  const ImportClients = () => {
+  // Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalClient, setModalClient] = useState<IClient | null>(null);
+
+  const openModal = (client?: IClient) => {
+    setModalClient(client ?? null);
+    setIsModalOpen(true);
+  };
+
+  // Importar clientes
+  const importClients = () => {
     window.api.send('import-clients-csv');
   };
 
   // Deletar cliente
-  const DeleteClient = async (clientId: number) => {
+  const deleteClient = async (clientId: number) => {
     const { success, error } = (await window.api.invoke('delete-client', clientId)) as IAppResponseDTO<IClient>;
 
     if (!success && error) {
       return setError(error.message);
     }
 
-    loadClients(offset);
+    load(); // reload mantendo offset
   };
 
   return (
-    <div className="m-0 flex min-h-screen bg-light-bg p-0">
-      {/* MODAL DE CLIENTE */}
+    <AppLayout>
       <ClientModal
         open={isModalOpen}
         client={modalClient}
         onClose={(success, error) => {
           setIsModalOpen(false);
-          if (success) loadClients(offset);
+
+          if (success)
+            load(); // atualiza mantendo offset
           else if (error) setError(error);
         }}
       />
 
-      {/* SIDEBAR */}
-      <Sidebar />
+      <h2 className="mt-5 text-center text-2xl font-semibold">Clientes</h2>
 
-      {/* CONTEÚDO */}
-      <div className="w-full bg-light-bg2 py-8 px-4 text-light-text">
-        <h2 className="mt-5 text-center text-2xl font-semibold">SEUS CLIENTES</h2>
+      {/* BARRA DE BUSCA */}
+      <form className="my-5 block md:flex items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg">
+        <div className="flex flex-grow items-center gap-2">
+          <span className="flex h-10 w-10 items-center justify-center text-lg text-white">
+            <IoMdSearch />
+          </span>
 
-        {/* BARRA DE BUSCA */}
-        <form className="my-5 flex items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg">
-          <div className="flex flex-grow items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center text-lg text-white">
-              <IoMdSearch />
-            </span>
+          <input
+            type="search"
+            placeholder="Buscar por nome, CPF ou CNPJ"
+            onChange={(e) => setFilter(e.currentTarget.value)}
+            className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
+          />
+        </div>
 
-            <input
-              type="search"
-              placeholder="BUSCAR CLIENTES POR NOME, CPF E CNPJ"
-              onChange={(e) => setFilter(e.currentTarget.value)}
-              className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
-            />
-          </div>
-
+        <div className='flex justify-end items-center gap-2'>
           <button
             type="button"
-            onClick={() => OpenModal()}
+            onClick={() => openModal()}
             title="Cadastrar cliente"
             className="flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-hover2 text-white transition hover:bg-sidebar-hover"
           >
@@ -135,16 +102,18 @@ export default function ClientsList() {
 
           <button
             type="button"
-            onClick={() => ImportClients()}
+            onClick={importClients}
             title="Importar clientes"
             className="flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-hover2 text-white transition hover:bg-sidebar-hover"
           >
             <FaFileUpload />
           </button>
-        </form>
+        </div>
+      </form>
 
-        {/* TABELA */}
-        <table className="w-full table-fixed border-collapse text-sm shadow-sm">
+      {/* TABELA */}
+      <div className="w-full overflow-x-auto">
+        <table className="w-full min-w-[900px] table-fixed border-collapse text-sm shadow-sm">
           <thead>
             <tr className="border-b bg-sidebar-hover2 text-left text-sidebar-text">
               <th className="px-4 py-3 font-semibold">CPF</th>
@@ -186,11 +155,11 @@ export default function ClientsList() {
 
                 <td className="px-4 py-3 text-center">
                   <div className="flex justify-center gap-2">
-                    <button onClick={() => OpenModal(client)} className="flex h-9 w-9 items-center justify-center rounded-md bg-blue-600 text-white transition hover:bg-blue-700">
+                    <button onClick={() => openModal(client)} className="flex h-9 w-9 items-center justify-center rounded-md bg-blue-600 text-white transition hover:bg-blue-700">
                       <FaPencil />
                     </button>
 
-                    <DangerHoldButton onComplete={() => DeleteClient(client.id)} seconds={1} />
+                    <DangerHoldButton onComplete={() => deleteClient(client.id)} seconds={1} />
                   </div>
                 </td>
               </tr>
@@ -198,6 +167,6 @@ export default function ClientsList() {
           </tbody>
         </table>
       </div>
-    </div>
+    </AppLayout>
   );
 }

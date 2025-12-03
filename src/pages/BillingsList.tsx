@@ -1,109 +1,76 @@
-import { useContext, useEffect, useRef, useState } from 'react';
-import { IBilling, IAppResponseDTO } from '@t/dtos';
+import { useContext, useEffect, useState } from 'react';
+import { IBilling } from '@t/dtos';
 
 import { IoMdSearch } from 'react-icons/io';
 import { FaPencil, FaPlus } from 'react-icons/fa6';
 
-import Sidebar from '@components/Sidebar';
-import BillingModal from '@components/BillingModal';
+import BillingModal from '@/components/billing/BillingModal';
 import DangerHoldButton from '@components/DangerHoldButton';
 import { formatDate, formatMoney } from '@utils/formatters';
 import { GlobalEventsContext } from '@contexts/GlobalEventsContext';
+import { useBillings } from '@/hooks/useBillings';
+import { useInfiniteScroll } from '@/hooks/useInfinityScroll';
+import AppLayout from '@/components/AppLayout';
 
 export default function BillingsList() {
   // Contexto global
   const { setError } = useContext(GlobalEventsContext);
+  const { fetchAll, remove } = useBillings();
 
-  const [billings, setBillings] = useState<IBilling[]>([]);
-
-  // Paginação e filtro
+  // Filtro digitado
   const [filter, setFilter] = useState<string>('');
-  const isLoading = useRef<boolean>(false);
-  const [offset, setOffset] = useState(0);
-  const limit = 30;
+
+  // Infinite scroll com filtro
+  const { items: billings, load, handleScroll } = useInfiniteScroll<IBilling>((offset) => fetchAll(offset, 30, filter).then((r) => r.data ?? []));
+
+  // Aplica filtro SEM resetar scroll automaticamente
+  useEffect(() => {
+    load(0); // reseta quando filtro mudar
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter]);
+
+  const deleteBilling = async (id: number) => {
+    const result = await remove(id);
+
+    if (!result.success && result.error) {
+      return setError(result.error.message);
+    }
+
+    load();
+  };
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalBilling, setModalBilling] = useState<IBilling | null>(null);
 
-  // FETCH BASE
-  const loadBillings = async (newOffset: number) => {
-    if (isLoading.current) return;
-    isLoading.current = true;
-
-    const { data, error } = (await window.api.invoke('fetch-all-billings', offset, limit, filter)) as IAppResponseDTO<IBilling[]>;
-
-    if (error) {
-      setError(error.message);
-    }
-
-    if (data && Array.isArray(data)) {
-      setBillings(data);
-      setOffset(newOffset);
-    }
-
-    isLoading.current = false;
-  };
-
-  // Atualiza a lista sempre que o scroll mudar
-  const handleScroll = async (e: React.UIEvent) => {
-    const el = e.currentTarget;
-
-    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 50;
-    const atTop = el.scrollTop < 50;
-
-    if (atBottom) {
-      loadBillings(offset + limit);
-    } else if (atTop && offset > 0) {
-      loadBillings(Math.max(offset - limit, 0));
-    }
-  };
-
-  // Abre o modal
-  const openModal = (billing: IBilling | null = null) => {
-    setModalBilling(billing);
+  const openModal = (billing?: IBilling) => {
+    setModalBilling(billing ?? null);
     setIsModalOpen(true);
-  };
-
-  // Atualiza a lista
-  useEffect(() => {
-    loadBillings(0);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
-
-  // DELETAR
-  const deleteBilling = async (id: number) => {
-    const { success, error } = (await window.api.invoke('delete-billing', id)) as IAppResponseDTO<IBilling>;
-
-    if (!success && error) return setError(error.message);
-
-    loadBillings(offset);
   };
 
   // RENDER
   return (
-    <div className="flex min-h-screen bg-light-bg p-0">
+    <AppLayout>
       {/* MODAIS */}
       <BillingModal
         open={isModalOpen}
         billing={modalBilling}
         onClose={(success, error) => {
           setIsModalOpen(false);
-          if (success) loadBillings(offset);
-          else if (error) setError(error);
+
+          if (success) {
+            load();
+          } else if (error) {
+            setError(error);
+          }
         }}
       />
 
-      {/* SIDEBAR */}
-      <Sidebar />
+      <h2 className="mt-5 text-center text-2xl font-semibold">Faturamentos</h2>
 
-      {/* CONTEÚDO */}
-      <div className="w-full bg-light-bg2 py-8 px-4 text-light-textj">
-        <h2 className="mt-5 text-center text-2xl font-semibold">SUAS COBRANÇAS</h2>
-
-        {/* BARRA DE BUSCA */}
-        <form className="my-5 flex items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg">
+      {/* BARRA DE BUSCA */}
+      <form className="my-5 block items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg md:flex">
+        <div className="flex flex-grow items-center gap-2">
           <span className="flex h-10 w-10 items-center justify-center text-lg text-white">
             <IoMdSearch />
           </span>
@@ -111,22 +78,24 @@ export default function BillingsList() {
           <input
             type="search"
             className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
-            placeholder="BUSCAR POR CLIENTE"
+            placeholder="Buscar por cliente, ou status"
             onChange={(ev) => setFilter(ev.target.value)}
           />
+        </div>
 
-          <button
-            type="button"
-            onClick={() => openModal()}
-            title="Cadastrar cobrança"
-            className="flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-hover2 text-white transition hover:bg-sidebar-hover"
-          >
-            <FaPlus />
-          </button>
-        </form>
+        <button
+          type="button"
+          onClick={() => openModal()}
+          title="Cadastrar cobrança"
+          className="ms-auto flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-hover2 text-white transition hover:bg-sidebar-hover"
+        >
+          <FaPlus />
+        </button>
+      </form>
 
-        {/* TABELA */}
-        <table className="w-full table-fixed border-collapse text-sm shadow-sm">
+      {/* TABELA */}
+      <div className="w-full overflow-x-auto">
+        <table className="w-full min-w-[900px] table-fixed border-collapse text-sm shadow-sm">
           <thead>
             <tr className="border-b bg-sidebar-hover2 text-left text-sidebar-text">
               <th className="px-4 py-3 font-semibold">Cliente</th>
@@ -141,8 +110,8 @@ export default function BillingsList() {
           <tbody onScroll={handleScroll}>
             {billings.map((b, i) => (
               <tr key={i} className="border-b text-sidebar-text odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2">
-                <td className="max-w-[180px] truncate whitespace-nowrap px-4 py-3" title={b.client.name}>
-                  {b.client.name}
+                <td className={`max-w-[180px] truncate whitespace-nowrap px-4 py-3 ${b.client === null ? 'text-red-500' : ''}`} title={b.client?.name ?? 'Cliente excluído'}>
+                  {b.client?.name ?? 'Cliente excluído'}
                 </td>
 
                 <td className="max-w-[100px] truncate whitespace-nowrap px-4 py-3" title={formatMoney(b.fee)}>
@@ -175,6 +144,6 @@ export default function BillingsList() {
           </tbody>
         </table>
       </div>
-    </div>
+    </AppLayout>
   );
 }

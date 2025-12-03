@@ -11,18 +11,19 @@ export default function DangerHoldButton({ seconds = 3, onComplete }: Props) {
   const [progress, setProgress] = useState(0);
 
   const startHold = () => {
-    let p = 0;
+    let progress = 0;
     const step = 100 / (seconds * 20);
 
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
 
-    intervalRef.current = setInterval(() => {
-      p += step;
-      setProgress(p);
+    intervalRef.current = setInterval(async () => {
+      progress += step;
+      setProgress(progress);
 
-      if (p >= 100) {
+      if (progress >= 100) {
         clearInterval(intervalRef.current!);
-        setProgress(100);
         onComplete();
       }
     }, 50);

@@ -48,7 +48,7 @@ export default function ModalBase({ isOpen, onClose, children, className = '' }:
   }, [onClose]);
 
   return (
-    <dialog ref={dialogRef} className={`rounded-xl border-0 bg-[#2b3035] p-6   shadow-xl backdrop:backdrop-blur-sm open:animate-fadeIn ${className} `}>
+    <dialog ref={dialogRef} className={`rounded-xl border-0 bg-[#2b3035] p-6 text-light-text shadow-xl backdrop:backdrop-blur-sm open:animate-fadeIn ${className} `}>
       <div className="w-full max-w-lg">{children}</div>
     </dialog>
   );

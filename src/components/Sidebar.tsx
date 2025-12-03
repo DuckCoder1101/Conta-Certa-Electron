@@ -9,6 +9,104 @@ import { IoIosBriefcase, IoIosStats } from 'react-icons/io';
 import { IoPeople } from 'react-icons/io5';
 import { MdAttachMoney, MdOutlineAttachMoney } from 'react-icons/md';
 
+interface MenuLink {
+  name: string;
+  link?: string;
+  action?: () => void;
+  icon: JSX.Element;
+}
+
+interface Submenu {
+  name: string;
+  icon: JSX.Element;
+  items: MenuLink[];
+}
+
+type MenuOption = MenuLink | Submenu;
+
+const isSubmenu = (option: MenuOption) => 'items' in option;
+const sidebarOptions: MenuOption[] = [
+  {
+    name: 'Início',
+    link: '/',
+    icon: <FaHouseChimney />,
+  },
+  {
+    name: 'Clientes',
+    icon: <IoPeople />,
+    items: [
+      {
+        name: 'Listar clientes',
+        link: '/clients/list',
+        icon: <FaList />,
+      },
+      {
+        name: 'Cadastrar cliente',
+        link: '/clients/new',
+        icon: <FaPlus />,
+      },
+    ],
+  },
+  {
+    name: 'Faturamentos',
+    icon: <MdOutlineAttachMoney />,
+    items: [
+      {
+        name: 'Listar faturamentos',
+        link: '/billings/list',
+        icon: <FaList />,
+      },
+      {
+        name: 'Cadastrar faturamentos',
+        link: '/billings/new',
+        icon: <FaPlus />,
+      },
+    ],
+  },
+  {
+    name: 'Serviços',
+    icon: <IoIosBriefcase />,
+    items: [
+      {
+        name: 'Listar serviços',
+        link: '/services/list',
+        icon: <FaList />,
+      },
+      {
+        name: 'Cadastrar serviços',
+        link: '/services/new',
+        icon: <FaPlus />,
+      },
+    ],
+  },
+  {
+    name: 'Relatórios',
+    icon: <HiDocumentReport />,
+    items: [
+      {
+        name: 'Relatorios financeiros',
+        link: '/reports/financial',
+        icon: <MdAttachMoney />,
+      },
+      {
+        name: 'Estatísticas gerais',
+        link: '/reports/general',
+        icon: <IoIosStats />,
+      },
+    ],
+  },
+  {
+    name: 'Configurações',
+    icon: <FaGear />,
+    action: () => {},
+  },
+  {
+    name: 'Login',
+    icon: <GrLogin />,
+    action: () => {},
+  },
+];
+
 export default function Sidebar() {
   const [open, setOpen] = useState<string | null>(null);
 
@@ -17,112 +115,59 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="flex min-h-screen min-w-[260px] flex-col border-r border-sidebar-border bg-sidebar-bg p-4 text-sidebar-text">
+    <aside className="flex min-h-screen min-w-[260px] flex-col border-r border-sidebar-border bg-sidebar-bg px-4 py-6 text-sidebar-text">
       {/* TÍTULO */}
-      <h2 className="mb-6 text-center text-2xl font-semibold tracking-wide text-white uppercase">Conta Certa</h2>
+      <h2 className="mb-6 text-center text-2xl font-semibold uppercase tracking-wide text-white">Conta Certa</h2>
 
-      {/* MENU */}
+      {/* MENU DINÂMICO */}
       <nav className="flex flex-col gap-1">
-        {/* Início */}
-        <Link to="/" className="flex items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
-          <FaHouseChimney />
-          Início
-        </Link>
+        {sidebarOptions.map((item) => (
+          <div key={item.name}>
+            {/* 1️⃣ Se for submenu */}
+            {isSubmenu(item) ? (
+              <>
+                <button onClick={() => toggle(item.name)} className="flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
+                  {item.icon}
+                  {item.name}
+                </button>
 
-        {/* CLIENTES */}
-        <button onClick={() => toggle('clients')} className="flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
-          <IoPeople />
-          Clientes
-        </button>
-
-        {open === 'clients' && (
-          <div className="flex animate-fadeIn flex-col gap-1 pl-4">
-            <Link to="/clients/list" className="flex items-center gap-2 rounded py-2 hover:bg-sidebar-hover2">
-              <FaList />
-              Listar clientes
-            </Link>
-
-            <Link to="/clients/new" className="flex items-center gap-2 rounded py-2 hover:bg-sidebar-hover2">
-              <FaPlus />
-              Cadastrar cliente
-            </Link>
+                {open === item.name && (
+                  <div className="flex animate-fadeIn flex-col gap-1 pl-4">
+                    {item.items.map((sub) =>
+                      sub.link ? (
+                        <Link key={sub.name} to={sub.link} className="flex items-center gap-2 rounded py-2 hover:bg-sidebar-hover2">
+                          {sub.icon}
+                          {sub.name}
+                        </Link>
+                      ) : (
+                        <button key={sub.name} onClick={sub.action} className="flex items-center gap-2 rounded py-2 hover:bg-sidebar-hover2">
+                          {sub.icon}
+                          {sub.name}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                )}
+              </>
+            ) : (
+              /* Se for MenuLink simples */
+              <>
+                {item.link ? (
+                  <Link to={item.link} className="flex items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
+                    {item.icon}
+                    {item.name}
+                  </Link>
+                ) : (
+                  <button onClick={item.action} className="flex items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
+                    {item.icon}
+                    {item.name}
+                  </button>
+                )}
+              </>
+            )}
           </div>
-        )}
-
-        {/* FATURAMENTOS */}
-        <button onClick={() => toggle('billings')} className="flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
-          <MdOutlineAttachMoney />
-          Faturamentos
-        </button>
-
-        {open === 'billings' && (
-          <div className="flex animate-fadeIn flex-col gap-1 pl-4">
-            <Link to="/billings/list" className="flex items-center gap-2 rounded py-2 hover:bg-sidebar-hover2">
-              <FaList />
-              Listar faturamentos
-            </Link>
-
-            <Link to="/billings/new" className="flex items-center gap-2 rounded py-2 hover:bg-sidebar-hover2">
-              <FaPlus />
-              Cadastrar faturamento
-            </Link>
-          </div>
-        )}
-
-        {/* SERVIÇOS */}
-        <button onClick={() => toggle('services')} className="flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
-          <IoIosBriefcase />
-          Serviços
-        </button>
-
-        {open === 'services' && (
-          <div className="flex animate-fadeIn flex-col gap-1 pl-4">
-            <Link to="/services/list" className="flex items-center gap-2 rounded py-2 hover:bg-sidebar-hover2">
-              <FaList />
-              Listar serviços
-            </Link>
-
-            <Link to="/services/new" className="flex items-center gap-2 rounded py-2 hover:bg-sidebar-hover2">
-              <FaPlus />
-              Cadastrar serviço
-            </Link>
-          </div>
-        )}
-
-        {/* RELATÓRIOS */}
-        <button onClick={() => toggle('reports')} className="flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
-          <HiDocumentReport />
-          Relatórios
-        </button>
-
-        {open === 'reports' && (
-          <div className="flex animate-fadeIn flex-col gap-1 pl-4">
-            <Link to="/reports/financial" className="flex items-center gap-2 rounded py-2 hover:bg-sidebar-hover2">
-              <MdAttachMoney />
-              Relatórios financeiros
-            </Link>
-
-            <Link to="/reports/general" className="flex items-center gap-2 rounded py-2 hover:bg-sidebar-hover2">
-              <IoIosStats />
-              Estatísticas gerais
-            </Link>
-          </div>
-        )}
-
-        {/* CONFIGURAÇÕES */}
-        <button className="flex items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
-          <FaGear />
-          Configurações
-        </button>
+        ))}
       </nav>
-
-      {/* RODAPÉ */}
-      <div className="mt-auto pt-4">
-        <button className="flex items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
-          <GrLogin />
-          Entrar
-        </button>
-      </div>
     </aside>
   );
 }
