@@ -72,7 +72,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
     <ModalBase isOpen={open} onClose={() => onClose(false, null)}>
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="mb-6 text-center text-2xl font-semibold uppercase">{client ? 'Editar Cliente' : 'Cadastrar Cliente'}</h2>
+        <h2 className="mb-6 text-center text-2xl font-semibold">{client ? 'Editar cliente' : 'Cadastrar cliente'}</h2>
         <button onClick={() => onClose(false, null)} className="text-xl font-bold hover:text-red-400">
           <MdClose />
         </button>

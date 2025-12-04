@@ -46,7 +46,6 @@ export default function BillingModal({ open, billing, onClose }: Props) {
   const [servicesBilling, setServicesBilling] = useState<IServiceBillingFormDTO[]>([]);
   const filteredClients = clients.filter((c) => c.name.toLowerCase().startsWith(search.toLowerCase()));
 
-  // Buscar cliente completo e atualizar campos
   useEffect(() => {
     (async () => {
       const now = new Date();
@@ -57,7 +56,6 @@ export default function BillingModal({ open, billing, onClose }: Props) {
         if (error) return setFormError(error.message);
         if (!data || Array.isArray(data)) return;
 
-        // Dados padrão do cliente
         now.setDate(data.feeDueDay);
 
         setValue('fee', data.fee);
@@ -69,7 +67,6 @@ export default function BillingModal({ open, billing, onClose }: Props) {
     })();
   }, [clientId, setValue, fetchById]);
 
-  // Quando abrir modal
   useEffect(() => {
     (async () => {
       if (!open) return;
@@ -77,14 +74,13 @@ export default function BillingModal({ open, billing, onClose }: Props) {
       setFormError(null);
 
       const { data, error } = await fetchResume();
-
       if (data) {
         setClients(data);
       } else if (error) {
         setError(error.message);
       }
 
-      prepareServices(billing);
+      setServicesBilling(await prepareServices(billing));
 
       if (billing) {
         reset({
@@ -95,8 +91,6 @@ export default function BillingModal({ open, billing, onClose }: Props) {
           dueDate: billing.dueDate,
           paidAt: billing.status === 'paid' ? billing.paidAt! : null,
         });
-
-        setServicesBilling(billing.serviceBillings);
       } else {
         reset({
           id: null,
@@ -111,19 +105,17 @@ export default function BillingModal({ open, billing, onClose }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Quanto o status do pagamento muda para pendente, reseta o valor da data
   useEffect(() => {
     if (status === 'pending') {
       setValue('paidAt', null);
     }
   }, [status, setValue]);
 
-  // Salvar cobrança
   const saveBilling = handleSubmit(async (data) => {
     if (clientId === null || clientId === -1) return;
 
     data.clientId = clientId;
-    data.serviceBillings = servicesBilling; // carregar serviços modificados
+    data.serviceBillings = servicesBilling;
 
     const { success, error } = await save(data);
     if (!success && error) return setFormError(error.message);
@@ -132,7 +124,6 @@ export default function BillingModal({ open, billing, onClose }: Props) {
     onClose(true, null);
   });
 
-  // Atualiza quantidade dos serviços
   const updateQuantity = (index: number, qty: number) => {
     setServicesBilling((prev) => {
       const copy = [...prev];
@@ -143,9 +134,9 @@ export default function BillingModal({ open, billing, onClose }: Props) {
 
   return (
     <ModalBase isOpen={open} onClose={() => onClose(false, null)}>
-      {/* HEADER */}
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="mb-6 text-center text-2xl font-semibold uppercase">{billing ? 'Editar Conta' : 'Cadastrar Conta'}</h2>
+      {/* Header (Fixo) */}
+      <div className="mb-4 flex items-start justify-between">
+        <h2 className="text-2xl font-semibold">{billing ? 'Editar faturamento' : 'Cadastrar faturamento'}</h2>
         <button onClick={() => onClose(false, null)} className="text-xl font-bold hover:text-red-400">
           <MdClose />
         </button>
@@ -153,13 +144,11 @@ export default function BillingModal({ open, billing, onClose }: Props) {
 
       {formError && <p className="mb-3 text-center text-red-400">{formError}</p>}
 
-      {/* FORM */}
-      <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {/* Cliente */}
+      <form className="grid h-full grid-cols-1 gap-4 md:grid-cols-2">
+        {/* Cliente (Fixo) */}
         <div className="col-span-full">
           <label className="mb-1 block">Cliente:</label>
 
-          {/* Busca */}
           <input
             className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none placeholder:text-black focus:ring-2 focus:ring-blue-500"
             placeholder="Buscar cliente..."
@@ -167,7 +156,6 @@ export default function BillingModal({ open, billing, onClose }: Props) {
             onChange={(e) => setSearch(e.target.value)}
           />
 
-          {/* Lista */}
           <select
             {...register('clientId', { required: true, setValueAs: (v) => Number(v) })}
             disabled={billing != null}
@@ -213,7 +201,7 @@ export default function BillingModal({ open, billing, onClose }: Props) {
           </select>
         </div>
 
-        {/* pago em */}
+        {/* paidAt */}
         <div>
           <label className="mb-1 block">Data de Pagamento:</label>
           <input
@@ -224,7 +212,7 @@ export default function BillingModal({ open, billing, onClose }: Props) {
           />
         </div>
 
-        {/* vencimento */}
+        {/* dueDate */}
         <div>
           <label className="mb-1 block">Data de Vencimento:</label>
           <input
@@ -234,15 +222,14 @@ export default function BillingModal({ open, billing, onClose }: Props) {
           />
         </div>
 
-        {/* SERVIÇOS */}
-        <div className="col-span-full mt-2">
+        <div className="col-span-full overflow-y-auto">
           <label className="mb-1 block">Serviços:</label>
           <ServicesSelector services={servicesBilling} onChange={updateQuantity} />
         </div>
       </form>
 
-      {/* FOOTER */}
-      <div className="mt-6 text-right">
+      {/* Footer (Fixo) */}
+      <div className="mt-4 border-t border-sidebar-border pt-4 text-right">
         <SaveButton onClick={saveBilling} />
       </div>
     </ModalBase>

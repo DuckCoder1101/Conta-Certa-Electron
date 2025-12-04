@@ -17,7 +17,7 @@ export function useClients() {
     return (await window.api.invoke('fetch-client-by-id', id)) as IAppResponseDTO<IClient>;
   };
 
-  const save = async (data: Partial<IClientFormDTO>) => {
+  const save = async (data: IClientFormDTO) => {
     return (await window.api.invoke('save-client', data)) as IAppResponseDTO<null>;
   };
 

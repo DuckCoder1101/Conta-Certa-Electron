@@ -41,6 +41,12 @@ export interface IService {
 	value: number;
 }
 
+export interface IServiceFormDTO {
+	id: number;
+	name: string;
+	value: number;
+}
+
 export interface IServiceBilling {
 	id: number;
 	name: string;

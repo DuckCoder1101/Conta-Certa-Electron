@@ -6,11 +6,13 @@ import { FaPencil, FaPlus } from 'react-icons/fa6';
 
 import BillingModal from '@/components/billing/BillingModal';
 import DangerHoldButton from '@components/DangerHoldButton';
+import AppLayout from '@/components/AppLayout';
+
 import { formatDate, formatMoney } from '@utils/formatters';
+
 import { GlobalEventsContext } from '@contexts/GlobalEventsContext';
 import { useBillings } from '@/hooks/useBillings';
 import { useInfiniteScroll } from '@/hooks/useInfinityScroll';
-import AppLayout from '@/components/AppLayout';
 
 export default function BillingsList() {
   // Contexto global
@@ -77,9 +79,9 @@ export default function BillingsList() {
 
           <input
             type="search"
-            className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
+            onChange={(e) => setFilter(e.target.value.toLowerCase())}
             placeholder="Buscar por cliente, ou status"
-            onChange={(ev) => setFilter(ev.target.value)}
+            className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
           />
         </div>
 
@@ -99,7 +101,7 @@ export default function BillingsList() {
           <thead>
             <tr className="border-b bg-sidebar-hover2 text-left text-sidebar-text">
               <th className="px-4 py-3 font-semibold">Cliente</th>
-              <th className="px-4 py-3 font-semibold">Valor</th>
+              <th className="px-4 py-3 font-semibold">Valor total</th>
               <th className="px-4 py-3 font-semibold">Status</th>
               <th className="px-4 py-3 font-semibold">Pagamento</th>
               <th className="px-4 py-3 font-semibold">Vencimento</th>
@@ -114,8 +116,8 @@ export default function BillingsList() {
                   {b.client?.name ?? 'Cliente excluído'}
                 </td>
 
-                <td className="max-w-[100px] truncate whitespace-nowrap px-4 py-3" title={formatMoney(b.fee)}>
-                  {formatMoney(b.fee)}
+                <td className="max-w-[100px] truncate whitespace-nowrap px-4 py-3" title={formatMoney(b.totalFee)}>
+                  {formatMoney(b.totalFee)}
                 </td>
 
                 <td className={`max-w-[120px] truncate whitespace-nowrap px-4 py-3 ${b.status === 'paid' ? 'text-green-500' : 'text-red-500'}`} title={b.status === 'paid' ? 'PAGO' : 'PENDENTE'}>

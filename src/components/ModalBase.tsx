@@ -4,10 +4,9 @@ interface Props {
   isOpen: boolean;
   onClose?: () => void;
   children: React.ReactNode;
-  className?: string;
 }
 
-export default function ModalBase({ isOpen, onClose, children, className = '' }: Props) {
+export default function ModalBase({ isOpen, onClose, children }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   // Abrir/Fechar modal
@@ -48,7 +47,7 @@ export default function ModalBase({ isOpen, onClose, children, className = '' }:
   }, [onClose]);
 
   return (
-    <dialog ref={dialogRef} className={`rounded-xl border-0 bg-[#2b3035] p-6 text-light-text shadow-xl backdrop:backdrop-blur-sm open:animate-fadeIn ${className} `}>
+    <dialog ref={dialogRef} className='rounded-xl border-0 bg-[#2b3035] p-6 text-light-text shadow-xl backdrop:backdrop-blur-sm open:animate-fadeIn'>
       <div className="w-full max-w-lg">{children}</div>
     </dialog>
   );

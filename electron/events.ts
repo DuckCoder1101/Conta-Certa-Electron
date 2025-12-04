@@ -2,7 +2,7 @@ import { BrowserWindow, dialog, ipcMain } from 'electron';
 import { Client, PrismaClient, Service } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
-import { BillingStatus, IAppResponseDTO, IBillingCadDTO, IBillingResumeDTO, IBillingWithTotalDTO, IClientCadDTO, ICLientResumoDTO } from './@types/dtos';
+import { BillingStatus, IAppResponseDTO, IBillingCadDTO, IBillingResumeDTO, IBillingWithTotalDTO, IClientCadDTO, IClientResumoDTO, IServiceCadDTO } from './@types/dtos';
 
 import AppError from './errors/AppError';
 import HandlePrismaErrors from './errors/HandlePrismaErrors';
@@ -150,7 +150,7 @@ export default async function HandleIPCEvents() {
         data: null,
         error: {
           status: 500,
-          message: 'Erro desconhecido ao salvar cliente. Entre em contato com o suporte!',
+          message: 'Erro desconhecido ao salvar o cliente. Entre em contato com o suporte!',
         },
       };
     }
@@ -179,13 +179,13 @@ export default async function HandleIPCEvents() {
         data: null,
         error: {
           status: 500,
-          message: 'Erro desconhecido ao carregar os clientes. Entre em contato com o suporte!',
+          message: 'Erro desconhecido ao remover o cliente. Entre em contato com o suporte!',
         },
       };
     }
   });
 
-  ipcMain.handle('fetch-clients-resume', async (): Promise<IAppResponseDTO<ICLientResumoDTO[]>> => {
+  ipcMain.handle('fetch-clients-resume', async (): Promise<IAppResponseDTO<IClientResumoDTO[]>> => {
     console.log('Fetching clients resume.');
 
     try {
@@ -194,7 +194,7 @@ export default async function HandleIPCEvents() {
           id: true,
           name: true,
         },
-      })) as ICLientResumoDTO[];
+      })) as IClientResumoDTO[];
 
       return {
         success: true,
@@ -297,7 +297,7 @@ export default async function HandleIPCEvents() {
           AND: [
             filter
               ? {
-                  OR: [{ client: { name: { startsWith: filter } } }, { status: filter }],
+                  OR: [{ client: { name: { startsWith: filter } } }, { status: filter === 'pendente' ? 'pending' : filter === 'pago' ? 'paid' : '' }],
                 }
               : {},
           ],
@@ -495,7 +495,7 @@ export default async function HandleIPCEvents() {
         data: null,
         error: {
           status: 500,
-          message: 'Erro desconhecido ao salvar cobrança. Contate o suporte!',
+          message: 'Erro desconhecido ao salvar a cobrança. Contate o suporte!',
         },
       };
     }
@@ -532,7 +532,7 @@ export default async function HandleIPCEvents() {
         data: null,
         error: {
           status: 500,
-          message: 'Erro desconhecido ao salvar cobrança. Contate o suporte!',
+          message: 'Erro desconhecido ao remover a cobrança. Contate o suporte!',
         },
       };
     }
@@ -568,6 +568,107 @@ export default async function HandleIPCEvents() {
         error: {
           status: 500,
           message: 'Erro desconhecido ao carregar os serviços. Entre em contato com o suporte!',
+        },
+      };
+    }
+  });
+
+  ipcMain.handle('save-service', async (_event, data: IServiceCadDTO) => {
+    console.log('Saving service: ' + data.name);
+
+    try {
+      data.name = data.name.trim();
+
+      // Verifica o nome
+      if (!data.name) {
+        throw new AppError(400, 'Nome inválido!');
+      }
+
+      // Verifica o valor
+      if (!data.value || typeof data.value != 'number') {
+        return new AppError(400, 'Valor inválido!');
+      }
+
+      // Novo registro ou update?
+      if (!data.id) {
+        await prisma.service.create({
+          data: {
+            name: data.name,
+            value: data.value,
+          },
+        });
+      } else {
+        await prisma.service.update({
+          where: {
+            id: data.id,
+          },
+          data: {
+            name: data.name,
+            value: data.value,
+          },
+        });
+      }
+
+      return {
+        success: true,
+        data: null,
+        error: null,
+      };
+    } catch (error) {
+      if (error instanceof AppError) {
+        return {
+          success: false,
+          data: null,
+          error,
+        };
+      }
+
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        const prismaError = HandlePrismaErrors(error);
+
+        return {
+          success: false,
+          data: null,
+          error: prismaError,
+        };
+      }
+
+      console.log(error);
+      return {
+        success: false,
+        data: null,
+        error: {
+          status: 500,
+          message: 'Erro desconhecido ao salvar o serviço. Entre em contato com o suporte!',
+        },
+      };
+    }
+  });
+
+  ipcMain.handle('delete-service', async (_event, serviceId: number): Promise<IAppResponseDTO<null>> => {
+    console.log('Deleting service: ' + serviceId);
+
+    try {
+      await prisma.service.delete({
+        where: {
+          id: serviceId,
+        },
+      });
+
+      return {
+        success: true,
+        data: null,
+        error: null,
+      };
+    } catch (error) {
+      console.log(error);
+
+      return {
+        success: false,
+        data: null,
+        error: {
+          status: 500,
+          message: 'Erro desconhecido ao remover o serviço. Entre em contato com o suporte!',
         },
       };
     }

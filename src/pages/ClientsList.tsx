@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { IClient, IAppResponseDTO } from '@t/dtos';
+import { IClient } from '@t/dtos';
 
 import DangerHoldButton from '@components/DangerHoldButton';
 import ClientModal from '@components/ClientModal';
@@ -18,9 +18,9 @@ import { useClients } from '@/hooks/useClients';
 import AppLayout from '@/components/AppLayout';
 
 export default function ClientsList() {
-  // Contexto global
   const { setError } = useContext(GlobalEventsContext);
-  const { fetchAll } = useClients();
+
+  const { fetchAll, remove } = useClients();
 
   // Filtro digitado
   const [filter, setFilter] = useState('');
@@ -50,7 +50,7 @@ export default function ClientsList() {
 
   // Deletar cliente
   const deleteClient = async (clientId: number) => {
-    const { success, error } = (await window.api.invoke('delete-client', clientId)) as IAppResponseDTO<IClient>;
+    const { success, error } = await remove(clientId);
 
     if (!success && error) {
       return setError(error.message);
@@ -76,7 +76,7 @@ export default function ClientsList() {
       <h2 className="mt-5 text-center text-2xl font-semibold">Clientes</h2>
 
       {/* BARRA DE BUSCA */}
-      <form className="my-5 block md:flex items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg">
+      <form className="my-5 block items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg md:flex">
         <div className="flex flex-grow items-center gap-2">
           <span className="flex h-10 w-10 items-center justify-center text-lg text-white">
             <IoMdSearch />
@@ -85,12 +85,12 @@ export default function ClientsList() {
           <input
             type="search"
             placeholder="Buscar por nome, CPF ou CNPJ"
-            onChange={(e) => setFilter(e.currentTarget.value)}
+            onChange={(e) => setFilter(e.target.value.toLowerCase())}
             className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
           />
         </div>
 
-        <div className='flex justify-end items-center gap-2'>
+        <div className="flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={() => openModal()}

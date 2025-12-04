@@ -11,6 +11,7 @@ import ClientForm from "@/pages/ClientForm";
 
 import { GlobalEventsProvider } from "@contexts/GlobalEventsProvider";
 import BillingForm from "./pages/BillingForm";
+import ServicesList from "./pages/ServicesList";
 
 ReactDOM.createRoot(document.querySelector("#root")!).render(
   <React.StrictMode>
@@ -22,6 +23,7 @@ ReactDOM.createRoot(document.querySelector("#root")!).render(
           <Route path="/clients/new" element={<ClientForm />} />
           <Route path="/billings/list" element={<BillingsList />} />
           <Route path="/billings/new" element={<BillingForm />} />
+          <Route path="/services/list" element={<ServicesList />} />
         </Routes>
       </HashRouter>
     </GlobalEventsProvider>

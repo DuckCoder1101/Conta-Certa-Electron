@@ -19,6 +19,12 @@ export interface IServiceBillingCadDTO {
   quantity: number;
 }
 
+export interface IServiceCadDTO {
+  id: number | null;
+  name: string;
+  value: number;
+}
+
 export type BillingStatus = "pending" | "paid";
 export interface IBillingCadDTO {
   id: number | null;
@@ -43,7 +49,7 @@ export interface IBillingWithTotalDTO extends Billing {
   totalFee: number;
 }
 
-export interface ICLientResumoDTO {
+export interface IClientResumoDTO {
   id: number;
   name: string;
 }
