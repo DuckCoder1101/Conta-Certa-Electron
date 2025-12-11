@@ -7,7 +7,7 @@ import { IClientFormDTO } from '@t/dtos';
 
 import { useClients } from '@hooks/useClients';
 
-import { GlobalEventsContext } from '@contexts/GlobalEventsContext';
+import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
 
 import AppLayout from '@components/AppLayout';
 import SaveButton from '@/components/SaveButton';
@@ -52,9 +52,8 @@ export default function ClientForm() {
 
   return (
     <AppLayout>
-      <form className="mx-auto grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
-        <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">Cadastrar clientes</h2>
-
+      <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">Cadastrar clientes</h2>
+      <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
         {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-red-400">{formError}</p>}
 
         {/* CPF */}
@@ -150,7 +149,7 @@ export default function ClientForm() {
         </div>
 
         {/* Botão */}
-        <div className="col-span-full flex justify-center md:mt-4 md:justify-end">
+        <div className="col-span-full flex items-center justify-center md:justify-end">
           <SaveButton onClick={saveClient} />
         </div>
       </form>

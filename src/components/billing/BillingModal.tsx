@@ -9,7 +9,7 @@ import SaveButton from '../SaveButton';
 
 import { IBilling, IBillingFormDTO, IClientResumeDTO, IServiceBillingFormDTO } from '@t/dtos';
 
-import { GlobalEventsContext } from '@contexts/GlobalEventsContext';
+import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
 
 import { useClients } from '@hooks/useClients';
 import { useBillings } from '@hooks/useBillings';
@@ -18,7 +18,7 @@ import { ServicesSelector } from './ServicesSelector';
 interface Props {
   open: boolean;
   billing: IBilling | null;
-  onClose: (success: boolean, errorMessage: string | null) => void;
+  onClose: (success: boolean, error: string | null) => void;
 }
 
 export default function BillingModal({ open, billing, onClose }: Props) {
@@ -68,9 +68,8 @@ export default function BillingModal({ open, billing, onClose }: Props) {
   }, [clientId, setValue, fetchById]);
 
   useEffect(() => {
+    if (!open) return;
     (async () => {
-      if (!open) return;
-
       setFormError(null);
 
       const { data, error } = await fetchResume();
@@ -222,14 +221,13 @@ export default function BillingModal({ open, billing, onClose }: Props) {
           />
         </div>
 
-        <div className="col-span-full overflow-y-auto">
+        <div className="col-span-full">
           <label className="mb-1 block">Serviços:</label>
-          <ServicesSelector services={servicesBilling} onChange={updateQuantity} />
+          <ServicesSelector services={servicesBilling} onChange={updateQuantity} className="max-h-[250px]" />
         </div>
       </form>
 
-      {/* Footer (Fixo) */}
-      <div className="mt-4 border-t border-sidebar-border pt-4 text-right">
+      <div className="col-span-full mt-4 flex justify-end">
         <SaveButton onClick={saveBilling} />
       </div>
     </ModalBase>

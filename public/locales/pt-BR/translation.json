@@ -1,0 +1,30 @@
+{
+  "billing": {
+    "form": {
+      "client": {
+        "default-option": "Selecione um cliente",
+        "label": "Cliente:",
+        "search-placeholder": "Busque um cliente por nome..."
+      },
+      "fee": {
+        "label": "Valor:",
+        "money-prefix": "R$"
+      },
+      "feeDueDate": {
+        "label": "Data vencimento:"
+      },
+      "paidAt": {
+        "label": "Data pagamento:"
+      },
+      "services": {
+        "label": "Serviços"
+      },
+      "status": {
+        "label": "Status:",
+        "paid": "Pago",
+        "pending": "Pendente"
+      },
+      "title": "Cadastrar faturamentos"
+    }
+  }
+}

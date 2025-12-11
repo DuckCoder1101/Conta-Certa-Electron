@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
+import { useTranslation } from 'react-i18next';
 
 import { IBillingFormDTO, IClientResumeDTO, IServiceBillingFormDTO } from '@t/dtos';
 
 import { ServicesSelector } from '@components/billing/ServicesSelector';
 
-import { GlobalEventsContext } from '@contexts/GlobalEventsContext';
+import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
 
 import { useClients } from '@hooks/useClients';
 import { useBillings } from '@hooks/useBillings';
@@ -14,6 +15,9 @@ import AppLayout from '@/components/AppLayout';
 import SaveButton from '@/components/SaveButton';
 
 export default function BillingForm() {
+  // Traduções
+  const { t } = useTranslation();
+
   const { fetchResume, fetchById } = useClients();
   const { prepareServices, save } = useBillings();
 
@@ -70,26 +74,16 @@ export default function BillingForm() {
       setFormError(null);
 
       const { data, error } = await fetchResume();
-
       if (data) {
         setClients(data);
       } else if (error) {
         setError(error.message);
       }
 
-      prepareServices(null);
-
-      reset({
-        id: null,
-        clientId: -1,
-        fee: 1,
-        status: 'pending',
-        paidAt: null,
-        dueDate: new Date().toISOString().split('T')[0],
-      });
+      setServicesBilling(await prepareServices(null));
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, []);
 
   // Quanto o status do pagamento muda para pendente, reseta o valor da data
   useEffect(() => {
@@ -129,19 +123,18 @@ export default function BillingForm() {
 
   return (
     <AppLayout>
-      <form className="mx-auto grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
-        <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">Cadastrar faturamentos</h2>
-
+      <form className="grid h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
+        <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">{t('billing.form.title')}</h2>
         {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-red-400">{formError}</p>}
 
         {/* Cliente */}
         <div className="col-span-full">
-          <label className="mb-1 block">Cliente:</label>
+          <label className="mb-1 block">{t('billing.form.client.label')}</label>
 
           {/* Busca */}
           <input
             className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none placeholder:text-black focus:ring-2 focus:ring-blue-500"
-            placeholder="Buscar cliente..."
+            placeholder={t('billing.form.client.search-placeholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -151,7 +144,7 @@ export default function BillingForm() {
             {...register('clientId', { required: true, setValueAs: (v) => Number(v) })}
             className="mt-2 max-h-48 w-full rounded-xl border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value={-1}>Selecione um cliente</option>
+            <option value={-1}>{t('billing.form.client.default-option')}</option>
             {filteredClients.map(({ id, name }, i) => (
               <option key={i} value={id}>
                 {name}
@@ -162,7 +155,7 @@ export default function BillingForm() {
 
         {/* fee */}
         <div>
-          <label className="mb-1 block">Valor:</label>
+          <label className="mb-1 block">{t('billing.form.fee.label')}</label>
           <Controller
             name="fee"
             control={control}
@@ -170,7 +163,7 @@ export default function BillingForm() {
               <NumericFormat
                 thousandSeparator="."
                 decimalSeparator=","
-                prefix="R$"
+                prefix={t('billing.form.fee.money-prefix')}
                 decimalScale={2}
                 fixedDecimalScale={true}
                 allowNegative={false}
@@ -184,16 +177,16 @@ export default function BillingForm() {
 
         {/* status */}
         <div>
-          <label className="mb-1 block">Status:</label>
+          <label className="mb-1 block">{t('billing.form.status.label')}</label>
           <select {...register('status', { required: true })} className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="pending">Pendente</option>
-            <option value="paid">Paga</option>
+            <option value="pending">{t('billing.form.status.pending')}</option>
+            <option value="paid">{t('billing.form.status.paid')}</option>
           </select>
         </div>
 
         {/* pago em */}
         <div>
-          <label className="mb-1 block">Data de Pagamento:</label>
+          <label className="mb-1 block">{t('billing.form.paidAt.label')}</label>
           <input
             type="date"
             {...register('paidAt', { required: status === 'paid' })}
@@ -204,7 +197,7 @@ export default function BillingForm() {
 
         {/* vencimento */}
         <div>
-          <label className="mb-1 block">Data de Vencimento:</label>
+          <label className="mb-1 block">{t('billing.form.feeDueDate.label')}</label>
           <input
             type="date"
             {...register('dueDate', { required: true })}
@@ -213,12 +206,12 @@ export default function BillingForm() {
         </div>
 
         {/* SERVIÇOS */}
-        <div className="col-span-full mt-2">
-          <label className="mb-1 block">Serviços:</label>
-          <ServicesSelector services={servicesBilling} onChange={updateQuantity} />
+        <div className="col-span-full">
+          <label className="mb-1 block">{t('billing.form.services.label')}</label>
+          <ServicesSelector services={servicesBilling} onChange={updateQuantity} className="md:max-h-[250px]" />
         </div>
 
-        <div className="col-span-full flex justify-center md:mt-4 md:justify-end">
+        <div className="col-span-full flex items-center justify-center">
           <SaveButton onClick={saveBilling} />
         </div>
       </form>

@@ -10,7 +10,7 @@ import AppLayout from '@/components/AppLayout';
 
 import { formatDate, formatMoney } from '@utils/formatters';
 
-import { GlobalEventsContext } from '@contexts/GlobalEventsContext';
+import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
 import { useBillings } from '@/hooks/useBillings';
 import { useInfiniteScroll } from '@/hooks/useInfinityScroll';
 

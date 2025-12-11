@@ -34,7 +34,7 @@ export default function Dashboard() {
     if (!dateStr) return null;
 
     const full = new Date(dateStr);
-    return `${full.getFullYear()}-${full.getMonth() +1}`;
+    return `${full.getFullYear()}-${full.getMonth() + 1}`;
   };
 
   const yearMonthToLabel = (ym: string) => {
@@ -115,7 +115,7 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
-      {isLoading && <h2 className="col-span-full mt-6 md:mt-12 text-center text-2xl font-semibold">Carregando informações...</h2>}
+      {isLoading && <h2 className="col-span-full mt-6 text-center text-2xl font-semibold md:mt-12">Carregando informações...</h2>}
       {!isLoading && (
         <div className="flex h-full flex-col">
           <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">Visão geral</h2>

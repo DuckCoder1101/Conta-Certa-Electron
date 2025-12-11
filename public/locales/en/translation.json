@@ -1,0 +1,30 @@
+{
+  "billing": {
+    "form": {
+      "client": {
+        "default-option": "billing.form.client.default-option",
+        "label": "billing.form.client.label",
+        "search-placeholder": "billing.form.client.search-placeholder"
+      },
+      "fee": {
+        "label": "billing.form.fee.label",
+        "money-prefix": "billing.form.fee.money-prefix"
+      },
+      "feeDueDate": {
+        "label": "billing.form.feeDueDate.label"
+      },
+      "paidAt": {
+        "label": "billing.form.paidAt.label"
+      },
+      "services": {
+        "label": "billing.form.services.label"
+      },
+      "status": {
+        "label": "billing.form.status.label",
+        "paid": "billing.form.status.paid",
+        "pending": "billing.form.status.pending"
+      },
+      "title": "billing.form.title"
+    }
+  }
+}

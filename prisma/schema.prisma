@@ -41,6 +41,9 @@ model Billing {
   dueDate String
   paidAt  String?
 
+  // Unique year-month
+  yearMonth String
+
   // FK (DocumentoCliente)
   clientId Int?
   client   Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
@@ -48,7 +51,7 @@ model Billing {
   // Relation: Billing → ServiceBilling
   serviceBillings ServiceBilling[]
 
-  @@unique([dueDate, clientId])
+  @@unique([clientId, yearMonth])
   @@map("Cobrancas")
 }
 

@@ -1,23 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { IService, IServiceFormDTO } from '@t/dtos';
+import { IServiceFormDTO } from '@t/dtos';
 import { NumericFormat } from 'react-number-format';
 
-// Ícones
-import { MdClose } from 'react-icons/md';
-
-import ModalBase from '@components/ModalBase';
-import SaveButton from './SaveButton';
+import AppLayout from '@/components/AppLayout';
+import SaveButton from '@components/SaveButton';
 
 import { useServices } from '@/hooks/useServices';
 
-interface Props {
-  open: boolean;
-  client: IService | null;
-  onClose: (success: boolean, error: string | null) => void;
-}
-
-export default function ServiceModal({ open, onClose, client: service }: Props) {
+export default function ServiceForm() {
   const { save } = useServices();
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -28,41 +19,24 @@ export default function ServiceModal({ open, onClose, client: service }: Props) 
     },
   });
 
-  useEffect(() => {
-    if (!open) return;
-    reset(
-      service || {
-        name: '',
-        value: 1,
-      },
-    );
-    setFormError(null);
-  }, [open, service, reset]);
-
   const saveService = handleSubmit(async (data) => {
     data.name = data.name.trim();
 
-    const { success, error } = await save(data);
+    const { error } = await save(data);
     if (error && error.status === 400) {
       return setFormError(error.message);
     }
 
     setFormError(null);
-    onClose(success, error?.message ?? null);
+    reset();
   });
 
   return (
-    <ModalBase isOpen={open} onClose={() => onClose(false, null)}>
-      {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="mb-6 text-center text-2xl font-semibold">{service ? 'Editar serviço' : 'Cadastrar serviço'}</h2>
-        <button onClick={() => onClose(false, null)} className="text-xl font-bold hover:text-red-400">
-          <MdClose />
-        </button>
-      </div>
+    <AppLayout>
+      <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">Cadastrar serviços</h2>
+      <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
+        {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-red-400">{formError}</p>}
 
-      {/* Form */}
-      <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {formError && <p className="col-span-full text-center text-red-400">{formError}</p>}
 
         {/* Nome */}
@@ -93,11 +67,10 @@ export default function ServiceModal({ open, onClose, client: service }: Props) 
           />
         </div>
 
-        {/* Botão */}
-        <div className="col-span-full mt-4 flex justify-end">
+        <div className="col-span-full flex justify-center md:justify-end items-center">
           <SaveButton onClick={saveService} />
         </div>
       </form>
-    </ModalBase>
+    </AppLayout>
   );
 }

@@ -2,11 +2,15 @@ import { BrowserWindow, dialog, ipcMain } from 'electron';
 import { Client, PrismaClient, Service } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
+import IConfiguration from './@types/configuration';
 import { BillingStatus, IAppResponseDTO, IBillingCadDTO, IBillingResumeDTO, IBillingWithTotalDTO, IClientCadDTO, IClientResumoDTO, IServiceCadDTO } from './@types/dtos';
 
 import AppError from './errors/AppError';
 import HandlePrismaErrors from './errors/HandlePrismaErrors';
-import { ImportCSV } from './csvImporter';
+
+import { ImportCSV } from './utils/csvImporter';
+import { GetConfiguration, SaveConfiguration } from './utils/configManager';
+import makeYearMonth from './utils/yearMonth';
 
 const prisma = new PrismaClient();
 
@@ -421,6 +425,7 @@ export default async function HandleIPCEvents() {
             fee: data.fee,
             status: data.status,
             dueDate: data.dueDate,
+            yearMonth: makeYearMonth(data.dueDate),
             paidAt: data.status === 'paid' ? data.paidAt : null,
           },
         });
@@ -435,6 +440,7 @@ export default async function HandleIPCEvents() {
             fee: data.fee,
             status: data.status,
             dueDate: data.dueDate,
+            yearMonth: makeYearMonth(data.dueDate),
             paidAt: data.status === 'paid' ? data.paidAt : null,
           },
         });
@@ -672,5 +678,20 @@ export default async function HandleIPCEvents() {
         },
       };
     }
+  });
+
+  // --- CONFIGURAÇÕES ---
+  ipcMain.handle('get-settings', async (): Promise<IAppResponseDTO<IConfiguration>> => {
+    console.log('Reading configuration...');
+
+    const data = await GetConfiguration();
+    return data;
+  });
+
+  ipcMain.handle('set-settings', async (_event, config: IConfiguration): Promise<IAppResponseDTO<null>> => {
+    console.log('Saving configuration...');
+
+    const result = await SaveConfiguration(config);
+    return result;
   });
 }

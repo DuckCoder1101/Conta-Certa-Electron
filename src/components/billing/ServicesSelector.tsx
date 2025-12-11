@@ -4,11 +4,12 @@ import { FaPlus } from 'react-icons/fa6';
 interface Props {
   services: IServiceBillingFormDTO[];
   onChange: (index: number, qty: number) => void;
+  className?: string;
 }
 
-export function ServicesSelector({ services, onChange }: Props) {
+export function ServicesSelector({ services, onChange, className }: Props) {
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className={`flex flex-col gap-2 md:overflow-y-auto ${className}`}>
       {services.map((s, index) => (
         <li key={s.serviceOriginId} className="flex items-center justify-between rounded bg-sidebar-hover p-2">
           <div>

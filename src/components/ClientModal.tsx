@@ -14,7 +14,7 @@ import SaveButton from './SaveButton';
 interface Props {
   open: boolean;
   client: IClient | null;
-  onClose: (success: boolean, errorMessage: string | null) => void;
+  onClose: (success: boolean, error: string | null) => void;
 }
 
 export default function ClientModal({ open, onClose, client }: Props) {
@@ -34,20 +34,20 @@ export default function ClientModal({ open, onClose, client }: Props) {
   });
 
   useEffect(() => {
-    if (open) {
-      reset(
-        client || {
-          cpf: '',
-          cnpj: '',
-          name: '',
-          email: '',
-          phone: '',
-          fee: 1,
-          feeDueDay: 1,
-        },
-      );
-      setFormError(null);
-    }
+    if (!open) return;
+
+    reset(
+      client || {
+        cpf: '',
+        cnpj: '',
+        name: '',
+        email: '',
+        phone: '',
+        fee: 1,
+        feeDueDay: 1,
+      },
+    );
+    setFormError(null);
   }, [open, client, reset]);
 
   const saveClient = handleSubmit(async (data) => {

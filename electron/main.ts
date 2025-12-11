@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 
-import HandleIPCEvents from './events';
+import HandleIPCEvents from './events.ts';
 
 process.env.APP_ROOT = path.join(__dirname, '..');
 
@@ -15,23 +15,23 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 async function createMainWindow() {
   const mainWindow = new BrowserWindow({
     width: 800,
-		height: 600,
-		opacity: 0,
+    height: 600,
+    opacity: 0,
     webPreferences: {
       preload: path.join(__dirname, './preload.js'),
     },
   });
 
-  HandleIPCEvents();
+  await HandleIPCEvents();
 
   if (VITE_DEV_SERVER_URL) {
     await mainWindow.loadURL(VITE_DEV_SERVER_URL);
   } else {
     await mainWindow.loadFile(path.join(RENDERER_DIST, 'index.html'));
-	}
-	
-	mainWindow.setOpacity(1);
-	mainWindow.maximize();
+  }
+
+  mainWindow.setOpacity(1);
+  mainWindow.maximize();
 }
 
 app.on('window-all-closed', () => {
