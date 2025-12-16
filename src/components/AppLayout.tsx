@@ -12,10 +12,10 @@ export default function AppLayout({ children }: Props) {
   const { settings } = useContext(SettingsContext);
 
   useEffect(() => {
-    if (settings != null) {
+    if (settings) {
       i18next.changeLanguage(settings.language);
     }
-  }, [settings])
+  }, [settings]);
 
   return (
     <div className="m-0 flex overflow-hidden bg-light-bg2 p-0 text-light-text">

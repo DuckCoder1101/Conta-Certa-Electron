@@ -16,8 +16,12 @@ import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
 import { useInfiniteScroll } from '@/hooks/useInfinityScroll';
 import { useClients } from '@/hooks/useClients';
 import AppLayout from '@/components/AppLayout';
+import { useTranslation } from 'react-i18next';
 
 export default function ClientsList() {
+  // Traduções
+  const { t } = useTranslation();
+
   const { setError } = useContext(GlobalEventsContext);
 
   const { fetchAll, remove } = useClients();
@@ -56,7 +60,7 @@ export default function ClientsList() {
       return setError(error.message);
     }
 
-    load(); // reload mantendo offset
+    load();
   };
 
   return (
@@ -67,13 +71,15 @@ export default function ClientsList() {
         onClose={(success, error) => {
           setIsModalOpen(false);
 
-          if (success)
-            load(); // atualiza mantendo offset
-          else if (error) setError(error);
+          if (success) {
+            load();
+          } else if (error) {
+            setError(error);
+          }
         }}
       />
 
-      <h2 className="mt-5 text-center text-2xl font-semibold">Clientes</h2>
+      <h2 className="mt-5 text-center text-2xl font-semibold">{t('clients.list.title')}</h2>
 
       {/* BARRA DE BUSCA */}
       <form className="my-5 block items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg md:flex">
@@ -84,7 +90,7 @@ export default function ClientsList() {
 
           <input
             type="search"
-            placeholder="Buscar por nome, CPF ou CNPJ"
+            placeholder={t('clients.list.toolbar.search-placeholder')}
             onChange={(e) => setFilter(e.target.value.toLowerCase())}
             className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
           />
@@ -94,7 +100,7 @@ export default function ClientsList() {
           <button
             type="button"
             onClick={() => openModal()}
-            title="Cadastrar cliente"
+            title={t('clients.list.toolbar.new-client')}
             className="flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-hover2 text-white transition hover:bg-sidebar-hover"
           >
             <FaPlus />
@@ -103,7 +109,7 @@ export default function ClientsList() {
           <button
             type="button"
             onClick={importClients}
-            title="Importar clientes"
+            title={t('clients.list.toolbar.import-clients')}
             className="flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-hover2 text-white transition hover:bg-sidebar-hover"
           >
             <FaFileUpload />
@@ -118,12 +124,12 @@ export default function ClientsList() {
             <tr className="border-b bg-sidebar-hover2 text-left text-sidebar-text">
               <th className="px-4 py-3 font-semibold">CPF</th>
               <th className="px-4 py-3 font-semibold">CNPJ</th>
-              <th className="px-4 py-3 font-semibold">Nome</th>
-              <th className="px-4 py-3 font-semibold">Email</th>
-              <th className="px-4 py-3 font-semibold">Telefone</th>
-              <th className="px-4 py-3 text-center font-semibold">Honorário</th>
-              <th className="px-4 py-3 text-center font-semibold">Vencimento</th>
-              <th className="px-4 py-3 text-center font-semibold">Ações</th>
+              <th className="px-4 py-3 font-semibold">{t('clients.list.table.name')}</th>
+              <th className="px-4 py-3 font-semibold">{t('clients.list.table.email')}</th>
+              <th className="px-4 py-3 font-semibold">{t('clients.list.table.phone')}</th>
+              <th className="px-4 py-3 text-center font-semibold">{t('clients.list.table.fee')}</th>
+              <th className="px-4 py-3 text-center font-semibold">{t('clients.list.table.dueDate')}</th>
+              <th className="px-4 py-3 text-center font-semibold">{t('global.table.actions.title')}</th>
             </tr>
           </thead>
 
@@ -142,7 +148,7 @@ export default function ClientsList() {
                   {client.name}
                 </td>
 
-                <td className="max-w-[200px] truncate whitespace-nowrap px-4 py-3" title={client.email ?? ''}>
+                <td className="max-w-[200px] truncate whitespace-nowrap px-4 py-3" title={client.email ?? '-'}>
                   {client.email}
                 </td>
 

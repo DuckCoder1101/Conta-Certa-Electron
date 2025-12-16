@@ -13,8 +13,12 @@ import { formatDate, formatMoney } from '@utils/formatters';
 import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
 import { useBillings } from '@/hooks/useBillings';
 import { useInfiniteScroll } from '@/hooks/useInfinityScroll';
+import { useTranslation } from 'react-i18next';
 
 export default function BillingsList() {
+  // Traduções
+  const { t } = useTranslation();
+
   // Contexto global
   const { setError } = useContext(GlobalEventsContext);
   const { fetchAll, remove } = useBillings();
@@ -68,7 +72,7 @@ export default function BillingsList() {
         }}
       />
 
-      <h2 className="mt-5 text-center text-2xl font-semibold">Faturamentos</h2>
+      <h2 className="mt-5 text-center text-2xl font-semibold">{t('billing.list.title')}</h2>
 
       {/* BARRA DE BUSCA */}
       <form className="my-5 block items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg md:flex">
@@ -80,7 +84,7 @@ export default function BillingsList() {
           <input
             type="search"
             onChange={(e) => setFilter(e.target.value.toLowerCase())}
-            placeholder="Buscar por cliente, ou status"
+            placeholder={t('billing.list.tools.search-placeholder')}
             className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
           />
         </div>
@@ -88,7 +92,7 @@ export default function BillingsList() {
         <button
           type="button"
           onClick={() => openModal()}
-          title="Cadastrar cobrança"
+          title={t('billing.list.tools.new-billing')}
           className="ms-auto flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-hover2 text-white transition hover:bg-sidebar-hover"
         >
           <FaPlus />
@@ -100,28 +104,28 @@ export default function BillingsList() {
         <table className="w-full min-w-[900px] table-fixed border-collapse text-sm shadow-sm">
           <thead>
             <tr className="border-b bg-sidebar-hover2 text-left text-sidebar-text">
-              <th className="px-4 py-3 font-semibold">Cliente</th>
-              <th className="px-4 py-3 font-semibold">Valor total</th>
-              <th className="px-4 py-3 font-semibold">Status</th>
-              <th className="px-4 py-3 font-semibold">Pagamento</th>
-              <th className="px-4 py-3 font-semibold">Vencimento</th>
-              <th className="px-4 py-3 text-center font-semibold">Ações</th>
+              <th className="px-4 py-3 font-semibold">{t('billing.list.table.client')}</th>
+              <th className="px-4 py-3 font-semibold">{t('billing.list.table.tota-value')}</th>
+              <th className="px-4 py-3 font-semibold">{t('billing.list.table.status')}</th>
+              <th className="px-4 py-3 font-semibold">{t('billing.list.table.pait-at')}</th>
+              <th className="px-4 py-3 font-semibold">{t('billing.list.table.due-date')}</th>
+              <th className="px-4 py-3 text-center font-semibold">{t('global.table.actions.title')}</th>
             </tr>
           </thead>
 
           <tbody onScroll={handleScroll}>
             {billings.map((b, i) => (
               <tr key={i} className="border-b text-sidebar-text odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2">
-                <td className={`max-w-[180px] truncate whitespace-nowrap px-4 py-3 ${b.client === null ? 'text-red-500' : ''}`} title={b.client?.name ?? 'Cliente excluído'}>
-                  {b.client?.name ?? 'Cliente excluído'}
+                <td className={`max-w-[180px] truncate whitespace-nowrap px-4 py-3 ${b.client === null ? 'text-red-500' : ''}`} title={b.client?.name ?? '-'}>
+                  {b.client?.name ?? t('billing.list.table.deleted-client')}
                 </td>
 
                 <td className="max-w-[100px] truncate whitespace-nowrap px-4 py-3" title={formatMoney(b.totalFee)}>
                   {formatMoney(b.totalFee)}
                 </td>
 
-                <td className={`max-w-[120px] truncate whitespace-nowrap px-4 py-3 ${b.status === 'paid' ? 'text-green-500' : 'text-red-500'}`} title={b.status === 'paid' ? 'PAGO' : 'PENDENTE'}>
-                  {b.status === 'paid' ? 'PAGO' : 'PENDENTE'}
+                <td className={`max-w-[120px] truncate whitespace-nowrap px-4 py-3 ${b.status === 'paid' ? 'text-green-500' : 'text-red-500'}`}>
+                  {b.status === 'paid' ? t('billing.status.paid') : t('billing.status.pending')}
                 </td>
 
                 <td className="max-w-[120px] truncate whitespace-nowrap px-4 py-3" title={b.paidAt ? formatDate(b.paidAt) : '-'}>

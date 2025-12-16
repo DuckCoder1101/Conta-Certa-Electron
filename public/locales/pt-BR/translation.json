@@ -6,25 +6,95 @@
         "label": "Cliente:",
         "search-placeholder": "Busque um cliente por nome..."
       },
-      "fee": {
-        "label": "Valor:",
-        "money-prefix": "R$"
-      },
-      "feeDueDate": {
-        "label": "Data vencimento:"
-      },
-      "paidAt": {
-        "label": "Data pagamento:"
-      },
-      "services": {
-        "label": "Serviços"
-      },
-      "status": {
-        "label": "Status:",
-        "paid": "Pago",
-        "pending": "Pendente"
-      },
+      "fee": "Valor:",
+      "feeDueDate": "Data vencimento:",
+      "paidAt": "Data pagamento:",
+      "services": "Serviços",
+      "status": "Status:",
       "title": "Cadastrar faturamentos"
+    },
+    "list": {
+      "table": {
+        "client": "Cliente",
+        "deleted-client": "Cliente excluído",
+        "due-date": "Data de vencimento",
+        "pait-at": "Data de pagamento",
+        "status": "Status",
+        "tota-value": "Valor total"
+      },
+      "title": "Faturamentos",
+      "tools": {
+        "new-billing": "Novo faturamento",
+        "search-placeholder": "Buscar faturamento por cliente"
+      }
+    },
+    "status": {
+      "paid": "Pago",
+      "pending": "Pendente"
+    }
+  },
+  "clients": {
+    "form": {
+      "dueDate": "Data de vencimento",
+      "email": "Email",
+      "fee": "Honorário",
+      "name": "Nome",
+      "phone": "Telefone",
+      "title": "Cadastrar clientes"
+    },
+    "list": {
+      "table": {
+        "dueDate": "Vencimento",
+        "email": "E-Mail",
+        "fee": "Honorário",
+        "name": "Nome",
+        "phone": "Telefone"
+      },
+      "title": "Clientes",
+      "toolbar": {
+        "import-clients": "",
+        "new-client": "",
+        "search-placeholder": ""
+      }
+    }
+  },
+  "dashboard": {
+    "clients-count": "Clientes",
+    "general": "Visão geral",
+    "loading-info": "Carregando informações...",
+    "month": {
+      "total-billed": "Valor arrecadado",
+      "total-expected": "Faturamento experado",
+      "total-pending": "Valor pendente"
+    },
+    "month-info": "Informações mensais",
+    "total-paid": "Total recebido",
+    "total-pending": "Total pendente"
+  },
+  "global": {
+    "money-prefix": "R$",
+    "table": {
+      "actions": {
+        "title": "Ações"
+      }
+    }
+  },
+  "services": {
+    "form": {
+      "name": "Nome",
+      "title": "Cadastrar serviços",
+      "value": "Valor"
+    },
+    "list": {
+      "table": {
+        "name": "Nome",
+        "value": "Valor"
+      },
+      "title": "Serviços",
+      "toolbar": {
+        "search-placeholder": "Buscar serviços pelo nome"
+      },
+      "toolbar-new-service": "Novo serviço"
     }
   }
 }

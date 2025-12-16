@@ -123,12 +123,12 @@ export default function BillingForm() {
 
   return (
     <AppLayout>
-      <form className="grid h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
-        <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">{t('billing.form.title')}</h2>
-        {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-red-400">{formError}</p>}
+      <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
+      <h2 className="col-span-full text-center text-2xl font-semibold">{t('billing.form.title')}</h2>
+        {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold">{formError}</p>}
 
         {/* Cliente */}
-        <div className="col-span-full">
+        <div className="col-span-full bg-red-200">
           <label className="mb-1 block">{t('billing.form.client.label')}</label>
 
           {/* Busca */}
@@ -155,7 +155,7 @@ export default function BillingForm() {
 
         {/* fee */}
         <div>
-          <label className="mb-1 block">{t('billing.form.fee.label')}</label>
+          <label className="mb-1 block">{t('billing.form.fee')}</label>
           <Controller
             name="fee"
             control={control}
@@ -163,7 +163,7 @@ export default function BillingForm() {
               <NumericFormat
                 thousandSeparator="."
                 decimalSeparator=","
-                prefix={t('billing.form.fee.money-prefix')}
+                prefix={t('global.money-prefix')}
                 decimalScale={2}
                 fixedDecimalScale={true}
                 allowNegative={false}
@@ -177,16 +177,16 @@ export default function BillingForm() {
 
         {/* status */}
         <div>
-          <label className="mb-1 block">{t('billing.form.status.label')}</label>
+          <label className="mb-1 block">{t('billing.form.status')}</label>
           <select {...register('status', { required: true })} className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="pending">{t('billing.form.status.pending')}</option>
-            <option value="paid">{t('billing.form.status.paid')}</option>
+            <option value="pending">{t('billing.status.pending')}</option>
+            <option value="paid">{t('billing.status.paid')}</option>
           </select>
         </div>
 
         {/* pago em */}
         <div>
-          <label className="mb-1 block">{t('billing.form.paidAt.label')}</label>
+          <label className="mb-1 block">{t('billing.form.paidAt')}</label>
           <input
             type="date"
             {...register('paidAt', { required: status === 'paid' })}
@@ -197,7 +197,7 @@ export default function BillingForm() {
 
         {/* vencimento */}
         <div>
-          <label className="mb-1 block">{t('billing.form.feeDueDate.label')}</label>
+          <label className="mb-1 block">{t('billing.form.feeDueDate')}</label>
           <input
             type="date"
             {...register('dueDate', { required: true })}
@@ -207,7 +207,7 @@ export default function BillingForm() {
 
         {/* SERVIÇOS */}
         <div className="col-span-full">
-          <label className="mb-1 block">{t('billing.form.services.label')}</label>
+          <label className="mb-1 block">{t('billing.form.services')}</label>
           <ServicesSelector services={servicesBilling} onChange={updateQuantity} className="md:max-h-[250px]" />
         </div>
 

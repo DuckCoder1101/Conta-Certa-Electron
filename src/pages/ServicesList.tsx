@@ -15,9 +15,12 @@ import { useServices } from '@/hooks/useServices';
 import { useInfiniteScroll } from '@/hooks/useInfinityScroll';
 
 import { formatMoney } from '@/utils/formatters';
-
+import { useTranslation } from 'react-i18next';
 
 export default function ServicesList() {
+  // Traduções
+  const { t } = useTranslation();
+
   const { setError } = useContext(GlobalEventsContext);
 
   const { fetchAll, remove } = useServices();
@@ -61,13 +64,15 @@ export default function ServicesList() {
         onClose={(success, error) => {
           setIsModalOpen(false);
 
-          if (success)
-            load(); // atualiza mantendo offset
-          else if (error) setError(error);
+          if (success) {
+            load();
+          } else if (error) {
+            setError(error);
+          }
         }}
       />
 
-      <h2 className="mt-5 text-center text-2xl font-semibold">Serviços</h2>
+      <h2 className="mt-5 text-center text-2xl font-semibold">{t('services.list.title')}</h2>
 
       {/* BARRA DE BUSCA */}
       <form className="my-5 block items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg md:flex">
@@ -78,7 +83,7 @@ export default function ServicesList() {
 
           <input
             type="search"
-            placeholder="Buscar por nome"
+            placeholder={t('services.list.toolbar.search-placeholder')}
             onChange={(e) => setFilter(e.target.value.toLowerCase())}
             className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
           />
@@ -87,7 +92,7 @@ export default function ServicesList() {
         <button
           type="button"
           onClick={() => openModal()}
-          title="Cadastrar cobrança"
+          title={t('services.list.toolbar-new-service')}
           className="ms-auto flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-hover2 text-white transition hover:bg-sidebar-hover"
         >
           <FaPlus />
@@ -99,9 +104,9 @@ export default function ServicesList() {
         <table className="w-full min-w-[900px] table-fixed border-collapse text-sm shadow-sm">
           <thead>
             <tr className="border-b bg-sidebar-hover2 text-left text-sidebar-text">
-              <th className="px-4 py-3 font-semibold">Nome</th>
-              <th className="px-4 py-3 text-center font-semibold">Valor</th>
-              <th className="px-4 py-3 text-center font-semibold">Ações</th>
+              <th className="px-4 py-3 font-semibold">{t('services.list.table.name')}</th>
+              <th className="px-4 py-3 text-center font-semibold">{t('services.list.table.value')}</th>
+              <th className="px-4 py-3 text-center font-semibold">{t('global.table.actions.title')}</th>
             </tr>
           </thead>
 

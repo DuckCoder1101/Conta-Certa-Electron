@@ -7,6 +7,7 @@ import SaveButton from './SaveButton';
 
 import { IAppResponseDTO } from '@t/dtos';
 import IConfiguration from '@t/configuration';
+import { changeLanguage } from 'i18next';
 
 interface Props {
   open: boolean;
@@ -25,12 +26,17 @@ export default function ConfigurationsModal({ open, onClose }: Props) {
 
   const saveConfiguration = handleSubmit(async (data) => {
     const { success, error } = (await window.api.invoke('set-settings', data)) as IAppResponseDTO<null>;
+
+    if (success) {
+      changeLanguage(data.language);
+    }
+
     onClose(success, error?.message ?? 'Erro desconhecido!');
   });
 
   useEffect(() => {
-    if (!open) return
- 
+    if (!open) return;
+
     (async () => {
       const { success, data, error } = (await window.api.invoke('get-settings')) as IAppResponseDTO<IConfiguration>;
 
@@ -45,7 +51,6 @@ export default function ConfigurationsModal({ open, onClose }: Props) {
         });
       }
     })();
-
   }, [open, reset, onClose]);
 
   return (

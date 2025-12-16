@@ -25,6 +25,98 @@
         "pending": "billing.form.status.pending"
       },
       "title": "billing.form.title"
+    },
+    "list": {
+      "table": {
+        "client": "billing.list.table.client",
+        "deleted-client": "billing.list.table.deleted-client",
+        "due-date": "billing.list.table.due-date",
+        "pait-at": "billing.list.table.pait-at",
+        "status": "billing.list.table.status",
+        "tota-value": "billing.list.table.tota-value"
+      },
+      "title": "billing.list.title",
+      "tools": {
+        "new-billing": "billing.list.tools.new-billing",
+        "search-placeholder": "billing.list.tools.search-placeholder"
+      }
+    },
+    "status": {
+      "paid": "billing.status.paid",
+      "pending": "billing.status.pending"
+    }
+  },
+  "clients": {
+    "form": {
+      "dueDate": "clients.form.dueDate",
+      "email": {
+        "label": "clients.form.email.label"
+      },
+      "fee": {
+        "label": "clients.form.fee.label"
+      },
+      "name": {
+        "dueDate": "clients.form.name.dueDate",
+        "label": "clients.form.name.label"
+      },
+      "phone": {
+        "label": "clients.form.phone.label"
+      },
+      "title": "clients.form.title"
+    },
+    "list": {
+      "table": {
+        "dueDate": "clients.list.table.dueDate",
+        "email": "clients.list.table.email",
+        "fee": "clients.list.table.fee",
+        "name": "clients.list.table.name",
+        "phone": "clients.list.table.phone"
+      },
+      "title": "clients.list.title",
+      "toolbar": {
+        "import-clients": "clients.list.toolbar.import-clients",
+        "new-client": "clients.list.toolbar.new-client",
+        "search-placeholder": "clients.list.toolbar.search-placeholder"
+      }
+    }
+  },
+  "dashboard": {
+    "clients-count": "dashboard.clients-count",
+    "general": "dashboard.general",
+    "loading-info": "dashboard.loading-info",
+    "month": {
+      "total-billed": "dashboard.month.total-billed",
+      "total-expected": "dashboard.month.total-expected",
+      "total-pending": "dashboard.month.total-pending"
+    },
+    "month-info": "dashboard.month-info",
+    "total-paid": "dashboard.total-paid",
+    "total-pending": "dashboard.total-pending"
+  },
+  "global": {
+    "money-prefix": "global.money-prefix",
+    "table": {
+      "actions": {
+        "title": "global.table.actions.title.title"
+      }
+    }
+  },
+  "services": {
+    "form": {
+      "name": "services.form.name",
+      "title": "services.form.title",
+      "value": "services.form.value"
+    },
+    "list": {
+      "table": {
+        "name": "services.list.table.name",
+        "value": "services.list.table.value"
+      },
+      "title": "services.list.title",
+      "toolbar": {
+        "search-placeholder": "services.list.toolbar.search-placeholder"
+      },
+      "toolbar-new-service": "services.list.toolbar-new-service"
     }
   }
 }

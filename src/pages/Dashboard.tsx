@@ -8,6 +8,7 @@ import { useClients } from '@/hooks/useClients';
 
 import AppLayout from '@/components/AppLayout';
 import { formatMoney } from '@/utils/formatters';
+import { useTranslation } from 'react-i18next';
 
 interface ChartRow {
   ym: string;
@@ -18,6 +19,9 @@ interface ChartRow {
 }
 
 export default function Dashboard() {
+  // Traduções
+  const { t } = useTranslation();
+
   const { setError } = useContext(GlobalEventsContext);
 
   const { count: countAllClients } = useClients();
@@ -115,32 +119,32 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
-      {isLoading && <h2 className="col-span-full mt-6 text-center text-2xl font-semibold md:mt-12">Carregando informações...</h2>}
+      {isLoading && <h2 className="col-span-full mt-6 text-center text-2xl font-semibold md:mt-12">{t('dashboard.loading-info')}</h2>}
       {!isLoading && (
         <div className="flex h-full flex-col">
-          <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">Visão geral</h2>
+          <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">{t('dashboard.general')}</h2>
 
           {/* CARDS */}
           <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
             <div className="rounded-md bg-sidebar-hover2 p-6 shadow transition hover:bg-sidebar-hover">
-              <p className="text-lg font-semibold text-white">Clientes cadastrados</p>
+              <p className="text-lg font-semibold text-white">{t('dashboard.clients-count')}</p>
               <p className="mt-2 text-2xl font-bold text-blue-400">{totalClients}</p>
             </div>
 
             <div className="rounded-md bg-sidebar-hover2 p-6 shadow transition hover:bg-sidebar-hover">
-              <p className="text-lg font-semibold text-white">Faturamentos</p>
+              <p className="text-lg font-semibold text-white">{t('dashboard.total-paid')}</p>
               <p className="mt-2 text-2xl font-bold text-green-400">{formatMoney(totalPaid)}</p>
             </div>
 
             <div className="rounded-md bg-sidebar-hover2 p-6 shadow transition hover:bg-sidebar-hover">
-              <p className="text-lg font-semibold text-white">Faturamentos pendentes</p>
+              <p className="text-lg font-semibold text-white">{t('dashboard.total-pending')}</p>
               <p className="mt-2 text-2xl font-bold text-red-400">{formatMoney(totalPending)}</p>
             </div>
           </div>
 
           {/* GRÁFICO */}
-          <div className="mt-10 min-h-[400px] flex-grow rounded-md bg-sidebar-hover2 p-6 shadow">
-            <h2 className="mb-4 text-xl font-semibold text-white">Renda mensal</h2>
+          <div className="mt-10 min-h-[400px] flex-grow rounded-md bg-sidebar-hover2 p-10 shadow">
+            <h2 className="mb-4 text-xl font-semibold text-white">{t('dashboard.month-info')}</h2>
 
             <div className="h-full w-full p-5">
               <ResponsiveContainer width="100%" height="100%">
@@ -151,9 +155,9 @@ export default function Dashboard() {
                   <Tooltip
                     formatter={(value: number, name: string) => {
                       const nameMap: Record<string, string> = {
-                        expected: 'Esperado (venc.)',
-                        paid: 'Pago (pag.)',
-                        pending: 'Não pago (do mês)',
+                        expected: t('dashboard.month.total-expected'),
+                        paid: t('dashboard.month.total-billed'),
+                        pending: t('dashboard.month.total-pending'),
                       };
                       const displayName = nameMap[name] ?? name;
                       return [formatMoney(value), displayName];
