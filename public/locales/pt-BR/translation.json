@@ -6,56 +6,92 @@
         "label": "Cliente:",
         "search-placeholder": "Busque um cliente por nome..."
       },
-      "fee": "Valor:",
-      "feeDueDate": "Data vencimento:",
-      "paidAt": "Data pagamento:",
-      "services": "Serviços",
-      "status": "Status:",
+      "fee": {
+        "label": "Mensalidade",
+        "tip": "Valor base da mensalidade do cliente. Não inclue os serviços extras."
+      },
+      "feeDueDate": {
+        "label": "Data de vencimento",
+        "tip": "Data limite para o pagamento da mensalidade."
+      },
+      "paidAt": {
+        "label": "Data de pagamento",
+        "tip": "Data do pagamento da mensalidade, caso tenha sido paga."
+      },
+      "services": {
+        "label": "Serviços extras"
+      },
+      "status": {
+        "label": "Status",
+        "tip": "Status da mensalide (paga ou pendente)."
+      },
       "title": "Cadastrar faturamentos"
     },
     "list": {
       "table": {
         "client": "Cliente",
-        "deleted-client": "Cliente excluído",
         "due-date": "Data de vencimento",
         "pait-at": "Data de pagamento",
         "status": "Status",
-        "tota-value": "Valor total"
+        "total-value": "Valor total"
       },
-      "title": "Faturamentos",
+      "title": "Clientes",
       "tools": {
-        "new-billing": "Novo faturamento",
-        "search-placeholder": "Buscar faturamento por cliente"
+        "new-billing": "Cadastrar faturamento",
+        "search-placeholder": "Buscar faturamento por cliente ou status."
       }
+    },
+    "modal": {
+      "edit-billing": "Alterar faturamento",
+      "new-billing": "Cadastrar faturamento"
     },
     "status": {
       "paid": "Pago",
       "pending": "Pendente"
     }
   },
-  "clients": {
+  "client": {
     "form": {
-      "dueDate": "Data de vencimento",
-      "email": "Email",
-      "fee": "Honorário",
-      "name": "Nome",
-      "phone": "Telefone",
+      "dueDate": {
+        "label": "Data de vencimento padrão",
+        "tip": "A data padrão para o vencimento da mensalidade do cliente."
+      },
+      "email": {
+        "label": "Email:",
+        "tip": "Email de contato do cliente"
+      },
+      "fee": {
+        "label": "Mensalidade",
+        "tip": "Valor base padrão para da mensalide do cliente."
+      },
+      "name": {
+        "label": "Nome",
+        "tip": "Nome do cliente"
+      },
+      "phone": {
+        "label": "Telefone",
+        "tip": "Telefone de contato do cliente."
+      },
       "title": "Cadastrar clientes"
     },
     "list": {
+      "title": "Clientes",
       "table": {
-        "dueDate": "Vencimento",
+        "dueDate": "Vencimento mensalidade",
         "email": "E-Mail",
-        "fee": "Honorário",
+        "fee": "Mensalidade",
         "name": "Nome",
         "phone": "Telefone"
       },
-      "title": "Clientes",
       "toolbar": {
-        "import-clients": "",
-        "new-client": "",
-        "search-placeholder": ""
+        "import-clients": "Importar clientes",
+        "new-client": "Cadastrar cliente",
+        "search-placeholder": "Buscar cliente por nome."
       }
+    },
+    "modal": {
+      "edit-client": "Alterar cliente",
+      "new-client": "Cadastrar cliente"
     }
   },
   "dashboard": {
@@ -81,20 +117,30 @@
   },
   "services": {
     "form": {
-      "name": "Nome",
+      "name": {
+        "label": "Nome",
+        "tip": "Nome do serviço"
+      },
       "title": "Cadastrar serviços",
-      "value": "Valor"
+      "value": {
+        "label": "Valor",
+        "tip": "Valor do serviço."
+      }
     },
     "list": {
+      "title": "Serviços",
       "table": {
         "name": "Nome",
         "value": "Valor"
       },
-      "title": "Serviços",
       "toolbar": {
-        "search-placeholder": "Buscar serviços pelo nome"
+        "search-placeholder": "Buscar serviços por nome."
       },
-      "toolbar-new-service": "Novo serviço"
+      "toolbar-new-service": "Cadastrar serviço"
+    },
+    "modal": {
+      "edit-service": "Alterar serviço",
+      "new-service": "Cadastrar serviço"
     }
   }
 }

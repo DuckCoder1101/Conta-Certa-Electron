@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { MdClose } from 'react-icons/md';
+import { changeLanguage } from 'i18next';
 
-import ModalBase from './ModalBase';
-import SaveButton from './SaveButton';
+import ModalBase from '@modals/ModalBase';
+import SaveButton from '../form/SaveButton';
 
 import { IAppResponseDTO } from '@t/dtos';
 import IConfiguration from '@t/configuration';
-import { changeLanguage } from 'i18next';
 
 interface Props {
   open: boolean;
@@ -54,15 +53,7 @@ export default function ConfigurationsModal({ open, onClose }: Props) {
   }, [open, reset, onClose]);
 
   return (
-    <ModalBase isOpen={open} onClose={() => onClose(false, null)}>
-      {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="mb-6 text-center text-2xl font-semibold">Configurações</h2>
-        <button onClick={() => onClose(false, null)} className="text-xl font-bold hover:text-red-400">
-          <MdClose />
-        </button>
-      </div>
-
+    <ModalBase title='Configurações' isOpen={open} onClose={() => onClose(false, null)}>
       {/* Form */}
       <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>

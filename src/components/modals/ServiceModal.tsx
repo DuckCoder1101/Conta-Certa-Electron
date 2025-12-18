@@ -2,14 +2,12 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { IService, IServiceFormDTO } from '@t/dtos';
 import { NumericFormat } from 'react-number-format';
+import { useTranslation } from 'react-i18next';
 
-// Ícones
-import { MdClose } from 'react-icons/md';
+import ModalBase from '@modals/ModalBase';
+import SaveButton from '../form/SaveButton';
 
-import ModalBase from '@components/ModalBase';
-import SaveButton from './SaveButton';
-
-import { useServices } from '@/hooks/useServices';
+import { useServices } from '@hooks/useServices';
 
 interface Props {
   open: boolean;
@@ -18,6 +16,9 @@ interface Props {
 }
 
 export default function ServiceModal({ open, onClose, client: service }: Props) {
+  // Tradução
+  const { t } = useTranslation();
+
   const { save } = useServices();
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -52,36 +53,33 @@ export default function ServiceModal({ open, onClose, client: service }: Props) 
   });
 
   return (
-    <ModalBase isOpen={open} onClose={() => onClose(false, null)}>
-      {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="mb-6 text-center text-2xl font-semibold">{service ? 'Editar serviço' : 'Cadastrar serviço'}</h2>
-        <button onClick={() => onClose(false, null)} className="text-xl font-bold hover:text-red-400">
-          <MdClose />
-        </button>
-      </div>
-
+    <ModalBase title={t(service ? 'services.modal.edit-service' : 'services.modal.new-service')} isOpen={open} onClose={() => onClose(false, null)}>
       {/* Form */}
-      <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {formError && <p className="col-span-full text-center text-red-400">{formError}</p>}
+      <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
+        {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-red-400">{formError}</p>}
 
         {/* Nome */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">Nome</label>
-          <input className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('name', { required: true })} />
+          <label className="mb-1 block text-sm font-semibold">{t('services.form.name.label')}</label>
+          <input
+            title={t('services.form.name.tip')}
+            className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            {...register('name', { required: true })}
+          />
         </div>
 
         {/* Valor */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">Valor</label>
+          <label className="mb-1 block text-sm font-semibold">{t('services.form.value.label')}</label>
           <Controller
             name="value"
             control={control}
             render={({ field }) => (
               <NumericFormat
+                title={t('services.form.value.tip')}
                 thousandSeparator="."
                 decimalSeparator=","
-                prefix="R$"
+                prefix={t('global.money-prefix')}
                 decimalScale={2}
                 fixedDecimalScale={true}
                 allowNegative={false}
@@ -93,8 +91,7 @@ export default function ServiceModal({ open, onClose, client: service }: Props) 
           />
         </div>
 
-        {/* Botão */}
-        <div className="col-span-full mt-4 flex justify-end">
+        <div className="col-span-full flex items-center justify-center md:justify-end">
           <SaveButton onClick={saveService} />
         </div>
       </form>

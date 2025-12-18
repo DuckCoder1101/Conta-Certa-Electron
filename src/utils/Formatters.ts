@@ -25,14 +25,15 @@ export function formatPhone(phone?: string | null) {
   return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
 }
 
-export function formatMoney(value: number) {
-  return value.toLocaleString('pt-BR', {
+export function formatMoney(value: number, locale: string) {
+  return value.toLocaleString(locale, {
     style: 'currency',
     currency: 'BRL',
   });
 }
 
-export function formatDate(dateString: string) {
+export function formatDate(dateString: string | null) {
+  if (!dateString) return '-';
   return new Date(dateString + 'T00:00:00').toLocaleDateString('pt-BR', {
     year: '2-digit',
     month: '2-digit',

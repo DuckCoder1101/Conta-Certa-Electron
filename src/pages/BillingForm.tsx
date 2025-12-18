@@ -5,14 +5,14 @@ import { useTranslation } from 'react-i18next';
 
 import { IBillingFormDTO, IClientResumeDTO, IServiceBillingFormDTO } from '@t/dtos';
 
-import { ServicesSelector } from '@components/billing/ServicesSelector';
+import { ServicesSelector } from '@components/form/ServicesSelector';
 
 import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
 
 import { useClients } from '@hooks/useClients';
 import { useBillings } from '@hooks/useBillings';
 import AppLayout from '@/components/AppLayout';
-import SaveButton from '@/components/SaveButton';
+import SaveButton from '@/components/form/SaveButton';
 
 export default function BillingForm() {
   // Traduções
@@ -123,12 +123,12 @@ export default function BillingForm() {
 
   return (
     <AppLayout>
-      <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
       <h2 className="col-span-full text-center text-2xl font-semibold">{t('billing.form.title')}</h2>
+      <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
         {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold">{formError}</p>}
 
         {/* Cliente */}
-        <div className="col-span-full bg-red-200">
+        <div className="col-span-full">
           <label className="mb-1 block">{t('billing.form.client.label')}</label>
 
           {/* Busca */}
@@ -155,7 +155,7 @@ export default function BillingForm() {
 
         {/* fee */}
         <div>
-          <label className="mb-1 block">{t('billing.form.fee')}</label>
+          <label className="mb-1 block">{t('billing.form.fee.label')}</label>
           <Controller
             name="fee"
             control={control}
@@ -164,6 +164,7 @@ export default function BillingForm() {
                 thousandSeparator="."
                 decimalSeparator=","
                 prefix={t('global.money-prefix')}
+                title={t('billing.form.fee.tip')}
                 decimalScale={2}
                 fixedDecimalScale={true}
                 allowNegative={false}
@@ -177,8 +178,12 @@ export default function BillingForm() {
 
         {/* status */}
         <div>
-          <label className="mb-1 block">{t('billing.form.status')}</label>
-          <select {...register('status', { required: true })} className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500">
+          <label className="mb-1 block">{t('billing.form.status.label')}</label>
+          <select
+            title={t('billing.form.status.tip')}
+            className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            {...register('status', { required: true })}
+          >
             <option value="pending">{t('billing.status.pending')}</option>
             <option value="paid">{t('billing.status.paid')}</option>
           </select>
@@ -186,19 +191,21 @@ export default function BillingForm() {
 
         {/* pago em */}
         <div>
-          <label className="mb-1 block">{t('billing.form.paidAt')}</label>
+          <label className="mb-1 block">{t('billing.form.paidAt.label')}</label>
           <input
+            title={t('billing.form.paidAt.tip')}
             type="date"
-            {...register('paidAt', { required: status === 'paid' })}
             disabled={status === 'pending'}
             className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            {...register('paidAt', { required: status === 'paid' })}
           />
         </div>
 
         {/* vencimento */}
         <div>
-          <label className="mb-1 block">{t('billing.form.feeDueDate')}</label>
+          <label className="mb-1 block">{t('billing.form.feeDueDate.label')}</label>
           <input
+            title={t('billing.form.feeDueDate.tip')}
             type="date"
             {...register('dueDate', { required: true })}
             className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
@@ -207,7 +214,7 @@ export default function BillingForm() {
 
         {/* SERVIÇOS */}
         <div className="col-span-full">
-          <label className="mb-1 block">{t('billing.form.services')}</label>
+          <label className="mb-1 block">{t('billing.form.services.label')}</label>
           <ServicesSelector services={servicesBilling} onChange={updateQuantity} className="md:max-h-[250px]" />
         </div>
 

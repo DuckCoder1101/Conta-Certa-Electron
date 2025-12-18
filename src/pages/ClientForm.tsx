@@ -10,7 +10,7 @@ import { useClients } from '@hooks/useClients';
 import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
 
 import AppLayout from '@components/AppLayout';
-import SaveButton from '@/components/SaveButton';
+import SaveButton from '@/components/form/SaveButton';
 import { useTranslation } from 'react-i18next';
 
 export default function ClientForm() {
@@ -56,7 +56,7 @@ export default function ClientForm() {
 
   return (
     <AppLayout>
-      <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">{t('clients.form.title')}</h2>
+      <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">{t('client.form.title')}</h2>
       <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
         {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-red-400">{formError}</p>}
 
@@ -96,36 +96,51 @@ export default function ClientForm() {
 
         {/* Nome */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">{t('clients.form.name')}</label>
-          <input className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('name', { required: true })} />
+          <label className="mb-1 block text-sm font-semibold">{t('client.form.name.label')}</label>
+          <input
+            title={t('client.form.name.tip')}
+            className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            {...register('name', { required: true })}
+          />
         </div>
 
         {/* Email */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">{t('clients.form.email')}</label>
-          <input type="email" className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('email')} />
+          <label className="mb-1 block text-sm font-semibold">{t('client.form.email.label')}</label>
+          <input
+            title={t('client.form.email.tip')}
+            type="email"
+            className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            {...register('email')}
+          />
         </div>
 
         {/* Telefone */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">{t('clients.form.phone')}</label>
+          <label className="mb-1 block text-sm font-semibold">{t('client.form.phone.label')}</label>
           <Controller
             name="phone"
             control={control}
             render={({ field }) => (
-              <InputMask mask="(99) 99999-9999" className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...field} />
+              <InputMask
+                title={t('client.form.phone.tip')}
+                mask="(99) 99999-9999"
+                className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+                {...field}
+              />
             )}
           />
         </div>
 
         {/* Honorário */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">{t('clients.form.fee')}</label>
+          <label className="mb-1 block text-sm font-semibold">{t('client.form.fee.label')}</label>
           <Controller
             name="fee"
             control={control}
             render={({ field }) => (
               <NumericFormat
+                title={t('client.form.fee.tip')}
                 thousandSeparator="."
                 decimalSeparator=","
                 prefix={t('global.money-prefix')}
@@ -142,8 +157,9 @@ export default function ClientForm() {
 
         {/* Vencimento */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">{t('clients.form.dueDate')}</label>
+          <label className="mb-1 block text-sm font-semibold">{t('client.form.dueDate.label')}</label>
           <input
+            title={t('client.form.dueDate.tip')}
             type="number"
             min={1}
             max={31}

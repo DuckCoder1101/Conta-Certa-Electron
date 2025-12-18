@@ -51,7 +51,7 @@ export function useInfiniteScroll<T>(fetchFn: (offset: number) => Promise<T[]>, 
   );
 
   const handleScroll = useCallback(
-    (e: React.UIEvent<HTMLTableSectionElement>) => {
+    (e: React.UIEvent<HTMLTableElement>) => {
       const { scrollHeight, scrollTop, clientHeight } = e.currentTarget;
       const nearBottom = scrollHeight - scrollTop <= clientHeight * 1.5;
 

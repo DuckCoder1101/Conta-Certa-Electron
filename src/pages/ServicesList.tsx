@@ -1,13 +1,13 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FaPencil, FaPlus } from 'react-icons/fa6';
 import { IoMdSearch } from 'react-icons/io';
 
-import AppLayout from '@/components/AppLayout';
-import DangerHoldButton from '@/components/DangerHoldButton';
-import ServiceModal from '@/components/ServiceModal';
-
-import { IService } from '@/@types/dtos';
+import AppLayout from '@components/AppLayout';
+import DangerHoldButton from '@components/form/DangerHoldButton';
+import ServiceModal from '@modals/ServiceModal';
+import { IService } from '@t/dtos';
 
 import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
 
@@ -15,12 +15,16 @@ import { useServices } from '@/hooks/useServices';
 import { useInfiniteScroll } from '@/hooks/useInfinityScroll';
 
 import { formatMoney } from '@/utils/formatters';
-import { useTranslation } from 'react-i18next';
+import { SettingsContext } from '@/contexts/SettingsContext';
 
 export default function ServicesList() {
   // Traduções
   const { t } = useTranslation();
 
+  // Configurações
+  const { settings } = useContext(SettingsContext);
+
+  // Contexto de erros
   const { setError } = useContext(GlobalEventsContext);
 
   const { fetchAll, remove } = useServices();
@@ -29,6 +33,14 @@ export default function ServicesList() {
   const [filter, setFilter] = useState('');
 
   const { items: services, load, handleScroll } = useInfiniteScroll<IService>((offset) => fetchAll(offset, 30, filter).then((r) => r.data ?? []));
+
+  // Lista de linhas
+  const rows = useMemo(() => {
+    return services.map((s) => ({
+      ...s,
+      value: formatMoney(s.value, settings?.language ?? ''),
+    }));
+  }, [services, settings]);
 
   // Filtro -> reset
   useEffect(() => {
@@ -40,8 +52,8 @@ export default function ServicesList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalClient, setModalClient] = useState<IService | null>(null);
 
-  const openModal = (service?: IService) => {
-    setModalClient(service ?? null);
+  const openModal = (id?: number) => {
+    setModalClient(services.find((s) => s.id === id) ?? null);
     setIsModalOpen(true);
   };
 
@@ -101,7 +113,7 @@ export default function ServicesList() {
 
       {/* TABELA */}
       <div className="w-full overflow-x-auto">
-        <table className="w-full min-w-[900px] table-fixed border-collapse text-sm shadow-sm">
+        <table onScroll={handleScroll} className="w-full min-w-[900px] table-fixed border-collapse text-sm shadow-sm">
           <thead>
             <tr className="border-b bg-sidebar-hover2 text-left text-sidebar-text">
               <th className="px-4 py-3 font-semibold">{t('services.list.table.name')}</th>
@@ -110,21 +122,23 @@ export default function ServicesList() {
             </tr>
           </thead>
 
-          <tbody onScroll={handleScroll}>
-            {services.map((service, i) => (
-              <tr key={i} className="border-b text-sidebar-text odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2">
-                <td className="max-w-[160px] truncate whitespace-nowrap px-4 py-3" title={service.name}>
-                  {service.name}
+          <tbody>
+            {rows.map((s) => (
+              <tr key={s.id} className="border-b text-sidebar-text odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2">
+                <td className="max-w-[160px] truncate whitespace-nowrap px-4 py-3" title={s.name}>
+                  {s.name}
                 </td>
-                <td className="px-4 py-3 text-center">{formatMoney(service.value)}</td>
+                <td className="px-4 py-3 text-center" title={s.value}>
+                  {s.value}
+                </td>
 
                 <td className="px-4 py-3 text-center">
                   <div className="flex justify-center gap-2">
-                    <button onClick={() => openModal(service)} className="flex h-9 w-9 items-center justify-center rounded-md bg-blue-600 text-white transition hover:bg-blue-700">
+                    <button onClick={() => openModal(s.id)} className="flex h-9 w-9 items-center justify-center rounded-md bg-blue-600 text-white transition hover:bg-blue-700">
                       <FaPencil />
                     </button>
 
-                    <DangerHoldButton onComplete={() => deleteService(service.id)} seconds={1} />
+                    <DangerHoldButton onComplete={() => deleteService(s.id)} duration={600} />
                   </div>
                 </td>
               </tr>

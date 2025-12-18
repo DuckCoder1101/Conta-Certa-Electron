@@ -1,4 +1,4 @@
-import ModalBase from '@/components/ModalBase';
+import ModalBase from '@/components/modals/ModalBase';
 
 interface Props {
   error: string;
@@ -8,7 +8,7 @@ interface Props {
 export default function ErrorModal({ error, onClose }: Props) {
   return (
     <ModalBase isOpen={true} onClose={onClose}>
-      <h2 className="mb-3 mb-6 text-center text-2xl font-semibold">Erro inesperado</h2>
+      <h2 className="mb-3 text-center text-2xl font-semibold">Erro inesperado</h2>
       <p className="mb-4 text-red-400">{error}</p>
 
       <div className="text-right">

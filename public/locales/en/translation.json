@@ -8,32 +8,32 @@
       },
       "fee": {
         "label": "billing.form.fee.label",
-        "money-prefix": "billing.form.fee.money-prefix"
+        "tip": "billing.form.fee.tip"
       },
       "feeDueDate": {
-        "label": "billing.form.feeDueDate.label"
+        "label": "billing.form.feeDueDate.label",
+        "tip": "billing.form.feeDueDate.tip"
       },
       "paidAt": {
-        "label": "billing.form.paidAt.label"
+        "label": "billing.form.paidAt.label",
+        "tip": "billing.form.paidAt.tip"
       },
       "services": {
         "label": "billing.form.services.label"
       },
       "status": {
         "label": "billing.form.status.label",
-        "paid": "billing.form.status.paid",
-        "pending": "billing.form.status.pending"
+        "tip": "billing.form.status.tip"
       },
       "title": "billing.form.title"
     },
     "list": {
       "table": {
         "client": "billing.list.table.client",
-        "deleted-client": "billing.list.table.deleted-client",
         "due-date": "billing.list.table.due-date",
         "pait-at": "billing.list.table.pait-at",
         "status": "billing.list.table.status",
-        "tota-value": "billing.list.table.tota-value"
+        "total-value": "billing.list.table.total-value"
       },
       "title": "billing.list.title",
       "tools": {
@@ -41,43 +41,57 @@
         "search-placeholder": "billing.list.tools.search-placeholder"
       }
     },
+    "modal": {
+      "edit-billing": "billing.modal.edit-billing",
+      "new-billing": "billing.modal.new-billing"
+    },
     "status": {
       "paid": "billing.status.paid",
       "pending": "billing.status.pending"
     }
   },
-  "clients": {
+  "client": {
     "form": {
-      "dueDate": "clients.form.dueDate",
+      "dueDate": {
+        "label": "client.form.dueDate.label",
+        "tip": "client.form.dueDate.tip"
+      },
       "email": {
-        "label": "clients.form.email.label"
+        "label": "client.form.email.label",
+        "tip": "client.form.email.tip"
       },
       "fee": {
-        "label": "clients.form.fee.label"
+        "label": "client.form.fee.label",
+        "tip": "client.form.fee.tip"
       },
       "name": {
-        "dueDate": "clients.form.name.dueDate",
-        "label": "clients.form.name.label"
+        "label": "client.form.name.label",
+        "tip": "client.form.name.tip"
       },
       "phone": {
-        "label": "clients.form.phone.label"
+        "label": "client.form.phone.label",
+        "tip": "client.form.phone.tip"
       },
-      "title": "clients.form.title"
+      "title": "client.form.title"
     },
     "list": {
       "table": {
-        "dueDate": "clients.list.table.dueDate",
-        "email": "clients.list.table.email",
-        "fee": "clients.list.table.fee",
-        "name": "clients.list.table.name",
-        "phone": "clients.list.table.phone"
+        "dueDate": "client.list.table.dueDate",
+        "email": "client.list.table.email",
+        "fee": "client.list.table.fee",
+        "name": "client.list.table.name",
+        "phone": "client.list.table.phone"
       },
-      "title": "clients.list.title",
+      "title": "client.list.title",
       "toolbar": {
-        "import-clients": "clients.list.toolbar.import-clients",
-        "new-client": "clients.list.toolbar.new-client",
-        "search-placeholder": "clients.list.toolbar.search-placeholder"
+        "import-clients": "client.list.toolbar.import-clients",
+        "new-client": "client.list.toolbar.new-client",
+        "search-placeholder": "client.list.toolbar.search-placeholder"
       }
+    },
+    "modal": {
+      "edit-client": "client.modal.edit-client",
+      "new-client": "client.modal.new-client"
     }
   },
   "dashboard": {
@@ -103,9 +117,15 @@
   },
   "services": {
     "form": {
-      "name": "services.form.name",
+      "name": {
+        "label": "services.form.name.label",
+        "tip": "services.form.name.tip"
+      },
       "title": "services.form.title",
-      "value": "services.form.value"
+      "value": {
+        "label": "services.form.value.label",
+        "tip": "services.form.value.tip"
+      }
     },
     "list": {
       "table": {
@@ -117,6 +137,10 @@
         "search-placeholder": "services.list.toolbar.search-placeholder"
       },
       "toolbar-new-service": "services.list.toolbar-new-service"
+    },
+    "modal": {
+      "edit-service": "services.modal.edit-service",
+      "new-service": "services.modal.new-service"
     }
   }
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { subscribeToCsvImportEvents } from '@utils/globalEvents';
 
-import ErrorModal from '@components/ErrorModal';
+import ErrorModal from '@/components/modals/ErrorModal';
 import { GlobalEventsContext } from './GlobalEventsContext';
 
 export function GlobalEventsProvider({ children }: { children: React.ReactNode }) {

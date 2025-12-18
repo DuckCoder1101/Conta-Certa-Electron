@@ -10,7 +10,7 @@ import { IoPeople } from 'react-icons/io5';
 import { MdAttachMoney, MdOutlineAttachMoney } from 'react-icons/md';
 
 import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
-import ConfigurationsModal from './ConfigurationsModal';
+import ConfigurationsModal from '@modals/ConfigurationsModal';
 
 interface MenuLink {
   name: string;

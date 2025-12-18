@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { IClient, IClientFormDTO } from '@t/dtos';
 import { NumericFormat } from 'react-number-format';
-
-// Ícones
-import { MdClose } from 'react-icons/md';
-
+import { useTranslation } from 'react-i18next';
 import InputMask from 'react-input-mask';
-import ModalBase from '@components/ModalBase';
+
+import ModalBase from '@/components/modals/ModalBase';
+import SaveButton from '../form/SaveButton';
+
 import { useClients } from '@hooks/useClients';
-import SaveButton from './SaveButton';
 
 interface Props {
   open: boolean;
@@ -18,6 +17,9 @@ interface Props {
 }
 
 export default function ClientModal({ open, onClose, client }: Props) {
+  // Tradução
+  const { t } = useTranslation();
+
   const { save } = useClients();
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -69,18 +71,10 @@ export default function ClientModal({ open, onClose, client }: Props) {
   });
 
   return (
-    <ModalBase isOpen={open} onClose={() => onClose(false, null)}>
-      {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="mb-6 text-center text-2xl font-semibold">{client ? 'Editar cliente' : 'Cadastrar cliente'}</h2>
-        <button onClick={() => onClose(false, null)} className="text-xl font-bold hover:text-red-400">
-          <MdClose />
-        </button>
-      </div>
-
+    <ModalBase title={t(client ? 'client.modal.edit-client' : 'client.modal.new-client')} isOpen={open} onClose={() => onClose(false, null)}>
       {/* Form */}
-      <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {formError && <p className="col-span-full text-center text-red-400">{formError}</p>}
+      <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
+        {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-red-400">{formError}</p>}
 
         {/* CPF */}
         <div>
@@ -118,39 +112,54 @@ export default function ClientModal({ open, onClose, client }: Props) {
 
         {/* Nome */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">Nome</label>
-          <input className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('name', { required: true })} />
+          <label className="mb-1 block text-sm font-semibold">{t('client.form.name.label')}</label>
+          <input
+            title={t('client.form.name.tip')}
+            className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            {...register('name', { required: true })}
+          />
         </div>
 
         {/* Email */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">Email</label>
-          <input type="email" className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...register('email')} />
+          <label className="mb-1 block text-sm font-semibold">{t('client.form.email.label')}</label>
+          <input
+            title={t('client.form.email.tip')}
+            type="email"
+            className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            {...register('email')}
+          />
         </div>
 
         {/* Telefone */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">Telefone</label>
+          <label className="mb-1 block text-sm font-semibold">{t('client.form.phone.label')}</label>
           <Controller
             name="phone"
             control={control}
             render={({ field }) => (
-              <InputMask mask="(99) 99999-9999" className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500" {...field} />
+              <InputMask
+                title={t('client.form.phone.tip')}
+                mask="(99) 99999-9999"
+                className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+                {...field}
+              />
             )}
           />
         </div>
 
         {/* Honorário */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">Honorário</label>
+          <label className="mb-1 block text-sm font-semibold">{t('client.form.fee.label')}</label>
           <Controller
             name="fee"
             control={control}
             render={({ field }) => (
               <NumericFormat
+                title={t('client.form.fee.tip')}
                 thousandSeparator="."
                 decimalSeparator=","
-                prefix="R$"
+                prefix={t('global.money-prefix')}
                 decimalScale={2}
                 fixedDecimalScale={true}
                 allowNegative={false}
@@ -164,8 +173,9 @@ export default function ClientModal({ open, onClose, client }: Props) {
 
         {/* Vencimento */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">Vencimento</label>
+          <label className="mb-1 block text-sm font-semibold">{t('client.form.dueDate.label')}</label>
           <input
+            title={t('client.form.dueDate.tip')}
             type="number"
             min={1}
             max={31}
@@ -175,7 +185,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
         </div>
 
         {/* Botão */}
-        <div className="col-span-full mt-4 flex justify-end">
+        <div className="col-span-full flex items-center justify-center md:justify-end">
           <SaveButton onClick={saveClient} />
         </div>
       </form>

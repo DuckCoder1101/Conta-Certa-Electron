@@ -3,11 +3,11 @@ import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContai
 
 import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
 
-import { useBillings } from '@/hooks/useBillings';
-import { useClients } from '@/hooks/useClients';
+import { useBillings } from '@hooks/useBillings';
+import { useClients } from '@hooks/useClients';
 
-import AppLayout from '@/components/AppLayout';
-import { formatMoney } from '@/utils/formatters';
+import AppLayout from '@components/AppLayout';
+import { formatMoney } from '@utils/formatters';
 import { useTranslation } from 'react-i18next';
 
 interface ChartRow {

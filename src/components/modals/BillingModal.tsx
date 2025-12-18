@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
+import { useTranslation } from 'react-i18next';
 
-import { MdClose } from 'react-icons/md';
-
-import ModalBase from '@components/ModalBase';
-import SaveButton from '../SaveButton';
+import ModalBase from '@components/modals/ModalBase';
+import SaveButton from '../form/SaveButton';
+import { ServicesSelector } from '../form/ServicesSelector';
 
 import { IBilling, IBillingFormDTO, IClientResumeDTO, IServiceBillingFormDTO } from '@t/dtos';
 
@@ -13,7 +13,6 @@ import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
 
 import { useClients } from '@hooks/useClients';
 import { useBillings } from '@hooks/useBillings';
-import { ServicesSelector } from './ServicesSelector';
 
 interface Props {
   open: boolean;
@@ -22,6 +21,9 @@ interface Props {
 }
 
 export default function BillingModal({ open, billing, onClose }: Props) {
+  // Tradução
+  const { t } = useTranslation();
+
   const { fetchResume, fetchById } = useClients();
   const { prepareServices, save } = useBillings();
 
@@ -132,35 +134,30 @@ export default function BillingModal({ open, billing, onClose }: Props) {
   };
 
   return (
-    <ModalBase isOpen={open} onClose={() => onClose(false, null)}>
-      {/* Header (Fixo) */}
-      <div className="mb-4 flex items-start justify-between">
-        <h2 className="text-2xl font-semibold">{billing ? 'Editar faturamento' : 'Cadastrar faturamento'}</h2>
-        <button onClick={() => onClose(false, null)} className="text-xl font-bold hover:text-red-400">
-          <MdClose />
-        </button>
-      </div>
-
+    <ModalBase title={t(billing ? 'billing.modal.edit-billing' : 'billing.modal.new-billing')} isOpen={open} onClose={() => onClose(false, null)}>
       {formError && <p className="mb-3 text-center text-red-400">{formError}</p>}
 
-      <form className="grid h-full grid-cols-1 gap-4 md:grid-cols-2">
-        {/* Cliente (Fixo) */}
-        <div className="col-span-full">
-          <label className="mb-1 block">Cliente:</label>
+      <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
+        {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold">{formError}</p>}
 
+        {/* Cliente */}
+        <div className="col-span-full">
+          <label className="mb-1 block">{t('billing.form.client.label')}</label>
+
+          {/* Busca */}
           <input
             className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none placeholder:text-black focus:ring-2 focus:ring-blue-500"
-            placeholder="Buscar cliente..."
+            placeholder={t('billing.form.client.search-placeholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
 
+          {/* Lista */}
           <select
             {...register('clientId', { required: true, setValueAs: (v) => Number(v) })}
-            disabled={billing != null}
             className="mt-2 max-h-48 w-full rounded-xl border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value={-1}>Selecione um cliente</option>
+            <option value={-1}>{t('billing.form.client.default-option')}</option>
             {filteredClients.map(({ id, name }, i) => (
               <option key={i} value={id}>
                 {name}
@@ -171,7 +168,7 @@ export default function BillingModal({ open, billing, onClose }: Props) {
 
         {/* fee */}
         <div>
-          <label className="mb-1 block">Valor:</label>
+          <label className="mb-1 block">{t('billing.form.fee.label')}</label>
           <Controller
             name="fee"
             control={control}
@@ -179,7 +176,8 @@ export default function BillingModal({ open, billing, onClose }: Props) {
               <NumericFormat
                 thousandSeparator="."
                 decimalSeparator=","
-                prefix="R$"
+                prefix={t('global.money-prefix')}
+                title={t('billing.form.fee.tip')}
                 decimalScale={2}
                 fixedDecimalScale={true}
                 allowNegative={false}
@@ -193,43 +191,50 @@ export default function BillingModal({ open, billing, onClose }: Props) {
 
         {/* status */}
         <div>
-          <label className="mb-1 block">Status:</label>
-          <select {...register('status', { required: true })} className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="pending">Pendente</option>
-            <option value="paid">Paga</option>
+          <label className="mb-1 block">{t('billing.form.status.label')}</label>
+          <select
+            title={t('billing.form.status.tip')}
+            className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            {...register('status', { required: true })}
+          >
+            <option value="pending">{t('billing.status.pending')}</option>
+            <option value="paid">{t('billing.status.paid')}</option>
           </select>
         </div>
 
-        {/* paidAt */}
+        {/* pago em */}
         <div>
-          <label className="mb-1 block">Data de Pagamento:</label>
+          <label className="mb-1 block">{t('billing.form.paidAt.label')}</label>
           <input
+            title={t('billing.form.paidAt.tip')}
             type="date"
-            {...register('paidAt', { required: status === 'paid' })}
             disabled={status === 'pending'}
             className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            {...register('paidAt', { required: status === 'paid' })}
           />
         </div>
 
-        {/* dueDate */}
+        {/* vencimento */}
         <div>
-          <label className="mb-1 block">Data de Vencimento:</label>
+          <label className="mb-1 block">{t('billing.form.feeDueDate.label')}</label>
           <input
+            title={t('billing.form.feeDueDate.tip')}
             type="date"
             {...register('dueDate', { required: true })}
             className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
+        {/* SERVIÇOS */}
         <div className="col-span-full">
-          <label className="mb-1 block">Serviços:</label>
-          <ServicesSelector services={servicesBilling} onChange={updateQuantity} className="max-h-[250px]" />
+          <label className="mb-1 block">{t('billing.form.services.label')}</label>
+          <ServicesSelector services={servicesBilling} onChange={updateQuantity} className="md:max-h-[250px]" />
+        </div>
+
+        <div className="col-span-full flex items-center justify-center">
+          <SaveButton onClick={saveBilling} />
         </div>
       </form>
-
-      <div className="col-span-full mt-4 flex justify-end">
-        <SaveButton onClick={saveBilling} />
-      </div>
     </ModalBase>
   );
 }

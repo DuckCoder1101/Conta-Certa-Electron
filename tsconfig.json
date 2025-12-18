@@ -17,7 +17,8 @@
       "@assets/*": ["./src/assets/*"],
       "@contexts/*": ["./src/contexts/*"],
       "@hooks/*": ["./src/hooks/*"],
-      "@public/*": ["./public/*"]
+      "@public/*": ["./public/*"],
+      "@modals/*": ["./src/components/modals/*"],
     } 
   },
   "include": ["src", "src/@types"]

@@ -1,23 +1,28 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { IBilling } from '@t/dtos';
 
 import { IoMdSearch } from 'react-icons/io';
 import { FaPencil, FaPlus } from 'react-icons/fa6';
+import { useTranslation } from 'react-i18next';
 
-import BillingModal from '@/components/billing/BillingModal';
-import DangerHoldButton from '@components/DangerHoldButton';
-import AppLayout from '@/components/AppLayout';
+import AppLayout from '@components/AppLayout';
+import BillingModal from '@modals/BillingModal';
+import DangerHoldButton from '@components/form/DangerHoldButton';
 
 import { formatDate, formatMoney } from '@utils/formatters';
 
-import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
-import { useBillings } from '@/hooks/useBillings';
-import { useInfiniteScroll } from '@/hooks/useInfinityScroll';
-import { useTranslation } from 'react-i18next';
+import { GlobalEventsContext } from '@contexts/GlobalEventsContext';
+import { SettingsContext } from '@contexts/SettingsContext';
+
+import { useBillings } from '@hooks/useBillings';
+import { useInfiniteScroll } from '@hooks/useInfinityScroll';
 
 export default function BillingsList() {
   // Traduções
   const { t } = useTranslation();
+
+  // Configurações
+  const { settings } = useContext(SettingsContext);
 
   // Contexto global
   const { setError } = useContext(GlobalEventsContext);
@@ -28,6 +33,19 @@ export default function BillingsList() {
 
   // Infinite scroll com filtro
   const { items: billings, load, handleScroll } = useInfiniteScroll<IBilling>((offset) => fetchAll(offset, 30, filter).then((r) => r.data ?? []));
+
+  // Lista de linhas
+  const rows = useMemo(() => {
+    return billings.map((b) => ({
+      id: b.id,
+      client: b.client?.name ?? '-',
+      status: t(`billing.status.${b.status}`),
+      statusColor: b.status == 'paid' ? 'text-green-500' : 'text-red-500',
+      totalFee: formatMoney(b.totalFee, settings?.language ?? ''),
+      dueDate: formatDate(b.dueDate),
+      paidAt: formatDate(b.paidAt),
+    }));
+  }, [billings, t, settings]);
 
   // Aplica filtro SEM resetar scroll automaticamente
   useEffect(() => {
@@ -49,8 +67,8 @@ export default function BillingsList() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalBilling, setModalBilling] = useState<IBilling | null>(null);
 
-  const openModal = (billing?: IBilling) => {
-    setModalBilling(billing ?? null);
+  const openModal = (id?: number) => {
+    setModalBilling(billings.find((b) => b.id === id) ?? null);
     setIsModalOpen(true);
   };
 
@@ -101,11 +119,11 @@ export default function BillingsList() {
 
       {/* TABELA */}
       <div className="w-full overflow-x-auto">
-        <table className="w-full min-w-[900px] table-fixed border-collapse text-sm shadow-sm">
+        <table onScroll={handleScroll} className="w-full min-w-[900px] table-fixed border-collapse text-sm shadow-sm">
           <thead>
             <tr className="border-b bg-sidebar-hover2 text-left text-sidebar-text">
               <th className="px-4 py-3 font-semibold">{t('billing.list.table.client')}</th>
-              <th className="px-4 py-3 font-semibold">{t('billing.list.table.tota-value')}</th>
+              <th className="px-4 py-3 font-semibold">{t('billing.list.table.total-value')}</th>
               <th className="px-4 py-3 font-semibold">{t('billing.list.table.status')}</th>
               <th className="px-4 py-3 font-semibold">{t('billing.list.table.pait-at')}</th>
               <th className="px-4 py-3 font-semibold">{t('billing.list.table.due-date')}</th>
@@ -113,36 +131,34 @@ export default function BillingsList() {
             </tr>
           </thead>
 
-          <tbody onScroll={handleScroll}>
-            {billings.map((b, i) => (
-              <tr key={i} className="border-b text-sidebar-text odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2">
-                <td className={`max-w-[180px] truncate whitespace-nowrap px-4 py-3 ${b.client === null ? 'text-red-500' : ''}`} title={b.client?.name ?? '-'}>
-                  {b.client?.name ?? t('billing.list.table.deleted-client')}
+          <tbody>
+            {rows.map((b) => (
+              <tr key={b.id} className="border-b text-sidebar-text odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2">
+                <td className="max-w-[180px] truncate whitespace-nowrap px-4 py-3" title={b.client}>
+                  {b.client}
                 </td>
 
-                <td className="max-w-[100px] truncate whitespace-nowrap px-4 py-3" title={formatMoney(b.totalFee)}>
-                  {formatMoney(b.totalFee)}
+                <td className="max-w-[100px] truncate whitespace-nowrap px-4 py-3" title={b.totalFee}>
+                  {b.totalFee}
                 </td>
 
-                <td className={`max-w-[120px] truncate whitespace-nowrap px-4 py-3 ${b.status === 'paid' ? 'text-green-500' : 'text-red-500'}`}>
-                  {b.status === 'paid' ? t('billing.status.paid') : t('billing.status.pending')}
+                <td className={`max-w-[120px] truncate whitespace-nowrap px-4 py-3 ${b.statusColor}`}>{b.status}</td>
+
+                <td className="max-w-[120px] truncate whitespace-nowrap px-4 py-3" title={b.paidAt}>
+                  {b.paidAt}
                 </td>
 
-                <td className="max-w-[120px] truncate whitespace-nowrap px-4 py-3" title={b.paidAt ? formatDate(b.paidAt) : '-'}>
-                  {b.paidAt ? formatDate(b.paidAt) : '-'}
-                </td>
-
-                <td className="max-w-[120px] truncate whitespace-nowrap px-4 py-3" title={formatDate(b.dueDate)}>
-                  {formatDate(b.dueDate)}
+                <td className="max-w-[120px] truncate whitespace-nowrap px-4 py-3" title={b.dueDate}>
+                  {b.dueDate}
                 </td>
 
                 <td className="px-4 py-3 text-center">
                   <div className="flex justify-center gap-2">
-                    <button onClick={() => openModal(b)} className="flex h-9 w-9 items-center justify-center rounded-md bg-blue-600 text-white transition hover:bg-blue-700">
+                    <button onClick={() => openModal(b.id)} className="flex h-9 w-9 items-center justify-center rounded-md bg-blue-600 text-white transition hover:bg-blue-700">
                       <FaPencil />
                     </button>
 
-                    <DangerHoldButton onComplete={() => deleteBilling(b.id)} seconds={1} />
+                    <DangerHoldButton onComplete={() => deleteBilling(b.id)} duration={600} />
                   </div>
                 </td>
               </tr>
