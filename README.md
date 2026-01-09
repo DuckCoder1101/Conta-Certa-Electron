@@ -50,7 +50,7 @@ Este repositório corresponde à versão **Electron**, permitindo que o sistema 
 ---
 
 ## Estrutura do Projeto
-
+```
 Conta-Certa/
 ├─ electron/
 │  ├─ @types/
@@ -100,7 +100,7 @@ Conta-Certa/
 ├─ tsconfig.node.json
 ├─ vite.config.ts
 └─ README.md
-
+```
 ---
 
 ## Instalação
