@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 
-import HandleIPCEvents from './events.ts';
+import HandleIPCEvents from './events';
 
 process.env.APP_ROOT = path.join(__dirname, '..');
 

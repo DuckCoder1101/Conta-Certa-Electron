@@ -11,7 +11,6 @@ import DangerHoldButton from '@components/form/DangerHoldButton';
 
 import { formatDate, formatMoney } from '@utils/formatters';
 
-import { GlobalEventsContext } from '@contexts/GlobalEventsContext';
 import { SettingsContext } from '@contexts/SettingsContext';
 
 import { useBillings } from '@hooks/useBillings';
@@ -25,14 +24,13 @@ export default function BillingsList() {
   const { settings } = useContext(SettingsContext);
 
   // Contexto global
-  const { setError } = useContext(GlobalEventsContext);
-  const { fetchAll, remove } = useBillings();
+  const { fetch, remove } = useBillings();
 
   // Filtro digitado
   const [filter, setFilter] = useState<string>('');
 
   // Infinite scroll com filtro
-  const { items: billings, load, handleScroll } = useInfiniteScroll<IBilling>((offset) => fetchAll(offset, 30, filter).then((r) => r.data ?? []));
+  const { items: billings, load, handleScroll } = useInfiniteScroll<IBilling>((offset) => fetch(offset, 30, filter).then((r) => r.data ?? []));
 
   // Lista de linhas
   const rows = useMemo(() => {
@@ -40,27 +38,23 @@ export default function BillingsList() {
       id: b.id,
       client: b.client?.name ?? '-',
       status: t(`billing.status.${b.status}`),
-      statusColor: b.status == 'paid' ? 'text-green-500' : 'text-red-500',
+      statusColor: b.status == 'paid' ? 'text-success' : 'text-danger',
       totalFee: formatMoney(b.totalFee, settings?.language ?? ''),
       dueDate: formatDate(b.dueDate),
       paidAt: formatDate(b.paidAt),
     }));
   }, [billings, t, settings]);
 
-  // Aplica filtro SEM resetar scroll automaticamente
   useEffect(() => {
-    load(0); // reseta quando filtro mudar
+    load(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   const deleteBilling = async (id: number) => {
-    const result = await remove(id);
-
-    if (!result.success && result.error) {
-      return setError(result.error.message);
+    const { success } = await remove(id);
+    if (success) {
+      await load();
     }
-
-    load();
   };
 
   // Modal
@@ -79,13 +73,11 @@ export default function BillingsList() {
       <BillingModal
         open={isModalOpen}
         billing={modalBilling}
-        onClose={(success, error) => {
+        onClose={(success) => {
           setIsModalOpen(false);
 
           if (success) {
             load();
-          } else if (error) {
-            setError(error);
           }
         }}
       />
@@ -93,9 +85,9 @@ export default function BillingsList() {
       <h2 className="mt-5 text-center text-2xl font-semibold">{t('billing.list.title')}</h2>
 
       {/* BARRA DE BUSCA */}
-      <form className="my-5 block items-center gap-3 rounded-md border border-sidebar-border bg-sidebar-hover p-2 shadow-sm hover:bg-sidebar-bg md:flex">
+      <form className="bg-sidebar-hover my-5 block items-center gap-3 rounded-md border border-border p-2 shadow-sm hover:bg-surface-muted md:flex">
         <div className="flex flex-grow items-center gap-2">
-          <span className="flex h-10 w-10 items-center justify-center text-lg text-white">
+          <span className="flex h-10 w-10 items-center justify-center text-lg text-text-primary">
             <IoMdSearch />
           </span>
 
@@ -103,7 +95,7 @@ export default function BillingsList() {
             type="search"
             onChange={(e) => setFilter(e.target.value.toLowerCase())}
             placeholder={t('billing.list.tools.search-placeholder')}
-            className="w-full bg-transparent text-sidebar-text outline-none placeholder:text-light-placeholder"
+            className="w-full bg-transparent text-text-primary outline-none placeholder:text-text-placeholder"
           />
         </div>
 
@@ -111,7 +103,7 @@ export default function BillingsList() {
           type="button"
           onClick={() => openModal()}
           title={t('billing.list.tools.new-billing')}
-          className="ms-auto flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-hover2 text-white transition hover:bg-sidebar-hover"
+          className="bg-sidebar-hover2 ms-auto flex h-10 w-10 items-center justify-center rounded-md text-text-primary transition hover:bg-surface-muted"
         >
           <FaPlus />
         </button>
@@ -121,11 +113,11 @@ export default function BillingsList() {
       <div className="w-full overflow-x-auto">
         <table onScroll={handleScroll} className="w-full min-w-[900px] table-fixed border-collapse text-sm shadow-sm">
           <thead>
-            <tr className="border-b bg-sidebar-hover2 text-left text-sidebar-text">
+            <tr className="bg-sidebar-hover2 border-b text-left text-text-primary">
               <th className="px-4 py-3 font-semibold">{t('billing.list.table.client')}</th>
               <th className="px-4 py-3 font-semibold">{t('billing.list.table.total-value')}</th>
               <th className="px-4 py-3 font-semibold">{t('billing.list.table.status')}</th>
-              <th className="px-4 py-3 font-semibold">{t('billing.list.table.pait-at')}</th>
+              <th className="px-4 py-3 font-semibold">{t('billing.list.table.paid-at')}</th>
               <th className="px-4 py-3 font-semibold">{t('billing.list.table.due-date')}</th>
               <th className="px-4 py-3 text-center font-semibold">{t('global.table.actions.title')}</th>
             </tr>
@@ -133,7 +125,7 @@ export default function BillingsList() {
 
           <tbody>
             {rows.map((b) => (
-              <tr key={b.id} className="border-b text-sidebar-text odd:bg-sidebar-bg even:bg-sidebar-hover hover:bg-sidebar-hover2">
+              <tr key={b.id} className="odd:bg-sidebar-bg even:bg-sidebar-hover border-b text-text-primary hover:bg-surface-muted">
                 <td className="max-w-[180px] truncate whitespace-nowrap px-4 py-3" title={b.client}>
                   {b.client}
                 </td>
@@ -154,7 +146,10 @@ export default function BillingsList() {
 
                 <td className="px-4 py-3 text-center">
                   <div className="flex justify-center gap-2">
-                    <button onClick={() => openModal(b.id)} className="flex h-9 w-9 items-center justify-center rounded-md bg-blue-600 text-white transition hover:bg-blue-700">
+                    <button
+                      onClick={() => openModal(b.id)}
+                      className="flex h-9 w-9 items-center justify-center rounded-md bg-brand text-text-primary transition hover:opacity-90"
+                    >
                       <FaPencil />
                     </button>
 

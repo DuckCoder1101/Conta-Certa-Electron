@@ -12,7 +12,7 @@ import { useServices } from '@hooks/useServices';
 interface Props {
   open: boolean;
   client: IService | null;
-  onClose: (success: boolean, error: string | null) => void;
+  onClose: (success: boolean) => void;
 }
 
 export default function ServiceModal({ open, onClose, client: service }: Props) {
@@ -45,25 +45,25 @@ export default function ServiceModal({ open, onClose, client: service }: Props) 
 
     const { success, error } = await save(data);
     if (error && error.status === 400) {
-      return setFormError(error.message);
+      return setFormError(t(error.code, error.params));
     }
 
     setFormError(null);
-    onClose(success, error?.message ?? null);
+    onClose(success);
   });
 
   return (
-    <ModalBase title={t(service ? 'services.modal.edit-service' : 'services.modal.new-service')} isOpen={open} onClose={() => onClose(false, null)}>
+    <ModalBase title={t(service ? 'services.modal.edit-service' : 'services.modal.new-service')} isOpen={open} onClose={() => onClose(false)}>
       {/* Form */}
-      <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
-        {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-red-400">{formError}</p>}
+      <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2" onSubmit={saveService}>
+        {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-danger">{formError}</p>}
 
         {/* Nome */}
         <div>
           <label className="mb-1 block text-sm font-semibold">{t('services.form.name.label')}</label>
           <input
             title={t('services.form.name.tip')}
-            className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
             {...register('name', { required: true })}
           />
         </div>
@@ -85,14 +85,14 @@ export default function ServiceModal({ open, onClose, client: service }: Props) 
                 allowNegative={false}
                 value={field.value}
                 onValueChange={(values) => field.onChange(values.floatValue ?? 0)}
-                className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
               />
             )}
           />
         </div>
 
         <div className="col-span-full flex items-center justify-center md:justify-end">
-          <SaveButton onClick={saveService} />
+          <SaveButton type="submit" />
         </div>
       </form>
     </ModalBase>

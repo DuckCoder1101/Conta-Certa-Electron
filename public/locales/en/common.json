@@ -1,4 +1,30 @@
 {
+  "backup": {
+    "list": {
+      "table": {
+        "created-at": "backup.list.table.created-at",
+        "size": "backup.list.table.size",
+        "source": "backup.list.table.source"
+      },
+      "title": "backup.list.title",
+      "tools": {
+        "generate-backup": "backup.list.tools.generate-backup",
+        "search-placeholder": "backup.list.tools.search-placeholder"
+      }
+    }
+  },
+  "backups": {
+    "toasts": {
+      "started": {
+        "message": "backups.toasts.started.message",
+        "title": "backups.toasts.started.title"
+      },
+      "success": {
+        "message": "backups.toasts.success.message",
+        "title": "backups.toasts.success.title"
+      }
+    }
+  },
   "billing": {
     "form": {
       "client": {
@@ -31,7 +57,7 @@
       "table": {
         "client": "billing.list.table.client",
         "due-date": "billing.list.table.due-date",
-        "pait-at": "billing.list.table.pait-at",
+        "paid-at": "billing.list.table.paid-at",
         "status": "billing.list.table.status",
         "total-value": "billing.list.table.total-value"
       },
@@ -141,6 +167,55 @@
     "modal": {
       "edit-service": "services.modal.edit-service",
       "new-service": "services.modal.new-service"
+    }
+  },
+  "toasts": {
+    "backups": {
+      "fetch-error": {
+        "title": "toasts.backups.fetch-error.title"
+      },
+      "generate-error": {
+        "title": "toasts.backups.generate-error.title"
+      }
+    },
+    "billings": {
+      "fetch-error": {
+        "title": "toasts.billings.fetch-error.title"
+      },
+      "remove-error": {
+        "title": "toasts.billings.remove-error.title"
+      },
+      "save-error": {
+        "title": "toasts.billings.save-error.title"
+      }
+    },
+    "clients": {
+      "count-error": {
+        "title": "toasts.clients.count-error.title"
+      },
+      "fetch-by-id-error": {
+        "title": "toasts.clients.fetch-by-id-error.title"
+      },
+      "fetch-error": {
+        "title": "toasts.clients.fetch-error.title"
+      },
+      "remove-error": {
+        "title": "toasts.clients.remove-error.title"
+      },
+      "save-error": {
+        "title": "toasts.clients.save-error.title"
+      }
+    },
+    "services": {
+      "fetch-error": {
+        "title": "toasts.services.fetch-error.title"
+      },
+      "remove-error": {
+        "title": "toasts.services.remove-error.title"
+      },
+      "save-error": {
+        "title": "toasts.services.save-error.title"
+      }
     }
   }
 }

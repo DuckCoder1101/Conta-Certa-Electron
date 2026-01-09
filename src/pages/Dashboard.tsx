@@ -1,14 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
-import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
-
 import { useBillings } from '@hooks/useBillings';
 import { useClients } from '@hooks/useClients';
 
 import AppLayout from '@components/AppLayout';
 import { formatMoney } from '@utils/formatters';
 import { useTranslation } from 'react-i18next';
+import { SettingsContext } from '@contexts/SettingsContext';
 
 interface ChartRow {
   ym: string;
@@ -22,10 +21,11 @@ export default function Dashboard() {
   // Traduções
   const { t } = useTranslation();
 
-  const { setError } = useContext(GlobalEventsContext);
+  // Configurações
+  const { settings } = useContext(SettingsContext);
 
   const { count: countAllClients } = useClients();
-  const { fetchAllResumes: fetchAllBillings } = useBillings();
+  const { fetchResumes: fetchAllBillings } = useBillings();
 
   const [totalClients, setTotalClients] = useState<number>(0);
   const [totalPaid, setTotalPaid] = useState<number>(0);
@@ -56,17 +56,15 @@ export default function Dashboard() {
   };
 
   const fetchClients = async () => {
-    const { data, error } = await countAllClients();
+    const { data } = await countAllClients();
 
     if (data) {
       setTotalClients(data);
-    } else if (error) {
-      setError(error.message);
     }
   };
 
   const fetchBillings = async () => {
-    const { data, error } = await fetchAllBillings();
+    const { data } = await fetchAllBillings();
 
     if (data) {
       const paid = data.filter((b) => b.status === 'paid');
@@ -107,8 +105,6 @@ export default function Dashboard() {
         .sort((a, b) => (a.ym > b.ym ? 1 : -1));
 
       setChartRows(rows);
-    } else if (error) {
-      setError(error.message);
     }
   };
 
@@ -126,25 +122,25 @@ export default function Dashboard() {
 
           {/* CARDS */}
           <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
-            <div className="rounded-md bg-sidebar-hover2 p-6 shadow transition hover:bg-sidebar-hover">
-              <p className="text-lg font-semibold text-white">{t('dashboard.clients-count')}</p>
-              <p className="mt-2 text-2xl font-bold text-blue-400">{totalClients}</p>
+            <div className="bg-sidebar-hover2 rounded-md p-6 shadow transition hover:bg-surface-muted">
+              <p className="text-lg font-semibold text-text-primary">{t('dashboard.clients-count')}</p>
+              <p className="mt-2 text-2xl font-bold text-brand">{totalClients}</p>
             </div>
 
-            <div className="rounded-md bg-sidebar-hover2 p-6 shadow transition hover:bg-sidebar-hover">
-              <p className="text-lg font-semibold text-white">{t('dashboard.total-paid')}</p>
-              <p className="mt-2 text-2xl font-bold text-green-400">{formatMoney(totalPaid)}</p>
+            <div className="bg-sidebar-hover2 rounded-md p-6 shadow transition hover:bg-surface-muted">
+              <p className="text-lg font-semibold text-text-primary">{t('dashboard.total-paid')}</p>
+              <p className="mt-2 text-2xl font-bold text-success">{formatMoney(totalPaid, settings?.language ?? 'pt-BR')}</p>
             </div>
 
-            <div className="rounded-md bg-sidebar-hover2 p-6 shadow transition hover:bg-sidebar-hover">
-              <p className="text-lg font-semibold text-white">{t('dashboard.total-pending')}</p>
-              <p className="mt-2 text-2xl font-bold text-red-400">{formatMoney(totalPending)}</p>
+            <div className="bg-sidebar-hover2 rounded-md p-6 shadow transition hover:bg-surface-muted">
+              <p className="text-lg font-semibold text-text-primary">{t('dashboard.total-pending')}</p>
+              <p className="mt-2 text-2xl font-bold text-danger">{formatMoney(totalPending, settings?.language ?? 'pt-BR')}</p>
             </div>
           </div>
 
           {/* GRÁFICO */}
-          <div className="mt-10 min-h-[400px] flex-grow rounded-md bg-sidebar-hover2 p-10 shadow">
-            <h2 className="mb-4 text-xl font-semibold text-white">{t('dashboard.month-info')}</h2>
+          <div className="bg-sidebar-hover2 mt-10 min-h-[400px] flex-grow rounded-md p-10 shadow">
+            <h2 className="mb-4 text-xl font-semibold text-text-primary">{t('dashboard.month-info')}</h2>
 
             <div className="h-full w-full p-5">
               <ResponsiveContainer width="100%" height="100%">
@@ -160,7 +156,7 @@ export default function Dashboard() {
                         pending: t('dashboard.month.total-pending'),
                       };
                       const displayName = nameMap[name] ?? name;
-                      return [formatMoney(value), displayName];
+                      return [formatMoney(value, settings?.language ?? 'pt-BR'), displayName];
                     }}
                     labelFormatter={(label) => `Mês: ${label}`}
                     isAnimationActive={false}

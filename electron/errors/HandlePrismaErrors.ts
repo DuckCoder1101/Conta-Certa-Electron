@@ -5,7 +5,7 @@ type PrismaErrorHandler = (e: Prisma.PrismaClientKnownRequestError) => AppError;
 
 const codes: Record<string, PrismaErrorHandler> = {
   P2002: () => {
-    return new AppError(400, `Já existe um registro com essas informações!`);
+    return new AppError('DB.ALREADY_EXISTS', 400);
   },
 };
 
@@ -13,7 +13,7 @@ export default function HandlePrismaErrors(error: Prisma.PrismaClientKnownReques
   const prismaError = codes[error.code](error);
 
   if (!prismaError) {
-    return new AppError(500, `Erro do prisma, código ${error.code} não tratado!`);
+    return new AppError('DB.UNKNOWN_ERROR', 500);
   }
 
   return prismaError;

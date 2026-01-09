@@ -59,8 +59,8 @@ export interface IAppError {
   message: string;
 }
 
-export interface IAppResponseDTO<T> {
+export interface IAppResponseDTO<T = undefined> {
   success: boolean;
-  data: T | null;
-  error: IAppError | null;
+  data?: T;
+  error?: IAppError;
 }

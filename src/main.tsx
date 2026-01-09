@@ -5,8 +5,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 
-import { GlobalEventsProvider } from '@contexts/GlobalEventsProvider';
-import SettingsProvider from '@contexts/SettingsProvider';
+import { AlertsProvider } from '@contexts/AlertsProvider';
+import { SettingsProvider } from '@contexts/SettingsProvider';
 
 import Dashboard from '@pages/Dashboard';
 
@@ -18,11 +18,12 @@ import BillingsList from '@pages/BillingsList';
 
 import ServiceForm from '@pages/ServiceForm';
 import ServicesList from '@pages/ServicesList';
+import BackupsList from '@pages/BackupsList';
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(
   <React.StrictMode>
     <SettingsProvider>
-      <GlobalEventsProvider>
+      <AlertsProvider>
         <HashRouter>
           <Routes>
             <Route path="/" element={<Dashboard />} />
@@ -35,9 +36,11 @@ ReactDOM.createRoot(document.querySelector('#root')!).render(
 
             <Route path="/services/list" element={<ServicesList />} />
             <Route path="/services/new" element={<ServiceForm />} />
+
+            <Route path="/backups" element={<BackupsList />} />
           </Routes>
         </HashRouter>
-      </GlobalEventsProvider>
+      </AlertsProvider>
     </SettingsProvider>
   </React.StrictMode>,
 );

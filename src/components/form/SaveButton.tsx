@@ -1,12 +1,17 @@
 import { FaSave } from 'react-icons/fa';
 
 interface Props {
-  onClick: () => void;
+  type: 'button' | 'submit';
+  onClick?: () => void;
 }
 
-export default function SaveButton({ onClick }: Props) {
+export default function SaveButton({ type, onClick }: Props) {
   return (
-    <button type="button" onClick={onClick} className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-md transition hover:bg-blue-700 h-min">
+    <button
+      type={type}
+      onClick={onClick}
+      className="flex h-min items-center justify-center gap-2 rounded-lg bg-brand px-6 py-3 font-semibold text-white shadow-md transition hover:opacity-90"
+    >
       <FaSave />
       Salvar
     </button>

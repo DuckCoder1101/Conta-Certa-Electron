@@ -1,0 +1,27 @@
+{
+  "UNEXPECTED_ERROR": "Erro inesperado!",
+
+  "BILLING.INVALID_CLIENT": "Cliente inválido!",
+  "BILLING.INVALID_FEE": "Valor inválido!",
+  "BILLING.INVALID_DUE_DATE": "Data de vencimento inválida!",
+  "BILLING.INVALUD_STATUS": "Status inválido!",
+  "BILLING.INVALUD_PAID_AT": "Data de vencimento inválida!",
+
+  "CLIENT.CLIENT_NOT_FOUND": "Cliente não encontrado!",
+  "CLIENT.INVALID_NAME": "Nome inválido!",
+  "CLIENT.INVALID_PHONE": "Número de celular inválido!",
+  "CLIENT.NO_DOCUMENT_PROVIDED": "Nenhum documento enviado!",
+  "CLIENT.INVALID_DOCUMENT": "Documento inválido!",
+
+  "CSV.IMPORT_CANCELLED": "Importação cancelada!",
+
+  "SERVICE.INVALID_NAME": "Nome de serviço inválido!",
+  "SERVICE.INVALID_VALUE": "Valor de serviço inválido!",
+
+  "SETTINGS.INVALID_SETTINGS": "Configurações inválidas!",
+
+  "BACKUP.INVALID_OR_CORRUPTED_BACKUP": "Backup inválido ou corrompido!",
+
+  "DB.ALREADY_EXISTS": "Já existe um registro com essas informações!",
+  "DB.UNKNOWN_ERROR": "Erro desconhecido no bando de dados!"
+}

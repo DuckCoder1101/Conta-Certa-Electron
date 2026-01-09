@@ -1,9 +1,10 @@
 import { createContext } from 'react';
 
-import IConfiguration from '@t/configuration';
+import ISettings from '@t/settings';
 
 export interface SettingsContextType {
-  settings: IConfiguration | null;
+  settings: ISettings | null;
+  updateSettings?: (settings: ISettings) => void;
   isLoading: boolean;
 }
 

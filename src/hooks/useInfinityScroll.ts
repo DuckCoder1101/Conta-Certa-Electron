@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 
 export function useInfiniteScroll<T>(fetchFn: (offset: number) => Promise<T[]>, pageSize: number = 30) {
   const [items, setItems] = useState<T[]>([]);
@@ -30,7 +30,7 @@ export function useInfiniteScroll<T>(fetchFn: (offset: number) => Promise<T[]>, 
         setItems(data);
       } else if (offset === undefined) {
         // load sem mudar offset
-        // substitui os itens mas com mesmo offset
+        // substitui os itens, mantendo o mesmo offset
         setItems(data);
       } else {
         // append normal
@@ -51,12 +51,12 @@ export function useInfiniteScroll<T>(fetchFn: (offset: number) => Promise<T[]>, 
   );
 
   const handleScroll = useCallback(
-    (e: React.UIEvent<HTMLTableElement>) => {
+    async (e: React.UIEvent<HTMLTableElement>) => {
       const { scrollHeight, scrollTop, clientHeight } = e.currentTarget;
       const nearBottom = scrollHeight - scrollTop <= clientHeight * 1.5;
 
       if (nearBottom && !loading && hasMore) {
-        load(offsetRef.current); // load incremental
+        await load(offsetRef.current); // load incremental
       }
     },
     [load, loading, hasMore],

@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // Ícones
@@ -8,20 +8,20 @@ import { HiDocumentReport } from 'react-icons/hi';
 import { IoIosBriefcase, IoIosStats } from 'react-icons/io';
 import { IoPeople } from 'react-icons/io5';
 import { MdAttachMoney, MdOutlineAttachMoney } from 'react-icons/md';
+import { LuDatabaseBackup } from 'react-icons/lu';
 
-import { GlobalEventsContext } from '@/contexts/GlobalEventsContext';
-import ConfigurationsModal from '@modals/ConfigurationsModal';
+import SettingsModal from '@modals/SettingsModal';
 
 interface MenuLink {
   name: string;
   link?: string;
   action?: () => void;
-  icon: JSX.Element;
+  icon: React.JSX.Element;
 }
 
 interface Submenu {
   name: string;
-  icon: JSX.Element;
+  icon: React.JSX.Element;
   items: MenuLink[];
 }
 
@@ -33,14 +33,8 @@ export default function Sidebar() {
   const [open, setOpen] = useState<string | null>(null);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState<boolean>(false);
 
-  const { setError } = useContext(GlobalEventsContext);
-
-  const onConfigModalClose = (success: boolean, error: string | null) => {
+  const onConfigModalClose = () => {
     setIsConfigModalOpen(false);
-
-    if (!success && error) {
-      setError(error);
-    }
   };
 
   const toggle = (menu: string) => {
@@ -118,6 +112,11 @@ export default function Sidebar() {
       ],
     },
     {
+      name: 'Backups',
+      link: '/backups',
+      icon: <LuDatabaseBackup />,
+    },
+    {
       name: 'Configurações',
       icon: <FaGear />,
       action: () => setIsConfigModalOpen(true),
@@ -132,12 +131,12 @@ export default function Sidebar() {
   return (
     <>
       {/* Modal de configurações */}
-      <ConfigurationsModal open={isConfigModalOpen} onClose={onConfigModalClose} />
+      <SettingsModal open={isConfigModalOpen} onClose={onConfigModalClose} />
 
       {/* Navbar */}
-      <aside className="flex min-h-screen min-w-[260px] flex-col border-r border-sidebar-border bg-sidebar-bg px-4 py-6 text-sidebar-text">
+      <aside className="text-text flex min-h-screen min-w-[260px] flex-col border-r border-border bg-sidebar px-4 py-6">
         {/* TÍTULO */}
-        <h2 className="mb-6 text-center text-2xl font-semibold uppercase tracking-wide text-white">Conta Certa</h2>
+        <h2 className="text-text mb-6 text-center text-2xl font-semibold uppercase tracking-wide">Conta Certa</h2>
 
         {/* MENU DINÂMICO */}
         <nav className="flex flex-col gap-1">
@@ -146,7 +145,10 @@ export default function Sidebar() {
               {/* 1️⃣ Se for submenu */}
               {isSubmenu(item) ? (
                 <>
-                  <button onClick={() => toggle(item.name)} className="flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
+                  <button
+                    onClick={() => toggle(item.name)}
+                    className="hover:text-text flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-surface-muted"
+                  >
                     {item.icon}
                     {item.name}
                   </button>
@@ -155,12 +157,12 @@ export default function Sidebar() {
                     <div className="flex animate-fadeIn flex-col gap-1 pl-4">
                       {item.items.map((sub) =>
                         sub.link ? (
-                          <Link key={sub.name} to={sub.link} className="flex items-center gap-2 rounded py-2 hover:bg-sidebar-hover2">
+                          <Link key={sub.name} to={sub.link} className="flex items-center gap-2 rounded py-2 hover:bg-surface-muted">
                             {sub.icon}
                             {sub.name}
                           </Link>
                         ) : (
-                          <button key={sub.name} onClick={sub.action} className="flex items-center gap-2 rounded py-2 hover:bg-sidebar-hover2">
+                          <button key={sub.name} onClick={sub.action} className="flex items-center gap-2 rounded py-2 hover:bg-surface-muted">
                             {sub.icon}
                             {sub.name}
                           </button>
@@ -173,12 +175,15 @@ export default function Sidebar() {
                 /* Se for MenuLink simples */
                 <>
                   {item.link ? (
-                    <Link to={item.link} className="flex items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
+                    <Link to={item.link} className="flex items-center gap-2 rounded-md px-2 py-3 transition hover:bg-surface-muted">
                       {item.icon}
                       {item.name}
                     </Link>
                   ) : (
-                    <button onClick={item.action} className="flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-sidebar-hover hover:text-white">
+                    <button
+                      onClick={item.action}
+                      className="hover:text-text flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-surface-muted"
+                    >
                       {item.icon}
                       {item.name}
                     </button>

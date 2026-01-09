@@ -13,7 +13,7 @@ import { useClients } from '@hooks/useClients';
 interface Props {
   open: boolean;
   client: IClient | null;
-  onClose: (success: boolean, error: string | null) => void;
+  onClose: (success: boolean) => void;
 }
 
 export default function ClientModal({ open, onClose, client }: Props) {
@@ -63,18 +63,18 @@ export default function ClientModal({ open, onClose, client }: Props) {
     const { success, error } = await save(data);
 
     if (error && error.status === 400) {
-      return setFormError(error.message);
+      return setFormError(t(error.code, error.params));
     }
 
     setFormError(null);
-    onClose(success, error?.message ?? null);
+    onClose(success);
   });
 
   return (
-    <ModalBase title={t(client ? 'client.modal.edit-client' : 'client.modal.new-client')} isOpen={open} onClose={() => onClose(false, null)}>
+    <ModalBase title={t(client ? 'client.modal.edit-client' : 'client.modal.new-client')} isOpen={open} onClose={() => onClose(false)}>
       {/* Form */}
-      <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
-        {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-red-400">{formError}</p>}
+      <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2" onSubmit={saveClient}>
+        {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-danger">{formError}</p>}
 
         {/* CPF */}
         <div>
@@ -85,7 +85,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
             render={({ field }) => (
               <InputMask
                 mask="999.999.999-99"
-                className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
                 value={field.value || ''}
                 onChange={field.onChange}
               />
@@ -102,7 +102,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
             render={({ field }) => (
               <InputMask
                 mask="99.999.999/9999-99"
-                className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
                 value={field.value || ''}
                 onChange={field.onChange}
               />
@@ -115,7 +115,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
           <label className="mb-1 block text-sm font-semibold">{t('client.form.name.label')}</label>
           <input
             title={t('client.form.name.tip')}
-            className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
             {...register('name', { required: true })}
           />
         </div>
@@ -126,7 +126,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
           <input
             title={t('client.form.email.tip')}
             type="email"
-            className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
             {...register('email')}
           />
         </div>
@@ -141,7 +141,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
               <InputMask
                 title={t('client.form.phone.tip')}
                 mask="(99) 99999-9999"
-                className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
                 {...field}
               />
             )}
@@ -165,7 +165,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
                 allowNegative={false}
                 value={field.value}
                 onValueChange={(values) => field.onChange(values.floatValue ?? 0)}
-                className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
               />
             )}
           />
@@ -179,14 +179,14 @@ export default function ClientModal({ open, onClose, client }: Props) {
             type="number"
             min={1}
             max={31}
-            className="w-full rounded-lg border border-sidebar-border bg-light-input p-2 text-black outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
             {...register('feeDueDay', { required: true, valueAsNumber: true })}
           />
         </div>
 
         {/* Botão */}
         <div className="col-span-full flex items-center justify-center md:justify-end">
-          <SaveButton onClick={saveClient} />
+          <SaveButton type="submit" />
         </div>
       </form>
     </ModalBase>

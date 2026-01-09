@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { FaTrash } from 'react-icons/fa';
 
 interface Props {
@@ -6,60 +6,70 @@ interface Props {
   onComplete: () => void;
 }
 
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
 export default function DangerHoldButton({ duration, onComplete }: Props) {
   const rafRef = useRef<number | null>(null);
-  const startTimeRef = useRef<number | null>(null);
-
-  const [progress, setProgress] = useState(0);
+  const startRef = useRef(0);
+  const completedRef = useRef(false);
+  const progressRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const animate = (time: number) => {
-    if (!startTimeRef.current) return;
+    const elapsed = time - startRef.current;
+    const t = Math.min(elapsed / duration, 1);
+    const eased = easeOutCubic(t);
 
-    const elapsed = time - startTimeRef.current;
-    
-    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-    const nextProgress = easeOut(elapsed / duration) * 100;
+    if (progressRef.current) {
+      progressRef.current.style.transform = `scaleX(${eased})`;
+    }
 
-    setProgress(nextProgress);
-
-    if (elapsed < duration) {
+    if (t < 1) {
       rafRef.current = requestAnimationFrame(animate);
-    } else {
+    } else if (!completedRef.current) {
+      completedRef.current = true;
       onComplete();
     }
   };
 
-  const startHold = () => {
+  const startHold = (e: React.PointerEvent) => {
     cancelHold();
-    startTimeRef.current = performance.now();
+    completedRef.current = false;
+    startRef.current = performance.now();
+
+    // 🔒 garante todos os eventos
+    e.currentTarget.setPointerCapture(e.pointerId);
+
     rafRef.current = requestAnimationFrame(animate);
   };
 
   const cancelHold = () => {
+    if (completedRef.current) return;
+
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
-    startTimeRef.current = null;
-    setProgress(0);
+
+    if (progressRef.current) {
+      progressRef.current.style.transform = 'scaleX(0)';
+    }
   };
 
   useEffect(() => {
-    return () => cancelHold();
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   return (
     <button
+      ref={buttonRef}
       onPointerDown={startHold}
       onPointerUp={cancelHold}
       onPointerCancel={cancelHold}
       onPointerLeave={cancelHold}
-      className="relative flex h-10 w-10 select-none items-center justify-center overflow-hidden rounded-md bg-red-600 text-white transition hover:bg-red-700"
+      className="relative flex h-10 w-10 select-none items-center justify-center overflow-hidden rounded-md bg-danger text-white hover:opacity-90"
     >
-      <div
-        className="pointer-events-none absolute inset-0 bg-black/20"
-        style={{
-          width: `${progress}%`,
-        }}
-      />
+      <div ref={progressRef} className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-black/30" />
 
       <FaTrash className="relative z-10" />
     </button>

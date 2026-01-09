@@ -18,5 +18,7 @@ export default function HandleFsErrors(error: NodeJS.ErrnoException) {
       return 'Falha ao salvar: parte do caminho não é um diretório válido.';
     case 'EINVAL':
       return 'Falha ao salvar: caminho inválido ou dados inválidos.';
+    default:
+      return 'Erro inesperado ao salvar arquivo!';
   }
 }

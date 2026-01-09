@@ -1,10 +1,36 @@
 {
+  "backup": {
+    "list": {
+      "table": {
+        "created-at": "Data de criação",
+        "size": "Tamanho",
+        "source": "Armazenamento"
+      },
+      "title": "Lista de backups",
+      "tools": {
+        "generate-backup": "Gerar backup",
+        "search-placeholder": "Buscar backup por data."
+      }
+    }
+  },
+  "backups": {
+    "toasts": {
+      "started": {
+        "message": "Backup em andamento, não feche o programa!",
+        "title": "Backup iniciado!"
+      },
+      "success": {
+        "message": "O backup foi gerado com sucesso!",
+        "title": "Backup concluído!"
+      }
+    }
+  },
   "billing": {
     "form": {
       "client": {
         "default-option": "Selecione um cliente",
         "label": "Cliente:",
-        "search-placeholder": "Busque um cliente por nome..."
+        "search-placeholder": "Busque um cliente por nome."
       },
       "fee": {
         "label": "Mensalidade",
@@ -23,7 +49,7 @@
       },
       "status": {
         "label": "Status",
-        "tip": "Status da mensalide (paga ou pendente)."
+        "tip": "Status da mensalidade (paga ou pendente)."
       },
       "title": "Cadastrar faturamentos"
     },
@@ -31,13 +57,13 @@
       "table": {
         "client": "Cliente",
         "due-date": "Data de vencimento",
-        "pait-at": "Data de pagamento",
+        "paid-at": "Data de pagamento",
         "status": "Status",
         "total-value": "Valor total"
       },
-      "title": "Clientes",
+      "title": "Faturamentos",
       "tools": {
-        "new-billing": "Cadastrar faturamento",
+        "new-billing": "Novo faturamento",
         "search-placeholder": "Buscar faturamento por cliente ou status."
       }
     },
@@ -62,7 +88,7 @@
       },
       "fee": {
         "label": "Mensalidade",
-        "tip": "Valor base padrão para da mensalide do cliente."
+        "tip": "Valor base padrão para da mensalidade do cliente."
       },
       "name": {
         "label": "Nome",
@@ -75,7 +101,6 @@
       "title": "Cadastrar clientes"
     },
     "list": {
-      "title": "Clientes",
       "table": {
         "dueDate": "Vencimento mensalidade",
         "email": "E-Mail",
@@ -83,6 +108,7 @@
         "name": "Nome",
         "phone": "Telefone"
       },
+      "title": "Clientes",
       "toolbar": {
         "import-clients": "Importar clientes",
         "new-client": "Cadastrar cliente",
@@ -97,10 +123,10 @@
   "dashboard": {
     "clients-count": "Clientes",
     "general": "Visão geral",
-    "loading-info": "Carregando informações...",
+    "loading-info": "Carregando informações.",
     "month": {
       "total-billed": "Valor arrecadado",
-      "total-expected": "Faturamento experado",
+      "total-expected": "Faturamento esperado",
       "total-pending": "Valor pendente"
     },
     "month-info": "Informações mensais",
@@ -128,11 +154,11 @@
       }
     },
     "list": {
-      "title": "Serviços",
       "table": {
         "name": "Nome",
         "value": "Valor"
       },
+      "title": "Serviços",
       "toolbar": {
         "search-placeholder": "Buscar serviços por nome."
       },
@@ -141,6 +167,55 @@
     "modal": {
       "edit-service": "Alterar serviço",
       "new-service": "Cadastrar serviço"
+    }
+  },
+  "toasts": {
+    "backups": {
+      "fetch-error": {
+        "title": "Erro ao buscar backups!"
+      },
+      "generate-error": {
+        "title": "Erro ao gerar backup!"
+      }
+    },
+    "billings": {
+      "fetch-error": {
+        "title": "Erro ao buscar faturamentos!"
+      },
+      "remove-error": {
+        "title": "Erro ao deletar faturamento!"
+      },
+      "save-error": {
+        "title": "Erro ao salvar faturamento!"
+      }
+    },
+    "clients": {
+      "count-error": {
+        "title": "Erro ao contar clientes!"
+      },
+      "fetch-by-id-error": {
+        "title": "Erro ao buscar cliente!"
+      },
+      "fetch-error": {
+        "title": "Erro ao buscar clientes!"
+      },
+      "remove-error": {
+        "title": "Erro ao deletar cliente!"
+      },
+      "save-error": {
+        "title": "Erro ao salvar cliente!"
+      }
+    },
+    "services": {
+      "fetch-error": {
+        "title": "Erro ao buscar serviços!"
+      },
+      "remove-error": {
+        "title": "Erro ao deletar serviço!"
+      },
+      "save-error": {
+        "title": "Erro ao salvar serviço!"
+      }
     }
   }
 }

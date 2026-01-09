@@ -1,9 +1,11 @@
 export default class AppError {
-    public status: number;
-    public message: string;
+  public code: string;
+  public status: number;
+  public params?: Record<string, string>;
 
-    constructor(status: number, message: string) {
-        this.status = status;
-        this.message = message;
-    }
+  constructor(code: string, status: number, params?: Record<string, string>) {
+    this.code = code;
+    this.status = status;
+    this.params = params;
+  }
 }
