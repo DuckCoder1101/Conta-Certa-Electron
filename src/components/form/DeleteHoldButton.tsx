@@ -8,7 +8,7 @@ interface Props {
 
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
-export default function DangerHoldButton({ duration, onComplete }: Props) {
+export default function DeleteHoldButton({ duration, onComplete }: Props) {
   const rafRef = useRef<number | null>(null);
   const startRef = useRef(0);
   const completedRef = useRef(false);
@@ -67,11 +67,11 @@ export default function DangerHoldButton({ duration, onComplete }: Props) {
       onPointerUp={cancelHold}
       onPointerCancel={cancelHold}
       onPointerLeave={cancelHold}
-      className="relative flex h-10 w-10 select-none items-center justify-center overflow-hidden rounded-md bg-danger text-white hover:opacity-90"
+      className="relative flex h-8 w-8 select-none items-center justify-center overflow-hidden rounded-md bg-danger text-white hover:opacity-90"
     >
       <div ref={progressRef} className="pointer-events-none absolute inset-0 origin-left scale-x-0 bg-black/30" />
 
-      <FaTrash className="relative z-10" />
+      <FaTrash className="relative z-10" size={12} />
     </button>
   );
 }

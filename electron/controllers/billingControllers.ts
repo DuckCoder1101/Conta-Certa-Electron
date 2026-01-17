@@ -9,7 +9,8 @@ import {
   FetchBillingsWithTotalService,
 } from '../services/billingServices';
 
-import { IAppResponseDTO, IBillingCadDTO, IBillingResumeDTO, IBillingWithTotalDTO } from '../@types/dtos';
+import { IAppResponse } from '../@types/appResponse';
+import { IBillingCadDTO, IBillingResumeDTO, IBillingWithTotalDTO } from '../@types/dtos';
 
 import AppError from '../errors/AppError';
 import HandlePrismaErrors from '../errors/HandlePrismaErrors';
@@ -19,7 +20,7 @@ export async function FetchBillingsController(
   offset = 0,
   limit = 30,
   filter = '',
-): Promise<IAppResponseDTO<IBillingWithTotalDTO[]>> {
+): Promise<IAppResponse<IBillingWithTotalDTO[]>> {
   try {
     console.log('Fetching billings...');
     const billings = await FetchBillingsWithTotalService(offset, limit, filter);
@@ -38,7 +39,7 @@ export async function FetchBillingsController(
   }
 }
 
-export async function FetchBillingsResumeController(): Promise<IAppResponseDTO<IBillingResumeDTO[]>> {
+export async function FetchBillingsResumeController(): Promise<IAppResponse<IBillingResumeDTO[]>> {
   try {
     console.log('Fetching billings resumed...');
     const billings = await FetchBillingsResumeService();
@@ -57,7 +58,10 @@ export async function FetchBillingsResumeController(): Promise<IAppResponseDTO<I
   }
 }
 
-export async function SaveBillingController(_event: IpcMainInvokeEvent, billing: IBillingCadDTO): Promise<IAppResponseDTO> {
+export async function SaveBillingController(
+  _event: IpcMainInvokeEvent,
+  billing: IBillingCadDTO,
+): Promise<IAppResponse> {
   try {
     console.log('Saving billing: ' + billing.id);
 
@@ -116,7 +120,7 @@ export async function SaveBillingController(_event: IpcMainInvokeEvent, billing:
   }
 }
 
-export async function DeleteBillingController(_event: IpcMainInvokeEvent, billingId: number): Promise<IAppResponseDTO> {
+export async function DeleteBillingController(_event: IpcMainInvokeEvent, billingId: number): Promise<IAppResponse> {
   try {
     console.log('Deleting billing: ' + billingId);
     await DeleteBillingService(billingId);

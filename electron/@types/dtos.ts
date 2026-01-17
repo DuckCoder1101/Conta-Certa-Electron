@@ -1,7 +1,7 @@
-import { Billing } from "@prisma/client";
+import { Billing } from '@prisma/client';
 
 export interface IClientCadDTO {
-  id: number | null;
+  id?: number;
   cpf: string | null;
   cnpj: string | null;
   name: string;
@@ -12,7 +12,7 @@ export interface IClientCadDTO {
 }
 
 export interface IServiceBillingCadDTO {
-  id: number | null;
+  id?: number;
   serviceOriginId: number;
   name: string;
   value: number;
@@ -20,14 +20,14 @@ export interface IServiceBillingCadDTO {
 }
 
 export interface IServiceCadDTO {
-  id: number | null;
+  id?: number;
   name: string;
   value: number;
 }
 
-export type BillingStatus = "pending" | "paid";
+export type BillingStatus = 'pending' | 'paid';
 export interface IBillingCadDTO {
-  id: number | null;
+  id?: number;
   clientId: number;
   fee: number;
   status: BillingStatus;
@@ -52,15 +52,4 @@ export interface IBillingWithTotalDTO extends Billing {
 export interface IClientResumoDTO {
   id: number;
   name: string;
-}
-
-export interface IAppError {
-  status: number;
-  message: string;
-}
-
-export interface IAppResponseDTO<T = undefined> {
-  success: boolean;
-  data?: T;
-  error?: IAppError;
 }

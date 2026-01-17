@@ -122,24 +122,24 @@ export default function Dashboard() {
 
           {/* CARDS */}
           <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
-            <div className="bg-sidebar-hover2 rounded-md p-6 shadow transition hover:bg-surface-muted">
+            <div className="rounded-md bg-surface p-6 shadow transition hover:bg-surface-muted">
               <p className="text-lg font-semibold text-text-primary">{t('dashboard.clients-count')}</p>
               <p className="mt-2 text-2xl font-bold text-brand">{totalClients}</p>
             </div>
 
-            <div className="bg-sidebar-hover2 rounded-md p-6 shadow transition hover:bg-surface-muted">
+            <div className="rounded-md bg-surface p-6 shadow transition hover:bg-surface-muted">
               <p className="text-lg font-semibold text-text-primary">{t('dashboard.total-paid')}</p>
               <p className="mt-2 text-2xl font-bold text-success">{formatMoney(totalPaid, settings?.language ?? 'pt-BR')}</p>
             </div>
 
-            <div className="bg-sidebar-hover2 rounded-md p-6 shadow transition hover:bg-surface-muted">
+            <div className="rounded-md bg-surface p-6 shadow transition hover:bg-surface-muted">
               <p className="text-lg font-semibold text-text-primary">{t('dashboard.total-pending')}</p>
               <p className="mt-2 text-2xl font-bold text-danger">{formatMoney(totalPending, settings?.language ?? 'pt-BR')}</p>
             </div>
           </div>
 
           {/* GRÁFICO */}
-          <div className="bg-sidebar-hover2 mt-10 min-h-[400px] flex-grow rounded-md p-10 shadow">
+          <div className="mt-10 min-h-[400px] flex-grow rounded-md bg-surface p-10 shadow">
             <h2 className="mb-4 text-xl font-semibold text-text-primary">{t('dashboard.month-info')}</h2>
 
             <div className="h-full w-full p-5">

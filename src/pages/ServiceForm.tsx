@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { IServiceFormDTO } from '@t/dtos';
+import { IServiceFormDTO } from '@t/DTOs';
 import { NumericFormat } from 'react-number-format';
 
 import AppLayout from '@components/AppLayout';
@@ -37,15 +37,15 @@ export default function ServiceForm() {
 
   return (
     <AppLayout>
-      <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">{t('services.form.title')}</h2>
+      <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">{t('service.form.title')}</h2>
       <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6" onSubmit={saveService}>
         {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-danger">{formError}</p>}
 
         {/* Nome */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">{t('services.form.name.label')}</label>
+          <label className="mb-1 block text-sm font-semibold">{t('service.form.name.label')}</label>
           <input
-            title={t('services.form.name.tip')}
+            title={t('service.form.name.tip')}
             className="w-full rounded-lg border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
             {...register('name', { required: true })}
           />
@@ -53,13 +53,13 @@ export default function ServiceForm() {
 
         {/* Valor */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">{t('services.form.value.label')}</label>
+          <label className="mb-1 block text-sm font-semibold">{t('service.form.value.label')}</label>
           <Controller
             name="value"
             control={control}
             render={({ field }) => (
               <NumericFormat
-                title={t('services.form.value.tip')}
+                title={t('service.form.value.tip')}
                 thousandSeparator="."
                 decimalSeparator=","
                 prefix={t('global.money-prefix')}

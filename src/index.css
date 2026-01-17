@@ -5,10 +5,10 @@
 :root {
   /* Backgrounds */
   --bg: #e4e4e8;
-  --surface: #ffffff;
+  --surface: #ebebef;
   --surface-muted: #f9fafb;
   --input: #ffffff;
-  --sidebar: #dfe1e3;
+  --sidebar: #dadbdd;
 
   /* Text */
   --text-primary: #111827;
@@ -33,7 +33,7 @@
 [data-theme='dark'] {
   /* Backgrounds */
   --bg: #1f2227;
-  --surface: #2b3035;
+  --surface: #23262b;
   --surface-muted: #3a3d42;
   --input: #2b3035;
   --sidebar: #1f2227;

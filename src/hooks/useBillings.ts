@@ -1,24 +1,25 @@
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { IAppResponseDTO, IBilling, IBillingFormDTO, IBillingResumeDTO, IServiceBillingFormDTO } from '@t/dtos';
+import { IAppResponse } from '@t/AppResponse';
+import { IBilling } from '@t/Schemas';
+import { IBillingFormDTO, IBillingResumeDTO, IServiceBillingFormDTO } from '@t/DTOs';
 
 import { AlertsContext } from '@contexts/AlertsContext';
 
 import { useServices } from '@hooks/useServices';
 
 export function useBillings() {
-  const { addToast } = useContext(AlertsContext);
+  const { showToast } = useContext(AlertsContext);
   const { t } = useTranslation();
 
   const { fetch: fetchServices } = useServices();
 
   const fetch = async (offset: number, limit: number, filter: string) => {
-    const data = (await window.api.invoke('fetch-billings', offset, limit, filter)) as IAppResponseDTO<IBilling[]>;
+    const data = (await window.api.invoke('fetch-billings', offset, limit, filter)) as IAppResponse<IBilling[]>;
 
     if (data.error && data.error.status != 400) {
-      addToast({
-        id: 'fetch-billings-error',
+      showToast({
         type: 'error',
         title: t('toasts.billings.fetch-error.title'),
         message: t(`errors:${data.error.code}`, data.error.params),
@@ -29,11 +30,10 @@ export function useBillings() {
   };
 
   const fetchResumes = async () => {
-    const data = (await window.api.invoke('fetch-billings-resume')) as IAppResponseDTO<IBillingResumeDTO[]>;
+    const data = (await window.api.invoke('fetch-billings-resume')) as IAppResponse<IBillingResumeDTO[]>;
 
     if (data.error && data.error.status != 400) {
-      addToast({
-        id: 'fetch-billings-resumes-error',
+      showToast({
         type: 'error',
         title: t('toasts.billings.fetch-error.title'),
         message: t(`errors:${data.error.code}`, data.error.params),
@@ -44,10 +44,9 @@ export function useBillings() {
   };
 
   const save = async (billing: IBillingFormDTO) => {
-    const data = (await window.api.invoke('save-billing', billing)) as IAppResponseDTO<null>;
+    const data = (await window.api.invoke('save-billing', billing)) as IAppResponse<null>;
     if (data.error && data.error.status != 400) {
-      addToast({
-        id: 'save-billing-error',
+      showToast({
         type: 'error',
         title: t('toasts.billings.save-error.title'),
         message: t(`errors:${data.error.code}`, data.error.params),
@@ -58,10 +57,9 @@ export function useBillings() {
   };
 
   const remove = async (id: number) => {
-    const data = (await window.api.invoke('delete-billing', id)) as IAppResponseDTO<null>;
+    const data = (await window.api.invoke('delete-billing', id)) as IAppResponse<null>;
     if (data.error && data.error.status != 400) {
-      addToast({
-        id: 'remove-billing-error',
+      showToast({
         type: 'error',
         title: t('toasts.billings.remove-error.title'),
         message: t(`errors:${data.error.code}`, data.error.params),
@@ -84,7 +82,6 @@ export function useBillings() {
         const exists = result.some((x) => x.serviceOriginId === s.id);
         if (!exists) {
           result.push({
-            id: null,
             name: s.name,
             value: s.value,
             quantity: 0,
@@ -95,7 +92,6 @@ export function useBillings() {
     } else {
       data.forEach((s) =>
         result.push({
-          id: null,
           name: s.name,
           value: s.value,
           quantity: 0,

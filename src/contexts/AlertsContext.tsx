@@ -1,11 +1,11 @@
 import { createContext } from 'react';
 
-import { ToastInfo } from '@t/toastInfo';
+import { IToastInfo } from '@t/Toast';
 
 export interface AlertsContextType {
-  addToast: (info: ToastInfo) => void;
+  showToast: (info: IToastInfo) => void;
 }
 
 export const AlertsContext = createContext<AlertsContextType>({
-  addToast: () => {},
+  showToast: () => {},
 });

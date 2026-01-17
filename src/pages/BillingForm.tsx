@@ -3,7 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
 import { useTranslation } from 'react-i18next';
 
-import { IBillingFormDTO, IClientResumeDTO, IServiceBillingFormDTO } from '@t/dtos';
+import { IBillingFormDTO, IClientResumeDTO, IServiceBillingFormDTO } from '@t/DTOs';
 
 import { ServicesSelector } from '@components/form/ServicesSelector';
 
@@ -21,7 +21,6 @@ export default function BillingForm() {
 
   const { register, handleSubmit, reset, setValue, watch, control } = useForm<IBillingFormDTO>({
     values: {
-      id: null,
       clientId: -1,
       fee: 1,
       status: 'pending',
@@ -139,8 +138,8 @@ export default function BillingForm() {
             className="mt-2 max-h-48 w-full rounded-xl border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
           >
             <option value={-1}>{t('billing.form.client.default-option')}</option>
-            {filteredClients.map(({ id, name }, i) => (
-              <option key={i} value={id}>
+            {filteredClients.map(({ id, name }) => (
+              <option key={id} value={id}>
                 {name}
               </option>
             ))}

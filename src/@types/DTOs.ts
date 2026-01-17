@@ -1,3 +1,5 @@
+import { BillingStatus } from '@t/Schemas';
+
 export interface IClientFormDTO {
   cpf: string | null;
   cnpj: string | null;
@@ -8,15 +10,15 @@ export interface IClientFormDTO {
   feeDueDay: number;
 }
 
-export interface IClient {
+export interface IClientTableDTO {
   id: number;
-  cpf: string | null;
-  cnpj: string | null;
   name: string;
-  email: string | null;
+  cpf: string;
+  cnpj: string;
+  email: string;
   phone: string;
-  fee: number;
-  feeDueDay: number;
+  fee: string;
+  feeDueDay: string;
 }
 
 export interface IClientResumeDTO {
@@ -24,22 +26,10 @@ export interface IClientResumeDTO {
   name: string;
 }
 
-export interface IAppError {
-  code: string;
-  status: number;
-  params?: Record<string, string>;
-}
-
-export interface IAppResponseDTO<T = undefined> {
-  success: boolean;
-  data?: T;
-  error?: IAppError;
-}
-
-export interface IService {
+export interface IServiceTableDTO {
   id: number;
   name: string;
-  value: number;
+  value: string;
 }
 
 export interface IServiceFormDTO {
@@ -59,25 +49,12 @@ export interface IServiceBilling {
 }
 
 export interface IServiceBillingFormDTO {
-  id: number | null;
+  id?: number;
   name: string;
   value: number;
   quantity: number;
 
   serviceOriginId: number | null;
-}
-
-export type BillingStatus = 'pending' | 'paid';
-export interface IBilling {
-  id: number;
-  fee: number;
-  totalFee: number;
-  status: BillingStatus;
-  dueDate: string;
-  paidAt: string | null;
-
-  client: IClientResumeDTO | null;
-  serviceBillings: IServiceBilling[];
 }
 
 export interface IBillingResumeDTO {
@@ -89,7 +66,7 @@ export interface IBillingResumeDTO {
 }
 
 export interface IBillingFormDTO {
-  id: number | null;
+  id?: number;
   fee: number;
   status: BillingStatus;
   dueDate: string;
@@ -97,4 +74,20 @@ export interface IBillingFormDTO {
 
   clientId: number | null;
   serviceBillings: IServiceBillingFormDTO[];
+}
+
+export interface IBillingTableDTO {
+  id: number;
+  totalFee: string;
+  status: string;
+  dueDate: string;
+  paidAt: string;
+  client: string;
+}
+
+export interface IBackupMetaTableDTO {
+  id: string;
+  createdAt: string;
+  size: string;
+  source: string;
 }

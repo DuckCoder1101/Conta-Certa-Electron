@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+
 import { MdClose, MdError } from 'react-icons/md';
 import { IoInformationCircle, IoCheckmarkCircle, IoWarning } from 'react-icons/io5';
 
@@ -11,9 +12,29 @@ interface Props {
 }
 
 export default function Toast({ id, title, message, type, onClose }: Props) {
+  const barRef = useRef<HTMLDivElement>(null);
+  const startRef = useRef<number>(performance.now());
+
   useEffect(() => {
-    const timeout = setTimeout(() => onClose(id), 5000);
-    return () => clearTimeout(timeout);
+    let rafId: number;
+
+    const tick = (now: number) => {
+      const elapsedTime = now - startRef.current;
+      const progress = Math.max(0, 1 - elapsedTime / 5000);
+
+      if (barRef.current) {
+        barRef.current.style.transform = `scaleX(${progress})`;
+      }
+
+      if (elapsedTime >= 5000) {
+        onClose(id);
+      } else {
+        rafId = requestAnimationFrame(tick);
+      }
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
   }, [id, onClose]);
 
   return (
@@ -39,7 +60,7 @@ export default function Toast({ id, title, message, type, onClose }: Props) {
 
       {/* Progress */}
       <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-surface-muted">
-        <div className="animate-toast-progress h-full bg-brand" />
+        <div ref={barRef} className="h-full origin-left bg-brand will-change-transform" style={{ transform: 'scaleX(1)' }} />
       </div>
     </div>
   );

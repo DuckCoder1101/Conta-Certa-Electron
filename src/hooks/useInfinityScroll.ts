@@ -1,72 +1,88 @@
 import React, { useState, useCallback, useRef } from 'react';
 
-export function useInfiniteScroll<T>(fetchFn: (offset: number) => Promise<T[]>, pageSize: number = 30) {
+type Direction = 'up' | 'down';
+
+export function useInfiniteScroll<T>(fetchFn: (offset: number, limit: number) => Promise<T[]>, pageSize: number = 30) {
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
 
-  // GUARDAMOS o offset atual em um ref
   const offsetRef = useRef(0);
+  const hasMoreRef = useRef(true);
+  const loadingRef = useRef(false);
+
+  const lastScrollTopRef = useRef(0);
 
   const load = useCallback(
-    async (offset?: number) => {
-      if (loading) return;
+    async (direction: Direction) => {
+      if (loadingRef.current || !hasMoreRef.current) return;
 
+      loadingRef.current = true;
       setLoading(true);
 
-      // Se offset não foi passado → mantém o atual
-      const realOffset = offset ?? offsetRef.current;
+      const offset = direction === 'down' ? offsetRef.current : Math.max(offsetRef.current - pageSize, 0);
 
-      // Se offset = 0 → reset
-      if (offset === 0) {
-        setItems([]);
-        offsetRef.current = 0;
-      }
+      const data = await fetchFn(offset, pageSize);
+      setItems(data);
 
-      const data = await fetchFn(realOffset);
-
-      if (offset === 0) {
-        // reset total
-        setItems(data);
-      } else if (offset === undefined) {
-        // load sem mudar offset
-        // substitui os itens, mantendo o mesmo offset
-        setItems(data);
+      if (direction === 'down') {
+        offsetRef.current += data.length;
       } else {
-        // append normal
-        setItems((prev) => [...prev, ...data]);
+        offsetRef.current -= data.length;
       }
 
-      // Atualiza hasMore
-      setHasMore(data.length >= pageSize);
+      hasMoreRef.current = data.length === pageSize;
 
-      // Avança offset somente se foi carregamento incremental
-      if (offset !== undefined && offset !== 0) {
-        offsetRef.current = realOffset + data.length;
-      }
-
+      loadingRef.current = false;
       setLoading(false);
     },
-    [fetchFn, loading, pageSize],
+    [fetchFn, pageSize],
   );
 
   const handleScroll = useCallback(
-    async (e: React.UIEvent<HTMLTableElement>) => {
-      const { scrollHeight, scrollTop, clientHeight } = e.currentTarget;
-      const nearBottom = scrollHeight - scrollTop <= clientHeight * 1.5;
+    async (e: React.UIEvent) => {
+      const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
 
-      if (nearBottom && !loading && hasMore) {
-        await load(offsetRef.current); // load incremental
+      const scrollingDown = scrollTop > lastScrollTopRef.current;
+      lastScrollTopRef.current = scrollTop;
+
+      const nearBottom = scrollHeight - scrollTop <= clientHeight * 1.5;
+      const nearTop = scrollTop <= clientHeight * 0.5;
+
+      if (scrollingDown && nearBottom) {
+        await load('down');
+      }
+
+      if (!scrollingDown && nearTop && offsetRef.current > pageSize) {
+        await load('up');
       }
     },
-    [load, loading, hasMore],
+    [load, pageSize],
   );
+
+  const reset = useCallback(() => {
+    setItems([]);
+    offsetRef.current = 0;
+    hasMoreRef.current = true;
+  }, []);
+
+  const reload = useCallback(async () => {
+    if (loadingRef.current) return;
+
+    loadingRef.current = true;
+    setLoading(true);
+
+    const data = await fetchFn(offsetRef.current - pageSize, pageSize);
+    setItems(data);
+
+    loadingRef.current = false;
+    setLoading(false);
+  }, [fetchFn, pageSize]);
 
   return {
     items,
     loading,
-    load,
-    hasMore,
     handleScroll,
+    reset,
+    reload,
   };
 }

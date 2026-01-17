@@ -5,22 +5,27 @@ import { IoMdSearch, IoMdFolderOpen } from 'react-icons/io';
 import { MdBackup } from 'react-icons/md';
 
 import { useBackups } from '@hooks/useBackups';
+import { useInfiniteScroll } from '@hooks/useInfinityScroll';
 
 import { AlertsContext } from '@contexts/AlertsContext';
 
 import AppLayout from '@components/AppLayout';
-import { useInfiniteScroll } from '@hooks/useInfinityScroll';
+import DeleteHoldButton from '@components/form/DeleteHoldButton';
 
-import { BackupMeta } from '@t/backup';
+import { IBackupMeta } from '@t/Schemas';
+
 import { formatDate } from '@utils/formatters';
-import DangerHoldButton from '@components/form/DangerHoldButton';
+import AppTable from '@components/AppTable';
+
+import { IColumn } from '@t/Table';
+import { IBackupMetaTableDTO } from '@t/DTOs';
 
 export default function BackupsList() {
   // Traduções
   const { t } = useTranslation();
 
   // Toasts
-  const { addToast } = useContext(AlertsContext);
+  const { showToast } = useContext(AlertsContext);
 
   // Backups hook
   const { fetch, generate } = useBackups();
@@ -29,16 +34,21 @@ export default function BackupsList() {
   const [filter, setFilter] = useState<string>('');
 
   // Infinite scroll
-  const { items: backups, load, handleScroll } = useInfiniteScroll<BackupMeta>((offset) => fetch(offset, 30, filter).then((r) => r.data ?? []));
+  const {
+    items: backups,
+    loading,
+    handleScroll,
+    reload,
+  } = useInfiniteScroll<IBackupMeta>((offset) => fetch(offset, 30, filter).then((r) => r.data ?? []));
 
-  // Load
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
+  const columns: IColumn<IBackupMetaTableDTO>[] = [
+    { key: 'createdAt', header: t('backup.list.table.created-at'), width: '130' },
+    { key: 'source', header: t('backup.list.table.source'), width: '130' },
+    { key: 'size', header: t('backup.list.table.size'), width: '130' },
+  ];
 
-  // Rows
-  const rows = useMemo(() => {
+  // Linhas da tabela
+  const rows: IBackupMetaTableDTO[] = useMemo(() => {
     return backups.map((b) => ({
       id: b.id,
       size: `${b.size} MB`,
@@ -47,43 +57,47 @@ export default function BackupsList() {
     }));
   }, [backups, t]);
 
-  // New backup
+  // Gerar backup
   const generateBackup = async () => {
     // Aviso de geração iniciada
-    addToast({
+    showToast({
       title: t('backups.toasts.started.title'),
       message: t('backups.toasts.started.message'),
       type: 'info',
-      id: 'backup-generation-started',
     });
 
     const { success } = await generate();
 
     if (success) {
-      await load();
+      await reload();
 
       // Aviso de sucesso
-      addToast({
+      showToast({
         title: t('backups.toasts.success.title'),
         type: 'success',
         message: t('backups.toasts.success.message'),
-        id: 'backup-generation-success',
       });
     }
   };
 
-  // Delete backup
+  // Deletar backup
   const deleteBackup = async (backupId: string) => {};
 
-  // Open backups folder
+  // Abre a pasta de backups
   const openBackupFolder = (backupId?: string) => {};
+
+  // Busca os backups a primeira vez, e quando muda o filtro
+  useEffect(() => {
+    (async () => await reload())();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter]);
 
   return (
     <AppLayout>
       <h2 className="mt-5 text-center text-2xl font-semibold">{t('backup.list.title')}</h2>
 
       {/* BARRA DE BUSCA */}
-      <form className="bg-sidebar-hover my-5 block items-center gap-3 rounded-md border border-border p-2 shadow-sm hover:bg-surface-muted md:flex">
+      <form className="my-5 block items-center gap-3 rounded-md border border-border bg-surface p-2 shadow-sm hover:bg-surface-muted md:flex">
         <div className="flex flex-grow items-center gap-2">
           <span className="flex h-10 w-10 items-center justify-center text-lg text-text-primary">
             <IoMdSearch />
@@ -101,54 +115,31 @@ export default function BackupsList() {
           type="button"
           onClick={() => generateBackup()}
           title={t('backup.list.tools.generate-backup')}
-          className="bg-sidebar-hover2 ms-auto flex h-10 w-10 items-center justify-center rounded-md text-text-primary transition hover:bg-surface-muted"
+          className="ms-auto flex h-10 w-10 items-center justify-center rounded-md bg-surface-muted text-text-primary transition hover:bg-surface"
         >
           <MdBackup />
         </button>
       </form>
 
-      <div className="w-full overflow-x-auto">
-        <table onScroll={handleScroll} className="w-full min-w-[900px] table-fixed border-collapse text-sm shadow-sm">
-          <thead>
-            <tr className="bg-sidebar-hover2 border-b text-left text-text-primary">
-              <th className="px-4 py-3 font-semibold">{t('backup.list.table.created-at')}</th>
-              <th className="px-4 py-3 font-semibold">{t('backup.list.table.size')}</th>
-              <th className="px-4 py-3 font-semibold">{t('backup.list.table.source')}</th>
-              <th className="px-4 py-3 text-center font-semibold">{t('global.table.actions.title')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((b) => (
-              <tr key={b.id} className="odd:bg-sidebar-bg eveSn:bg-sidebar-hover border-b text-text-primary hover:bg-surface-muted">
-                <td className="max-w-[180px] truncate whitespace-nowrap px-4 py-3" title={b.createdAt}>
-                  {b.createdAt}
-                </td>
-
-                <td className="max-w-[100px] truncate whitespace-nowrap px-4 py-3" title={b.size}>
-                  {b.size}
-                </td>
-
-                <td className="max-w-[120px] truncate whitespace-nowrap px-4 py-3" title={b.source}>
-                  {b.source}
-                </td>
-
-                <td className="px-4 py-3 text-center">
-                  <div className="flex justify-center gap-2">
-                    <button
-                      onClick={() => openBackupFolder(b.id)}
-                      className="flex h-9 w-9 items-center justify-center rounded-md bg-brand text-text-primary transition hover:opacity-90"
-                    >
-                      <IoMdFolderOpen />
-                    </button>
-
-                    <DangerHoldButton onComplete={() => deleteBackup(b.id)} duration={600} />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* TABELA */}
+      <AppTable
+        onScroll={handleScroll}
+        columns={columns}
+        data={rows}
+        loading={loading}
+        emptyMessage={t('backup.list.table.empty')}
+        actions={(backup) => (
+          <>
+            <button
+              onClick={() => openBackupFolder(backup.id)}
+              className="flex h-9 w-9 items-center justify-center rounded-md bg-brand text-text-primary transition hover:opacity-90"
+            >
+              <IoMdFolderOpen />
+            </button>
+            <DeleteHoldButton onComplete={() => deleteBackup(backup.id)} duration={600} />
+          </>
+        )}
+      />
     </AppLayout>
   );
 }

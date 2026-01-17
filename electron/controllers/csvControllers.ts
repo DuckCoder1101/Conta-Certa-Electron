@@ -1,10 +1,10 @@
 import { BrowserWindow, dialog } from 'electron';
-import { IAppResponseDTO } from '../@types/dtos';
+import { IAppResponse } from '../@types/appResponse';
 
 import AppError from '../errors/AppError';
 import { ImportClientsCSVService } from '../services/csvServices';
 
-export async function ImportClientsCSVController(): Promise<IAppResponseDTO> {
+export async function ImportClientsCSVController(): Promise<IAppResponse> {
   try {
     const mainWindow = BrowserWindow.getAllWindows()[0];
     const result = await dialog.showOpenDialog(mainWindow, {
