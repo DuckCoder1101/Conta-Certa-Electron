@@ -71,7 +71,7 @@ export function useInfiniteScroll<T>(fetchFn: (offset: number, limit: number) =>
     loadingRef.current = true;
     setLoading(true);
 
-    const data = await fetchFn(offsetRef.current - pageSize, pageSize);
+    const data = await fetchFn(offsetRef.current, pageSize);
     setItems(data);
 
     loadingRef.current = false;

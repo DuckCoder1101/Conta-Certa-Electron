@@ -6,10 +6,9 @@ import {
   FetchClientByIdController,
   FetchClientsController,
   FetchClientsResumeController,
+  ImportClientsController,
   SaveClientController,
 } from './controllers/clientControllers';
-
-import { ImportClientsCSVController } from './controllers/csvControllers';
 
 import {
   DeleteBillingController,
@@ -18,9 +17,14 @@ import {
   SaveBillingController,
 } from './controllers/billingControllers';
 
-import { DeleteServiceController, FetchServicesController, SaveServiceController } from './controllers/serviceControllers';
+import {
+  DeleteServiceController,
+  FetchServicesController,
+  SaveServiceController,
+} from './controllers/serviceControllers';
 import { GetSettingsController, SetSettingsController } from './controllers/settingsControllers';
 import { FetchBackups, GenerateBackup } from './controllers/backupControllers';
+import { StartTaskController } from './controllers/backgroundTasksController';
 
 export default async function HandleIPCEvents() {
   // --- CLIENTES ---
@@ -30,9 +34,7 @@ export default async function HandleIPCEvents() {
   ipcMain.handle('delete-client', DeleteClientController);
   ipcMain.handle('fetch-clients-resume', FetchClientsResumeController);
   ipcMain.handle('fetch-client-by-id', FetchClientByIdController);
-
-  // --- CSV ---
-  ipcMain.on('import-clients-csv', ImportClientsCSVController);
+  ipcMain.on('import-clients-csv', ImportClientsController);
 
   // --- FATURAMENTOS ---
   ipcMain.handle('fetch-billings', FetchBillingsController);
@@ -52,4 +54,7 @@ export default async function HandleIPCEvents() {
   // --- BACKUPS ---
   ipcMain.handle('generate-backup', GenerateBackup);
   ipcMain.handle('fetch-backups', FetchBackups);
+
+  // TAREFAS DE SEGUNDO PLANO
+  ipcMain.on('task:start', StartTaskController)
 }

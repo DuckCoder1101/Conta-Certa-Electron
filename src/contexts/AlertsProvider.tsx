@@ -1,27 +1,55 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { nanoid } from 'nanoid';
 
 import Toast from '@components/Toast';
 
-import { AlertsContext } from './AlertsContext';
+import { AlertsContext } from '@contexts/AlertsContext';
+
 import { IToastInfo } from '@t/Toast';
 
 export function AlertsProvider({ children }: { children: React.ReactNode }) {
-  const [toasts, setToasts] = useState<IToastInfo[]>([]);
+  const [toasts, setToasts] = useState<Map<string, IToastInfo>>(() => new Map());
 
-  const showToast = (newToast: IToastInfo) => {
-    setToasts((t) => [...t, { id: nanoid(), ...newToast }]);
-  };
+  // Cria um novo toast
+  const showToast = useCallback((info: IToastInfo) => {
+    const toastId = nanoid();
 
-  const removeToast = (id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id != id));
-  };
+    setToasts((prev) => {
+      const next = new Map(prev);
+      next.set(toastId, info);
+      return next;
+    });
+
+    return toastId;
+  }, []);
+
+  // Atualiza o progresso de um toast
+  const updateToastProgress = useCallback((toastId: string, progress: number) => {
+    setToasts((prev) => {
+      const toast = prev.get(toastId);
+      if (!toast || toast.type !== 'progress') return prev;
+
+      const next = new Map(prev);
+      next.set(toastId, { ...toast, progress });
+
+      return next;
+    });
+  }, []);
+
+  // Remove um toast
+  const removeToast = useCallback((toastId: string) => {
+    setToasts((prev) => {
+      const next = new Map(prev);
+      next.delete(toastId);
+      return next;
+    });
+  }, []);
 
   return (
-    <AlertsContext.Provider value={{ showToast }}>
+    <AlertsContext.Provider value={{ showToast, updateToastProgress, removeToast }}>
       <div className="fixed bottom-2 right-2 z-50 flex flex-col gap-2">
-        {toasts.map(({ id, type, title, message }) => (
-          <Toast key={id} id={id!} type={type} title={title} message={message} onClose={removeToast} />
+        {[...toasts.values()].map((info) => (
+          <Toast key={info.id} info={info} onClose={removeToast} />
         ))}
       </div>
       {children}

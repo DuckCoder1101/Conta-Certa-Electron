@@ -2,219 +2,219 @@
   "backup": {
     "list": {
       "table": {
-        "created-at": "backup.list.table.created-at",
-        "size": "backup.list.table.size",
-        "source": "backup.list.table.source"
+        "created-at": "Data de criação",
+        "size": "Tamanho",
+        "source": "Armazenamento"
       },
-      "title": "backup.list.title",
+      "title": "Lista de backups",
       "tools": {
-        "generate-backup": "backup.list.tools.generate-backup",
-        "search-placeholder": "backup.list.tools.search-placeholder"
+        "generate-backup": "Gerar backup",
+        "search-placeholder": "Buscar backup por data."
       }
     }
   },
   "backups": {
     "toasts": {
       "started": {
-        "message": "backups.toasts.started.message",
-        "title": "backups.toasts.started.title"
+        "message": "Backup em andamento, não feche o programa!",
+        "title": "Backup iniciado!"
       },
       "success": {
-        "message": "backups.toasts.success.message",
-        "title": "backups.toasts.success.title"
+        "message": "O backup foi gerado com sucesso!",
+        "title": "Backup concluído!"
       }
     }
   },
   "billing": {
     "form": {
       "client": {
-        "default-option": "billing.form.client.default-option",
-        "label": "billing.form.client.label",
-        "search-placeholder": "billing.form.client.search-placeholder"
+        "default-option": "Selecione um cliente",
+        "label": "Cliente:",
+        "search-placeholder": "Busque um cliente por nome."
       },
       "fee": {
-        "label": "billing.form.fee.label",
-        "tip": "billing.form.fee.tip"
+        "label": "Mensalidade",
+        "tip": "Valor base da mensalidade do cliente. Não inclue os serviços extras."
       },
       "feeDueDate": {
-        "label": "billing.form.feeDueDate.label",
-        "tip": "billing.form.feeDueDate.tip"
+        "label": "Data de vencimento",
+        "tip": "Data limite para o pagamento da mensalidade."
       },
       "paidAt": {
-        "label": "billing.form.paidAt.label",
-        "tip": "billing.form.paidAt.tip"
+        "label": "Data de pagamento",
+        "tip": "Data do pagamento da mensalidade, caso tenha sido paga."
       },
       "services": {
-        "label": "billing.form.services.label"
+        "label": "Serviços extras"
       },
       "status": {
-        "label": "billing.form.status.label",
-        "tip": "billing.form.status.tip"
+        "label": "Status",
+        "tip": "Status da mensalidade (paga ou pendente)."
       },
-      "title": "billing.form.title"
+      "title": "Cadastrar faturamentos"
     },
     "list": {
       "table": {
-        "client": "billing.list.table.client",
-        "due-date": "billing.list.table.due-date",
-        "paid-at": "billing.list.table.paid-at",
-        "status": "billing.list.table.status",
-        "total-value": "billing.list.table.total-value"
+        "client": "Cliente",
+        "due-date": "Data de vencimento",
+        "paid-at": "Data de pagamento",
+        "status": "Status",
+        "total-value": "Valor total"
       },
-      "title": "billing.list.title",
+      "title": "Faturamentos",
       "tools": {
-        "new-billing": "billing.list.tools.new-billing",
-        "search-placeholder": "billing.list.tools.search-placeholder"
+        "new-billing": "Novo faturamento",
+        "search-placeholder": "Buscar faturamento por cliente ou status."
       }
     },
     "modal": {
-      "edit-billing": "billing.modal.edit-billing",
-      "new-billing": "billing.modal.new-billing"
+      "edit-billing": "Alterar faturamento",
+      "new-billing": "Cadastrar faturamento"
     },
     "status": {
-      "paid": "billing.status.paid",
-      "pending": "billing.status.pending"
+      "paid": "Pago",
+      "pending": "Pendente"
     }
   },
   "client": {
     "form": {
       "dueDate": {
-        "label": "client.form.dueDate.label",
-        "tip": "client.form.dueDate.tip"
+        "label": "Data de vencimento padrão",
+        "tip": "A data padrão para o vencimento da mensalidade do cliente."
       },
       "email": {
-        "label": "client.form.email.label",
-        "tip": "client.form.email.tip"
+        "label": "Email:",
+        "tip": "Email de contato do cliente"
       },
       "fee": {
-        "label": "client.form.fee.label",
-        "tip": "client.form.fee.tip"
+        "label": "Mensalidade",
+        "tip": "Valor base padrão para da mensalidade do cliente."
       },
       "name": {
-        "label": "client.form.name.label",
-        "tip": "client.form.name.tip"
+        "label": "Nome",
+        "tip": "Nome do cliente"
       },
       "phone": {
-        "label": "client.form.phone.label",
-        "tip": "client.form.phone.tip"
+        "label": "Telefone",
+        "tip": "Telefone de contato do cliente."
       },
-      "title": "client.form.title"
+      "title": "Cadastrar clientes"
     },
     "list": {
       "table": {
-        "dueDate": "client.list.table.dueDate",
-        "email": "client.list.table.email",
-        "fee": "client.list.table.fee",
-        "name": "client.list.table.name",
-        "phone": "client.list.table.phone"
+        "dueDate": "Vencimento mensalidade",
+        "email": "E-Mail",
+        "fee": "Mensalidade",
+        "name": "Nome",
+        "phone": "Telefone"
       },
-      "title": "client.list.title",
+      "title": "Clientes",
       "toolbar": {
-        "import-clients": "client.list.toolbar.import-clients",
-        "new-client": "client.list.toolbar.new-client",
-        "search-placeholder": "client.list.toolbar.search-placeholder"
+        "import-clients": "Importar clientes",
+        "new-client": "Cadastrar cliente",
+        "search-placeholder": "Buscar cliente por nome."
       }
     },
     "modal": {
-      "edit-client": "client.modal.edit-client",
-      "new-client": "client.modal.new-client"
+      "edit-client": "Alterar cliente",
+      "new-client": "Cadastrar cliente"
     }
   },
   "dashboard": {
-    "clients-count": "dashboard.clients-count",
-    "general": "dashboard.general",
-    "loading-info": "dashboard.loading-info",
+    "clients-count": "Clientes",
+    "general": "Visão geral",
+    "loading-info": "Carregando informações.",
     "month": {
-      "total-billed": "dashboard.month.total-billed",
-      "total-expected": "dashboard.month.total-expected",
-      "total-pending": "dashboard.month.total-pending"
+      "total-billed": "Valor arrecadado",
+      "total-expected": "Faturamento esperado",
+      "total-pending": "Valor pendente"
     },
-    "month-info": "dashboard.month-info",
-    "total-paid": "dashboard.total-paid",
-    "total-pending": "dashboard.total-pending"
+    "month-info": "Informações mensais",
+    "total-paid": "Total recebido",
+    "total-pending": "Total pendente"
   },
   "global": {
-    "money-prefix": "global.money-prefix",
+    "money-prefix": "R$",
     "table": {
       "actions": {
-        "title": "global.table.actions.title.title"
+        "title": "Ações"
       }
     }
   },
-  "services": {
+  "service": {
     "form": {
       "name": {
-        "label": "services.form.name.label",
-        "tip": "services.form.name.tip"
+        "label": "Nome",
+        "tip": "Nome do serviço"
       },
-      "title": "services.form.title",
+      "title": "Cadastrar serviços",
       "value": {
-        "label": "services.form.value.label",
-        "tip": "services.form.value.tip"
+        "label": "Valor",
+        "tip": "Valor do serviço."
       }
     },
     "list": {
       "table": {
-        "name": "services.list.table.name",
-        "value": "services.list.table.value"
+        "name": "Nome",
+        "value": "Valor"
       },
-      "title": "services.list.title",
+      "title": "Serviços",
       "toolbar": {
-        "search-placeholder": "services.list.toolbar.search-placeholder"
+        "search-placeholder": "Buscar serviços por nome."
       },
-      "toolbar-new-service": "services.list.toolbar-new-service"
+      "toolbar-new-service": "Cadastrar serviço"
     },
     "modal": {
-      "edit-service": "services.modal.edit-service",
-      "new-service": "services.modal.new-service"
+      "edit-service": "Alterar serviço",
+      "new-service": "Cadastrar serviço"
     }
   },
   "toasts": {
     "backups": {
       "fetch-error": {
-        "title": "toasts.backups.fetch-error.title"
+        "title": "Erro ao buscar backups!"
       },
       "generate-error": {
-        "title": "toasts.backups.generate-error.title"
+        "title": "Erro ao gerar backup!"
       }
     },
     "billings": {
       "fetch-error": {
-        "title": "toasts.billings.fetch-error.title"
+        "title": "Erro ao buscar faturamentos!"
       },
       "remove-error": {
-        "title": "toasts.billings.remove-error.title"
+        "title": "Erro ao deletar faturamento!"
       },
       "save-error": {
-        "title": "toasts.billings.save-error.title"
+        "title": "Erro ao salvar faturamento!"
       }
     },
     "clients": {
       "count-error": {
-        "title": "toasts.clients.count-error.title"
+        "title": "Erro ao contar clientes!"
       },
       "fetch-by-id-error": {
-        "title": "toasts.clients.fetch-by-id-error.title"
+        "title": "Erro ao buscar cliente!"
       },
       "fetch-error": {
-        "title": "toasts.clients.fetch-error.title"
+        "title": "Erro ao buscar clientes!"
       },
       "remove-error": {
-        "title": "toasts.clients.remove-error.title"
+        "title": "Erro ao deletar cliente!"
       },
       "save-error": {
-        "title": "toasts.clients.save-error.title"
+        "title": "Erro ao salvar cliente!"
       }
     },
     "services": {
       "fetch-error": {
-        "title": "toasts.services.fetch-error.title"
+        "title": "Erro ao buscar serviços!"
       },
       "remove-error": {
-        "title": "toasts.services.remove-error.title"
+        "title": "Erro ao deletar serviço!"
       },
       "save-error": {
-        "title": "toasts.services.save-error.title"
+        "title": "Erro ao salvar serviço!"
       }
     }
   }

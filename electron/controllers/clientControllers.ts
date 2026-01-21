@@ -1,4 +1,4 @@
-import { type IpcMainInvokeEvent } from 'electron';
+import { BrowserWindow, dialog, type IpcMainInvokeEvent } from 'electron';
 import { Client, Prisma } from '@prisma/client';
 
 import { IAppResponse } from '../@types/appResponse';
@@ -11,6 +11,7 @@ import DeleteClientService, {
   FetchClientByIdService,
   FetchClientsResumeService,
   FetchClientsService,
+  ImportClientsService,
 } from '../services/clientServices';
 
 import AppError from '../errors/AppError';
@@ -185,6 +186,46 @@ export async function DeleteClientController(_event: IpcMainInvokeEvent, clientI
     };
   } catch (err) {
     console.error(err);
+
+    return {
+      success: false,
+      error: new AppError('UNEXPECTED_ERROR', 500),
+    };
+  }
+}
+
+export async function ImportClientsController(): Promise<IAppResponse<number>> {
+  try {
+    const mainWindow = BrowserWindow.getAllWindows()[0];
+    const result = await dialog.showOpenDialog(mainWindow, {
+      title: 'Importar clientes',
+      message: 'Selecione o arquivo CSV contendo os dados dos clientes.',
+      properties: ['openFile'],
+      filters: [
+        {
+          name: 'CSV',
+          extensions: ['csv'],
+        },
+      ],
+    });
+
+    if (result.canceled || result.filePaths.length === 0) {
+      throw new AppError('CSV.IMPORT_CANCELLED', 400);
+    }
+
+    const errors = await ImportClientsService(result.filePaths[0]);
+
+    return {
+      success: true,
+      data: errors,
+    };
+  } catch (err) {
+    if (err instanceof AppError) {
+      return {
+        success: false,
+        error: err,
+      };
+    }
 
     return {
       success: false,
