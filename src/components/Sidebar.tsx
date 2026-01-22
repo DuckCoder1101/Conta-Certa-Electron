@@ -2,13 +2,20 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // Ícones
-import { FaGear, FaHouseChimney, FaList, FaPlus } from 'react-icons/fa6';
-import { GrLogin } from 'react-icons/gr';
-import { HiDocumentReport } from 'react-icons/hi';
-import { IoIosBriefcase, IoIosStats } from 'react-icons/io';
-import { IoPeople } from 'react-icons/io5';
-import { MdAttachMoney, MdOutlineAttachMoney } from 'react-icons/md';
-import { LuDatabaseBackup } from 'react-icons/lu';
+import {
+  BsArrowCounterclockwise,
+  BsBoxArrowInRight,
+  BsBriefcase,
+  BsCurrencyDollar,
+  BsFileBarGraph,
+  BsGear,
+  BsGraphUp,
+  BsHouseDoor,
+  BsListUl,
+  BsPeople,
+  BsPersonPlus,
+  BsPlus,
+} from 'react-icons/bs';
 
 import SettingsModal from '@modals/SettingsModal';
 
@@ -45,85 +52,85 @@ export default function Sidebar() {
     {
       name: 'Início',
       link: '/',
-      icon: <FaHouseChimney />,
+      icon: <BsHouseDoor />,
     },
     {
       name: 'Clientes',
-      icon: <IoPeople />,
+      icon: <BsPeople />,
       items: [
         {
           name: 'Listar clientes',
           link: '/clients/list',
-          icon: <FaList />,
+          icon: <BsListUl />,
         },
         {
           name: 'Cadastrar cliente',
           link: '/clients/new',
-          icon: <FaPlus />,
+          icon: <BsPersonPlus />,
         },
       ],
     },
     {
       name: 'Faturamentos',
-      icon: <MdOutlineAttachMoney />,
+      icon: <BsCurrencyDollar />,
       items: [
         {
           name: 'Listar faturamentos',
           link: '/billings/list',
-          icon: <FaList />,
+          icon: <BsListUl />,
         },
         {
           name: 'Cadastrar faturamentos',
           link: '/billings/new',
-          icon: <FaPlus />,
+          icon: <BsPlus />,
         },
       ],
     },
     {
       name: 'Serviços',
-      icon: <IoIosBriefcase />,
+      icon: <BsBriefcase />,
       items: [
         {
           name: 'Listar serviços',
           link: '/services/list',
-          icon: <FaList />,
+          icon: <BsListUl />,
         },
         {
           name: 'Cadastrar serviços',
           link: '/services/new',
-          icon: <FaPlus />,
+          icon: <BsPlus />,
         },
       ],
     },
     {
       name: 'Relatórios',
-      icon: <HiDocumentReport />,
+      icon: <BsFileBarGraph />,
       items: [
         {
           name: 'Relatorios financeiros',
           link: '/reports/financial',
-          icon: <MdAttachMoney />,
+          icon: <BsCurrencyDollar />,
         },
         {
           name: 'Estatísticas gerais',
           link: '/reports/general',
-          icon: <IoIosStats />,
+          icon: <BsGraphUp />,
         },
       ],
     },
     {
       name: 'Backups',
       link: '/backups',
-      icon: <LuDatabaseBackup />,
+      icon: <BsArrowCounterclockwise />,
     },
     {
       name: 'Configurações',
-      icon: <FaGear />,
+      icon: <BsGear />,
       action: () => setIsConfigModalOpen(true),
     },
     {
       name: 'Login',
-      icon: <GrLogin />,
+      icon: <BsBoxArrowInRight />,
       action: () => {},
     },
   ];
@@ -139,31 +146,31 @@ export default function Sidebar() {
         <h2 className="text-text mb-6 text-center text-2xl font-semibold uppercase tracking-wide">Conta Certa</h2>
 
         {/* MENU DINÂMICO */}
-        <nav className="flex flex-col gap-1">
+        <nav className="flex flex-col gap-1 font-normal">
           {sidebarOptions.map((item) => (
             <div key={item.name}>
-              {/* 1️⃣ Se for submenu */}
+              {/* Se for submenu */}
               {isSubmenu(item) ? (
                 <>
                   <button
                     onClick={() => toggle(item.name)}
-                    className="hover:text-text flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-surface-muted"
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-surface-muted"
                   >
-                    {item.icon}
+                    <span className="text-[18px]">{item.icon}</span>
                     {item.name}
                   </button>
 
                   {open === item.name && (
-                    <div className="flex animate-fadeIn flex-col gap-1 pl-4">
+                    <div className="flex animate-fadeIn flex-col gap-1 pl-5">
                       {item.items.map((sub) =>
                         sub.link ? (
                           <Link key={sub.name} to={sub.link} className="flex items-center gap-2 rounded py-2 hover:bg-surface-muted">
-                            {sub.icon}
+                            <span className="text-[18px]">{sub.icon}</span>
                             {sub.name}
                           </Link>
                         ) : (
                           <button key={sub.name} onClick={sub.action} className="flex items-center gap-2 rounded py-2 hover:bg-surface-muted">
-                            {sub.icon}
+                            <span className="text-[18px]">{sub.icon}</span>
                             {sub.name}
                           </button>
                         ),
@@ -176,15 +183,12 @@ export default function Sidebar() {
                 <>
                   {item.link ? (
                     <Link to={item.link} className="flex items-center gap-2 rounded-md px-2 py-3 transition hover:bg-surface-muted">
-                      {item.icon}
+                      <span className="text-[18px]">{item.icon}</span>
                       {item.name}
                     </Link>
                   ) : (
-                    <button
-                      onClick={item.action}
-                      className="hover:text-text flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-surface-muted"
-                    >
-                      {item.icon}
+                    <button onClick={item.action} className="flex w-full items-center gap-2 rounded-md px-2 py-3 transition hover:bg-surface-muted">
+                      <span className="text-[18px]">{item.icon}</span>
                       {item.name}
                     </button>
                   )}

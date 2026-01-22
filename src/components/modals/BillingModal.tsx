@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import ModalBase from '@components/modals/ModalBase';
 import SaveButton from '../form/SaveButton';
-import { ServicesSelector } from '../form/ServicesSelector';
 
-import { IBilling, IBillingFormDTO, IClientResumeDTO, IServiceBillingFormDTO } from '@t/dtos';
+import { IBilling } from '@t/Schemas';
+import { IBillingFormDTO, IClientResumeDTO } from '@t/DTOs';
 
 import { useClients } from '@hooks/useClients';
 import { useBillings } from '@hooks/useBillings';
@@ -23,11 +23,10 @@ export default function BillingModal({ open, billing, onClose }: Props) {
   const { t } = useTranslation();
 
   const { fetchResumes, fetchById } = useClients();
-  const { prepareServices, save } = useBillings();
+  const { save } = useBillings();
 
   const { register, handleSubmit, reset, setValue, watch, control } = useForm<IBillingFormDTO>({
     values: {
-      id: null,
       clientId: -1,
       fee: 1,
       status: 'pending',
@@ -37,14 +36,18 @@ export default function BillingModal({ open, billing, onClose }: Props) {
     },
   });
 
+  // Erro de formulário, lista de clientes e barra de busca
   const [formError, setFormError] = useState<string | null>(null);
   const [clients, setClients] = useState<IClientResumeDTO[]>([]);
   const [search, setSearch] = useState('');
+
+  // Status e ID de cliente
   const status = watch('status');
   const clientId = watch('clientId');
-  const [servicesBilling, setServicesBilling] = useState<IServiceBillingFormDTO[]>([]);
+
   const filteredClients = clients.filter((c) => c.name.toLowerCase().startsWith(search.toLowerCase()));
 
+  // Busca o cliente quando o ID selecionado muda
   useEffect(() => {
     (async () => {
       const now = new Date();
@@ -67,8 +70,9 @@ export default function BillingModal({ open, billing, onClose }: Props) {
         setValue('dueDate', now.toISOString().split('T')[0]);
       }
     })();
-  }, [clientId, setValue, fetchById]);
+  }, [clientId, setValue, fetchById, t]);
 
+  // Preenche ou limpa os campos do formulário
   useEffect(() => {
     if (!open) return;
     (async () => {
@@ -78,7 +82,6 @@ export default function BillingModal({ open, billing, onClose }: Props) {
       if (!data) return;
 
       setClients(data);
-      setServicesBilling(await prepareServices(billing));
 
       if (billing) {
         reset({
@@ -91,7 +94,6 @@ export default function BillingModal({ open, billing, onClose }: Props) {
         });
       } else {
         reset({
-          id: null,
           clientId: -1,
           fee: 1,
           status: 'pending',
@@ -103,20 +105,21 @@ export default function BillingModal({ open, billing, onClose }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
+  // Limpa a data de pagamento para status pendente
   useEffect(() => {
     if (status === 'pending') {
       setValue('paidAt', null);
     }
   }, [status, setValue]);
 
+  // Salva o faturamento
   const saveBilling = handleSubmit(async (data) => {
     if (clientId === null || clientId === -1) return;
 
     data.clientId = clientId;
-    data.serviceBillings = servicesBilling;
+    const { error } = await save(data);
 
-    const { success, error } = await save(data);
-    if (!success && error) {
+    if (error && error.status != 500) {
       return setFormError(t(error.code, error.params));
     }
 
@@ -124,16 +127,12 @@ export default function BillingModal({ open, billing, onClose }: Props) {
     onClose(true, null);
   });
 
-  const updateQuantity = (index: number, qty: number) => {
-    setServicesBilling((prev) => {
-      const copy = [...prev];
-      copy[index].quantity = qty;
-      return copy;
-    });
-  };
-
   return (
-    <ModalBase title={t(billing ? 'billing.modal.edit-billing' : 'billing.modal.new-billing')} isOpen={open} onClose={() => onClose(false, null)}>
+    <ModalBase
+      title={t(billing ? 'billing.modal.edit-billing' : 'billing.modal.new-billing')}
+      isOpen={open}
+      onClose={() => onClose(false, null)}
+    >
       {formError && <p className="mb-3 text-center text-danger">{formError}</p>}
 
       <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2" onSubmit={saveBilling}>
@@ -157,8 +156,8 @@ export default function BillingModal({ open, billing, onClose }: Props) {
             className="mt-2 max-h-48 w-full rounded-xl border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
           >
             <option value={-1}>{t('billing.form.client.default-option')}</option>
-            {filteredClients.map(({ id, name }, i) => (
-              <option key={i} value={id}>
+            {filteredClients.map(({ id, name }) => (
+              <option key={id} value={id}>
                 {name}
               </option>
             ))}
@@ -227,7 +226,6 @@ export default function BillingModal({ open, billing, onClose }: Props) {
         {/* SERVIÇOS */}
         <div className="col-span-full">
           <label className="mb-1 block">{t('billing.form.services.label')}</label>
-          <ServicesSelector services={servicesBilling} onChange={updateQuantity} className="md:max-h-[250px]" />
         </div>
 
         <div className="col-span-full flex items-center justify-center">

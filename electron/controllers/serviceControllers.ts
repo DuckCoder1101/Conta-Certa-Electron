@@ -1,14 +1,25 @@
 import { IpcMainInvokeEvent } from 'electron';
 import { Prisma, Service } from '@prisma/client';
 
-import { IAppResponseDTO, IServiceCadDTO } from '../@types/dtos';
+import { IAppResponse } from '../@types/appResponse';
+import { IServiceCadDTO } from '../@types/dtos';
 
 import AppError from '../errors/AppError';
 import HandlePrismaErrors from '../errors/HandlePrismaErrors';
 
-import { CreateServiceService, DeleteServiceService, EditServiceService, FetchServicesService } from '../services/serviceServices';
+import {
+  CreateServiceService,
+  DeleteServiceService,
+  EditServiceService,
+  FetchServicesService,
+} from '../services/serviceServices';
 
-export async function FetchServicesController(_event: IpcMainInvokeEvent, offset = 0, limit = 30, filter = ''): Promise<IAppResponseDTO<Service[]>> {
+export async function FetchServicesController(
+  _event: IpcMainInvokeEvent,
+  offset = 0,
+  limit = 30,
+  filter = '',
+): Promise<IAppResponse<Service[]>> {
   try {
     console.log('Fetching services...');
     const services = await FetchServicesService(offset, limit, filter);
@@ -27,7 +38,10 @@ export async function FetchServicesController(_event: IpcMainInvokeEvent, offset
   }
 }
 
-export async function SaveServiceController(_event: IpcMainInvokeEvent, service: IServiceCadDTO): Promise<IAppResponseDTO> {
+export async function SaveServiceController(
+  _event: IpcMainInvokeEvent,
+  service: IServiceCadDTO,
+): Promise<IAppResponse> {
   try {
     console.log('Saving service: ' + service.name);
 
@@ -73,15 +87,12 @@ export async function SaveServiceController(_event: IpcMainInvokeEvent, service:
     console.error(err);
     return {
       success: false,
-      error: {
-        status: 500,
-        message: 'Erro desconhecido ao salvar o serviço. Entre em contato com o suporte!',
-      },
+      error: new AppError('UNEXPECTED_ERROR', 500),
     };
   }
 }
 
-export async function DeleteServiceController(_event: IpcMainInvokeEvent, serviceId: number): Promise<IAppResponseDTO> {
+export async function DeleteServiceController(_event: IpcMainInvokeEvent, serviceId: number): Promise<IAppResponse> {
   try {
     console.log('Deleting service: ' + serviceId);
     await DeleteServiceService(serviceId);

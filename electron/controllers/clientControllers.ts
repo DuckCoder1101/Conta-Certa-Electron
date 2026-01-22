@@ -1,7 +1,8 @@
-import { type IpcMainInvokeEvent } from 'electron';
+import { BrowserWindow, dialog, type IpcMainInvokeEvent } from 'electron';
 import { Client, Prisma } from '@prisma/client';
 
-import { IAppResponseDTO, IClientCadDTO, IClientResumoDTO } from '../@types/dtos';
+import { IAppResponse } from '../@types/appResponse';
+import { IClientCadDTO, IClientResumoDTO } from '../@types/dtos';
 
 import DeleteClientService, {
   CountClientsService,
@@ -10,12 +11,18 @@ import DeleteClientService, {
   FetchClientByIdService,
   FetchClientsResumeService,
   FetchClientsService,
+  ImportClientsService,
 } from '../services/clientServices';
 
 import AppError from '../errors/AppError';
 import HandlePrismaErrors from '../errors/HandlePrismaErrors';
 
-export async function FetchClientsController(_event: IpcMainInvokeEvent, offset = 0, limit = 30, filter = ''): Promise<IAppResponseDTO<Client[]>> {
+export async function FetchClientsController(
+  _event: IpcMainInvokeEvent,
+  offset = 0,
+  limit = 30,
+  filter = '',
+): Promise<IAppResponse<Client[]>> {
   try {
     console.log('Fetching clients.');
     const clients = await FetchClientsService(offset, limit, filter);
@@ -34,7 +41,7 @@ export async function FetchClientsController(_event: IpcMainInvokeEvent, offset 
   }
 }
 
-export async function FetchClientsResumeController(): Promise<IAppResponseDTO<IClientResumoDTO[]>> {
+export async function FetchClientsResumeController(): Promise<IAppResponse<IClientResumoDTO[]>> {
   try {
     console.log('Fetching all clients resume...');
     const clients = await FetchClientsResumeService();
@@ -53,7 +60,10 @@ export async function FetchClientsResumeController(): Promise<IAppResponseDTO<IC
   }
 }
 
-export async function FetchClientByIdController(_event: IpcMainInvokeEvent, clientId: number): Promise<IAppResponseDTO<Client>> {
+export async function FetchClientByIdController(
+  _event: IpcMainInvokeEvent,
+  clientId: number,
+): Promise<IAppResponse<Client>> {
   try {
     console.log('Fetching client: ' + clientId);
     const client = await FetchClientByIdService(clientId);
@@ -82,7 +92,7 @@ export async function FetchClientByIdController(_event: IpcMainInvokeEvent, clie
   }
 }
 
-export async function CountClientsController(): Promise<IAppResponseDTO<number>> {
+export async function CountClientsController(): Promise<IAppResponse<number>> {
   try {
     console.log('Counting clients.');
     const count = await CountClientsService();
@@ -101,7 +111,7 @@ export async function CountClientsController(): Promise<IAppResponseDTO<number>>
   }
 }
 
-export async function SaveClientController(_event: IpcMainInvokeEvent, client: IClientCadDTO): Promise<IAppResponseDTO> {
+export async function SaveClientController(_event: IpcMainInvokeEvent, client: IClientCadDTO): Promise<IAppResponse> {
   try {
     console.log('Saving client: ' + client.name);
 
@@ -161,15 +171,12 @@ export async function SaveClientController(_event: IpcMainInvokeEvent, client: I
     console.error(err);
     return {
       success: false,
-      error: {
-        status: 500,
-        message: 'Erro desconhecido ao salvar o cliente!',
-      },
+      error: new AppError('UNEXPECTED_ERROR', 500),
     };
   }
 }
 
-export async function DeleteClientController(_event: IpcMainInvokeEvent, clientId: number): Promise<IAppResponseDTO> {
+export async function DeleteClientController(_event: IpcMainInvokeEvent, clientId: number): Promise<IAppResponse> {
   try {
     console.log('Deleting client: ' + clientId);
     await DeleteClientService(clientId);
@@ -179,6 +186,46 @@ export async function DeleteClientController(_event: IpcMainInvokeEvent, clientI
     };
   } catch (err) {
     console.error(err);
+
+    return {
+      success: false,
+      error: new AppError('UNEXPECTED_ERROR', 500),
+    };
+  }
+}
+
+export async function ImportClientsController(): Promise<IAppResponse<number>> {
+  try {
+    const mainWindow = BrowserWindow.getAllWindows()[0];
+    const result = await dialog.showOpenDialog(mainWindow, {
+      title: 'Importar clientes',
+      message: 'Selecione o arquivo CSV contendo os dados dos clientes.',
+      properties: ['openFile'],
+      filters: [
+        {
+          name: 'CSV',
+          extensions: ['csv'],
+        },
+      ],
+    });
+
+    if (result.canceled || result.filePaths.length === 0) {
+      throw new AppError('CSV.IMPORT_CANCELLED', 400);
+    }
+
+    const errors = await ImportClientsService(result.filePaths[0]);
+
+    return {
+      success: true,
+      data: errors,
+    };
+  } catch (err) {
+    if (err instanceof AppError) {
+      return {
+        success: false,
+        error: err,
+      };
+    }
 
     return {
       success: false,

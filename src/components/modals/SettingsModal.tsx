@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import ModalBase from '@modals/ModalBase';
 import SaveButton from '../form/SaveButton';
 
-import ISettings from '@t/settings';
+import ISettings from '@t/Schemas';
 import { SettingsContext } from '@contexts/SettingsContext';
 
 interface Props {

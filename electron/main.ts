@@ -17,12 +17,14 @@ async function createMainWindow() {
     width: 800,
     height: 600,
     opacity: 0,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, './preload.js'),
     },
   });
 
   await HandleIPCEvents();
+  mainWindow.webContents.openDevTools();
 
   if (VITE_DEV_SERVER_URL) {
     await mainWindow.loadURL(VITE_DEV_SERVER_URL);

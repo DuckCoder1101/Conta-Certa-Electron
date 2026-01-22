@@ -141,7 +141,7 @@
       }
     }
   },
-  "services": {
+  "service": {
     "form": {
       "name": {
         "label": "Nome",

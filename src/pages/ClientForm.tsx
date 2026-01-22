@@ -3,7 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import InputMask from 'react-input-mask';
 import { NumericFormat } from 'react-number-format';
 
-import { IClientFormDTO } from '@t/dtos';
+import { IClientFormDTO } from '@t/DTOs';
 
 import { useClients } from '@hooks/useClients';
 
@@ -34,8 +34,8 @@ export default function ClientForm() {
     data.name = data.name.trim();
     data.email = data.email?.trim() || null;
 
-    data.cpf = data.cpf?.match(/\d/g)?.join('') || null;
-    data.cnpj = data.cnpj?.match(/\d/g)?.join('') || null;
+    data.cpf = data.cpf?.match(/\d/g)?.join('') ?? null;
+    data.cnpj = data.cnpj?.match(/\d/g)?.join('') ?? null;
     data.phone = data.phone?.match(/\d/g)?.join('') ?? '';
 
     const { success, error } = await save(data);

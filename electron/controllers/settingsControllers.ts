@@ -1,12 +1,12 @@
 import { GetSettingsService, SetSettingsService } from '../services/settingsServices';
 
-import { IAppResponseDTO } from '../@types/dtos';
+import { IAppResponse } from '../@types/appResponse';
 import ISettings from '../@types/settings';
 
 import AppError from '../errors/AppError';
 import { IpcMainInvokeEvent } from 'electron';
 
-export async function SetSettingsController(_event: IpcMainInvokeEvent, settings: ISettings): Promise<IAppResponseDTO> {
+export async function SetSettingsController(_event: IpcMainInvokeEvent, settings: ISettings): Promise<IAppResponse> {
   try {
     console.log('Saving settings...');
 
@@ -32,7 +32,7 @@ export async function SetSettingsController(_event: IpcMainInvokeEvent, settings
   }
 }
 
-export async function GetSettingsController(): Promise<IAppResponseDTO<ISettings>> {
+export async function GetSettingsController(): Promise<IAppResponse<ISettings>> {
   try {
     console.log('Getting settings...');
     const settings = await GetSettingsService();

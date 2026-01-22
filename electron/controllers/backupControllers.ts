@@ -1,10 +1,11 @@
-import { IAppResponseDTO } from '../@types/dtos';
-
 import { FetchLocalBackups, SaveLocalBackupFile } from '../services/backupServices';
-import AppError from '../errors/AppError';
+
+import { IAppResponse } from '../@types/appResponse';
 import { BackupMeta } from '../@types/backup';
 
-export async function GenerateBackup(): Promise<IAppResponseDTO> {
+import AppError from '../errors/AppError';
+
+export async function GenerateBackup(): Promise<IAppResponse> {
   try {
     // Implementar os backups em nuvem
     await SaveLocalBackupFile();
@@ -28,7 +29,7 @@ export async function GenerateBackup(): Promise<IAppResponseDTO> {
   }
 }
 
-export async function FetchBackups(): Promise<IAppResponseDTO<BackupMeta[]>> {
+export async function FetchBackups(): Promise<IAppResponse<BackupMeta[]>> {
   try {
     const local = await FetchLocalBackups();
 

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { IClient, IClientFormDTO } from '@t/dtos';
 import { NumericFormat } from 'react-number-format';
 import { useTranslation } from 'react-i18next';
 import InputMask from 'react-input-mask';
@@ -9,6 +8,9 @@ import ModalBase from '@/components/modals/ModalBase';
 import SaveButton from '../form/SaveButton';
 
 import { useClients } from '@hooks/useClients';
+
+import { IClient } from '@t/Schemas';
+import { IClientFormDTO } from '@t/DTOs';
 
 interface Props {
   open: boolean;
@@ -71,7 +73,11 @@ export default function ClientModal({ open, onClose, client }: Props) {
   });
 
   return (
-    <ModalBase title={t(client ? 'client.modal.edit-client' : 'client.modal.new-client')} isOpen={open} onClose={() => onClose(false)}>
+    <ModalBase
+      title={t(client ? 'client.modal.edit-client' : 'client.modal.new-client')}
+      isOpen={open}
+      onClose={() => onClose(false)}
+    >
       {/* Form */}
       <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2" onSubmit={saveClient}>
         {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-danger">{formError}</p>}

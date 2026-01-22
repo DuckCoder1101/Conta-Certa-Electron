@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { IService, IServiceFormDTO } from '@t/dtos';
 import { NumericFormat } from 'react-number-format';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +7,9 @@ import ModalBase from '@modals/ModalBase';
 import SaveButton from '../form/SaveButton';
 
 import { useServices } from '@hooks/useServices';
+
+import { IService } from '@t/Schemas';
+import { IServiceFormDTO } from '@t/DTOs';
 
 interface Props {
   open: boolean;
@@ -53,16 +55,20 @@ export default function ServiceModal({ open, onClose, client: service }: Props) 
   });
 
   return (
-    <ModalBase title={t(service ? 'services.modal.edit-service' : 'services.modal.new-service')} isOpen={open} onClose={() => onClose(false)}>
+    <ModalBase
+      title={t(service ? 'service.modal.edit-service' : 'service.modal.new-service')}
+      isOpen={open}
+      onClose={() => onClose(false)}
+    >
       {/* Form */}
       <form className="mx-auto grid max-h-full grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2" onSubmit={saveService}>
         {formError && <p className="col-span-full mb-2 text-center text-sm font-semibold text-danger">{formError}</p>}
 
         {/* Nome */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">{t('services.form.name.label')}</label>
+          <label className="mb-1 block text-sm font-semibold">{t('service.form.name.label')}</label>
           <input
-            title={t('services.form.name.tip')}
+            title={t('service.form.name.tip')}
             className="w-full rounded-lg border border-border bg-input p-2 text-text-primary outline-none focus:ring-2 focus:ring-brand"
             {...register('name', { required: true })}
           />
@@ -70,13 +76,13 @@ export default function ServiceModal({ open, onClose, client: service }: Props) 
 
         {/* Valor */}
         <div>
-          <label className="mb-1 block text-sm font-semibold">{t('services.form.value.label')}</label>
+          <label className="mb-1 block text-sm font-semibold">{t('service.form.value.label')}</label>
           <Controller
             name="value"
             control={control}
             render={({ field }) => (
               <NumericFormat
-                title={t('services.form.value.tip')}
+                title={t('service.form.value.tip')}
                 thousandSeparator="."
                 decimalSeparator=","
                 prefix={t('global.money-prefix')}

@@ -1,12 +1,12 @@
 // import { Prisma, PrismaClient } from '@prisma/client';
 // import makeYearMonth from './yearMonth';
-// import { IAppResponseDTO } from '../@types/dtos';
+// import { IAppResponse } from '../@types/appResponse';
 // import HandlePrismaErrors from '../errors/HandlePrismaErrors';
 // import AppError from '../errors/AppError';
 //
 // const prisma = new PrismaClient();
 //
-// export default async function RunAutoBilling(): Promise<IAppResponseDTO<number>> {
+// export default async function RunAutoBilling(): Promise<IAppResponse<number>> {
 //   const now = new Date();
 //   const yearMonth = makeYearMonth(now);
 //
