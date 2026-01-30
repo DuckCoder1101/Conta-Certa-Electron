@@ -85,7 +85,7 @@ export default function ServiceModal({ open, onClose, client: service }: Props) 
                 title={t('service.form.value.tip')}
                 thousandSeparator="."
                 decimalSeparator=","
-                prefix={t('global.money-prefix')}
+                prefix={t('global.currency-prefix')}
                 decimalScale={2}
                 fixedDecimalScale={true}
                 allowNegative={false}

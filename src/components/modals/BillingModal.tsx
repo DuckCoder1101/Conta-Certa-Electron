@@ -11,6 +11,7 @@ import { IBillingFormDTO, IClientResumeDTO } from '@t/DTOs';
 
 import { useClients } from '@hooks/useClients';
 import { useBillings } from '@hooks/useBillings';
+import { toISODate } from '@utils/Formatters';
 
 interface Props {
   open: boolean;
@@ -31,7 +32,7 @@ export default function BillingModal({ open, billing, onClose }: Props) {
       fee: 1,
       status: 'pending',
       paidAt: null,
-      dueDate: new Date().toISOString().split('T')[0],
+      dueDate: toISODate(new Date()),
       serviceBillings: [],
     },
   });
@@ -50,8 +51,6 @@ export default function BillingModal({ open, billing, onClose }: Props) {
   // Busca o cliente quando o ID selecionado muda
   useEffect(() => {
     (async () => {
-      const now = new Date();
-
       if (clientId != null && clientId != -1) {
         const { data, error } = await fetchById(clientId);
 
@@ -61,13 +60,11 @@ export default function BillingModal({ open, billing, onClose }: Props) {
 
         if (!data || Array.isArray(data)) return;
 
-        now.setDate(data.feeDueDay);
+        const dueDate = new Date();
+        dueDate.setDate(data.feeDueDay);
 
         setValue('fee', data.fee);
-        setValue('dueDate', now.toISOString().split('T')[0]);
-      } else {
-        setValue('fee', 0);
-        setValue('dueDate', now.toISOString().split('T')[0]);
+        setValue('dueDate', toISODate(dueDate));
       }
     })();
   }, [clientId, setValue, fetchById, t]);
@@ -98,7 +95,7 @@ export default function BillingModal({ open, billing, onClose }: Props) {
           fee: 1,
           status: 'pending',
           paidAt: null,
-          dueDate: new Date().toISOString().split('T')[0],
+          dueDate: toISODate(new Date()),
         });
       }
     })();
@@ -174,7 +171,7 @@ export default function BillingModal({ open, billing, onClose }: Props) {
               <NumericFormat
                 thousandSeparator="."
                 decimalSeparator=","
-                prefix={t('global.money-prefix')}
+                prefix={t('global.currency-prefix')}
                 title={t('billing.form.fee.tip')}
                 decimalScale={2}
                 fixedDecimalScale={true}

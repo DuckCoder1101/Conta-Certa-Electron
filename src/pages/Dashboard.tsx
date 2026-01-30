@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { useBillings } from '@hooks/useBillings';
 import { useClients } from '@hooks/useClients';
@@ -115,7 +115,11 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
-      {isLoading && <h2 className="col-span-full mt-6 text-center text-2xl font-semibold md:mt-12">{t('dashboard.loading-info')}</h2>}
+      {isLoading && (
+        <h2 className="col-span-full mt-6 text-center text-2xl font-semibold md:mt-12">
+          {t('dashboard.loading-info')}
+        </h2>
+      )}
       {!isLoading && (
         <div className="flex h-full flex-col">
           <h2 className="col-span-full mb-6 text-center text-2xl font-semibold">{t('dashboard.general')}</h2>
@@ -129,12 +133,18 @@ export default function Dashboard() {
 
             <div className="rounded-md bg-surface p-6 shadow transition hover:bg-surface-muted">
               <p className="text-lg font-semibold text-text-primary">{t('dashboard.total-paid')}</p>
-              <p className="mt-2 text-2xl font-bold text-success">{formatMoney(totalPaid, settings?.language ?? 'pt-BR')}</p>
+              <p className="mt-2 text-2xl font-bold text-success">
+                {formatMoney(totalPaid, settings?.language ?? 'pt-BR', t('global.currency'))}
+              </p>
             </div>
 
             <div className="rounded-md bg-surface p-6 shadow transition hover:bg-surface-muted">
-              <p className="text-lg font-semibold text-text-primary">{t('dashboard.total-pending')}</p>
-              <p className="mt-2 text-2xl font-bold text-danger">{formatMoney(totalPending, settings?.language ?? 'pt-BR')}</p>
+              <p className="text-lg font-semibold text-text-primary">
+                {t('dashboard.total-pending', t('global.currency'))}
+              </p>
+              <p className="mt-2 text-2xl font-bold text-danger">
+                {formatMoney(totalPending, settings?.language ?? 'pt-BR', t('global.currency'))}
+              </p>
             </div>
           </div>
 
@@ -156,7 +166,7 @@ export default function Dashboard() {
                         pending: t('dashboard.month.total-pending'),
                       };
                       const displayName = nameMap[name] ?? name;
-                      return [formatMoney(value, settings?.language ?? 'pt-BR'), displayName];
+                      return [formatMoney(value, settings?.language ?? 'pt-BR', t('global.currency')), displayName];
                     }}
                     labelFormatter={(label) => `Mês: ${label}`}
                     isAnimationActive={false}

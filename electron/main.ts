@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 
-import HandleIPCEvents from './events';
+import HandleIPCEvents from './Events';
 
 process.env.APP_ROOT = path.join(__dirname, '..');
 
@@ -42,9 +42,10 @@ app.on('window-all-closed', () => {
   }
 });
 
-app.on('activate', () => {
+app.on('activate', async () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createMainWindow();
+    await createMainWindow();
+    console.log('Created main window!');
   }
 });
 

@@ -21,6 +21,7 @@
   "SETTINGS.INVALID_SETTINGS": "Configurações inválidas!",
 
   "BACKUP.INVALID_OR_CORRUPTED_BACKUP": "Backup inválido ou corrompido!",
+  "BACKUP.INVALID_FILE_PATH": "Caminho do backup invalido ou inexistente!",
 
   "DB.ALREADY_EXISTS": "Já existe um registro com essas informações!",
   "DB.UNKNOWN_ERROR": "Erro desconhecido no bando de dados!"

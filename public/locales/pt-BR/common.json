@@ -11,18 +11,10 @@
         "generate-backup": "Gerar backup",
         "search-placeholder": "Buscar backup por data."
       }
-    }
-  },
-  "backups": {
-    "toasts": {
-      "started": {
-        "message": "Backup em andamento, não feche o programa!",
-        "title": "Backup iniciado!"
-      },
-      "success": {
-        "message": "O backup foi gerado com sucesso!",
-        "title": "Backup concluído!"
-      }
+    },
+    "source": {
+      "local": "Local",
+      "remote": "Remoto"
     }
   },
   "billing": {
@@ -134,7 +126,8 @@
     "total-pending": "Total pendente"
   },
   "global": {
-    "money-prefix": "R$",
+    "currency": "BRL",
+    "currency-prefix": "R$",
     "table": {
       "actions": {
         "title": "Ações"
@@ -215,6 +208,21 @@
       },
       "save-error": {
         "title": "Erro ao salvar serviço!"
+      }
+    },
+    "tasks": {
+      "SAVE_LOCAL_BACKUP": {
+        "started": {
+          "title": "Backup em andamento!",
+          "message": "Não feche o programa nem desligue o computador!"
+        },
+        "success": {
+          "title": "Backup concluído!",
+          "message": "O backup foi concluído com sucesso!"
+        },
+        "error": {
+          "title": "Backup falhado!"
+        }
       }
     }
   }

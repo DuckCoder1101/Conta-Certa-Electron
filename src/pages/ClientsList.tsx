@@ -65,10 +65,10 @@ export default function ClientsList() {
       cnpj: formatCnpj(c.cnpj),
       email: c.email ?? '-',
       phone: formatPhone(c.phone),
-      fee: formatMoney(c.fee, settings?.language ?? ''),
+      fee: formatMoney(c.fee, settings?.language ?? 'pt-BR', t('global.currency')),
       feeDueDay: String(c.feeDueDay),
     }));
-  }, [clients, settings]);
+  }, [clients, settings?.language, t]);
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -113,7 +113,7 @@ export default function ClientsList() {
       <h2 className="mt-5 text-center text-2xl font-semibold">{t('client.list.title')}</h2>
 
       {/* BARRA DE BUSCA */}
-      <form className="my-5 block items-center gap-3 rounded-md border border-border bg-surface p-2 shadow-sm hover:bg-surface-muted md:flex">
+      <form className="my-5 flex items-center gap-3 rounded-md border border-border bg-surface p-2 shadow-sm hover:bg-surface-muted">
         <div className="flex flex-grow items-center gap-2">
           <span className="flex h-10 w-10 items-center justify-center text-lg text-text-primary">
             <IoMdSearch />

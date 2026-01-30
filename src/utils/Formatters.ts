@@ -25,18 +25,37 @@ export function formatPhone(phone?: string | null) {
   return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
 }
 
-export function formatMoney(value: number, locale: string) {
+export function formatMoney(value: number, locale: string, currency: string) {
   return value.toLocaleString(locale, {
     style: 'currency',
-    currency: 'BRL',
+    currency,
   });
 }
 
-export function formatDate(dateString: string | null) {
-  if (!dateString) return '-';
-  return new Date(dateString + 'T00:00:00').toLocaleDateString('pt-BR', {
+export function toISODate(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+export function formatDate(dateStr: string | null, locale: string) {
+  if (!dateStr) return '-';
+
+  const date = new Date(dateStr);
+
+  return date.toLocaleDateString(locale, {
     year: '2-digit',
     month: '2-digit',
     day: '2-digit',
   });
+}
+
+export function formatBytes(bytes: number) {
+  if (bytes < 1024) {
+    return bytes + ' B';
+  }
+
+  if (bytes < 1024 ** 2) {
+    return (bytes / 1024).toFixed(1) + ' KB';
+  }
+
+  return (bytes / 1024 ** 2).toFixed(2) + ' MB';
 }

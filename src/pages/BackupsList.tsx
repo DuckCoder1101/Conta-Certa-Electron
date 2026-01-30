@@ -1,22 +1,22 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { IoMdSearch, IoMdFolderOpen } from 'react-icons/io';
+import { IoMdFolderOpen, IoMdSearch } from 'react-icons/io';
 import { MdBackup } from 'react-icons/md';
 
-import { useBackups } from '@hooks/useBackups';
+import { useBackupsList } from '@hooks/useBackupsList';
 import { useInfiniteScroll } from '@hooks/useInfinityScroll';
-
-import { AlertsContext } from '@contexts/AlertsContext';
 
 import AppLayout from '@components/AppLayout';
 import DeleteHoldButton from '@components/form/DeleteHoldButton';
-
-import { IBackupMeta } from '@t/Schemas';
-
-import { formatDate } from '@utils/formatters';
 import AppTable from '@components/AppTable';
 
+import { formatBytes, formatDate } from '@utils/formatters';
+
+import { TasksContext } from '@contexts/TasksContext';
+import { SettingsContext } from '@contexts/SettingsContext';
+
+import { IBackupMeta } from '@t/Schemas';
 import { IColumn } from '@t/Table';
 import { IBackupMetaTableDTO } from '@t/DTOs';
 
@@ -24,11 +24,14 @@ export default function BackupsList() {
   // Traduções
   const { t } = useTranslation();
 
-  // Toasts
-  const { showToast } = useContext(AlertsContext);
+  // Configuracoes
+  const { settings } = useContext(SettingsContext);
 
-  // Backups hook
-  const { fetch, generate } = useBackups();
+  // Contexto de tasks
+  const { startTask } = useContext(TasksContext);
+
+  // Hook da lista de backups
+  const { fetch } = useBackupsList();
 
   // Filtro
   const [filter, setFilter] = useState<string>('');
@@ -51,33 +54,15 @@ export default function BackupsList() {
   const rows: IBackupMetaTableDTO[] = useMemo(() => {
     return backups.map((b) => ({
       id: b.id,
-      size: `${b.size} MB`,
-      createdAt: formatDate(b.createdAt),
+      size: formatBytes(b.size!),
+      createdAt: formatDate(b.createdAt, settings?.language ?? 'pt-BR'),
       source: t(`backup.source.${b.source}`),
     }));
-  }, [backups, t]);
+  }, [backups, t, settings?.language]);
 
   // Gerar backup
   const generateBackup = async () => {
-    // Aviso de geração iniciada
-    showToast({
-      title: t('backups.toasts.started.title'),
-      message: t('backups.toasts.started.message'),
-      type: 'info',
-    });
-
-    const { success } = await generate();
-
-    if (success) {
-      await reload();
-
-      // Aviso de sucesso
-      showToast({
-        title: t('backups.toasts.success.title'),
-        type: 'success',
-        message: t('backups.toasts.success.message'),
-      });
-    }
+    startTask('SAVE_LOCAL_BACKUP');
   };
 
   // Deletar backup
@@ -97,7 +82,7 @@ export default function BackupsList() {
       <h2 className="mt-5 text-center text-2xl font-semibold">{t('backup.list.title')}</h2>
 
       {/* BARRA DE BUSCA */}
-      <form className="my-5 block items-center gap-3 rounded-md border border-border bg-surface p-2 shadow-sm hover:bg-surface-muted md:flex">
+      <form className="my-5 flex items-center gap-3 rounded-md border border-border bg-surface p-2 shadow-sm hover:bg-surface-muted">
         <div className="flex flex-grow items-center gap-2">
           <span className="flex h-10 w-10 items-center justify-center text-lg text-text-primary">
             <IoMdSearch />

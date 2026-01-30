@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 
 import { MdClose, MdError } from 'react-icons/md';
-import { IoInformationCircle, IoCheckmarkCircle, IoWarning } from 'react-icons/io5';
+import { IoCheckmarkCircle, IoInformationCircle, IoWarning } from 'react-icons/io5';
+
 import { IToastInfo } from '@t/Toast';
 
 interface Props {
@@ -13,38 +14,47 @@ export default function Toast({ info, onClose }: Props) {
   const barRef = useRef<HTMLDivElement>(null);
   const startRef = useRef<number>(performance.now());
 
+  // Toast de progresso
   useEffect(() => {
-    // Modo de temporizador
-    if (info.type === 'progress') {
-      const barProgress = Math.min(1, Math.max(0, info.progress!));
-      if (barRef.current) {
-        barRef.current.style.transform = `scaleX(${barProgress})`;
-      }
+    if (info.type !== 'progress') return;
 
-      if (barProgress >= 1) {
-        onClose(info.id!);
-      }
-    } else {
-      let rafId: number;
-      const tick = (now: number) => {
-        const elapsedTime = now - startRef.current;
-        const barProgress = Math.max(0, 1 - elapsedTime / 5000);
+    const progress = Math.min(1, Math.max(0, info.progress ?? 0));
 
-        if (barRef.current) {
-          barRef.current.style.transform = `scaleX(${barProgress})`;
-        }
-
-        if (elapsedTime >= 5000) {
-          onClose(info.id!);
-        } else {
-          rafId = requestAnimationFrame(tick);
-        }
-      };
-
-      rafId = requestAnimationFrame(tick);
-      return () => cancelAnimationFrame(rafId);
+    if (barRef.current) {
+      barRef.current.style.transform = `scaleX(${progress})`;
     }
-  }, [info.id, info.type, info.progress, onClose]);
+
+    if (progress >= 1) {
+      onClose(info.id!);
+    }
+  }, [info.progress, info.id, info.type, onClose]);
+
+  // Toast com timer
+  useEffect(() => {
+    if (info.type === 'progress') return;
+
+    let rafId: number;
+
+    const tick = (now: number) => {
+      const elapsed = now - startRef.current;
+      const progress = Math.max(0, 1 - elapsed / 5000);
+
+      if (barRef.current) {
+        barRef.current.style.transform = `scaleX(${progress})`;
+      }
+
+      if (elapsed >= 5000) {
+        onClose(info.id!);
+      } else {
+        rafId = requestAnimationFrame(tick);
+      }
+    };
+
+    startRef.current = performance.now();
+    rafId = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(rafId);
+  }, [info.id, info.type, onClose]);
 
   // Atualiza o startRef
   useEffect(() => {

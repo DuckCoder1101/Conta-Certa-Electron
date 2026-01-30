@@ -156,7 +156,7 @@ export default function BillingForm() {
               <NumericFormat
                 thousandSeparator="."
                 decimalSeparator=","
-                prefix={t('global.money-prefix')}
+                prefix={t('global.currency-prefix')}
                 title={t('billing.form.fee.tip')}
                 decimalScale={2}
                 fixedDecimalScale={true}

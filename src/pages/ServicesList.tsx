@@ -54,9 +54,9 @@ export default function ServicesList() {
     return services.map((s) => ({
       id: s.id,
       name: s.name,
-      value: formatMoney(s.value, settings?.language ?? ''),
+      value: formatMoney(s.value, settings?.language ?? 'pt-BR', t('global.currency')),
     }));
-  }, [services, settings]);
+  }, [services, settings?.language, t]);
 
   // Busca os serviços a primeira vez, e quando muda o filtro
   useEffect(() => {
@@ -96,7 +96,7 @@ export default function ServicesList() {
       <h2 className="mt-5 text-center text-2xl font-semibold">{t('service.list.title')}</h2>
 
       {/* BARRA DE BUSCA */}
-      <form className="my-5 block items-center gap-3 rounded-md border border-border bg-surface p-2 shadow-sm hover:bg-surface-muted md:flex">
+      <form className="my-5 flex items-center gap-3 rounded-md border border-border bg-surface p-2 shadow-sm hover:bg-surface-muted">
         <div className="flex flex-grow items-center gap-2">
           <span className="flex h-10 w-10 items-center justify-center text-lg text-text-primary">
             <IoMdSearch />

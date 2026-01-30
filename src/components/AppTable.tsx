@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { IColumn, RowActions, ITableEntity } from '@t/Table';
+import { IColumn, ITableEntity, RowActions } from '@t/Table';
 
 interface Props<T extends ITableEntity> {
   columns: IColumn<T>[];
@@ -28,11 +28,14 @@ export default function AppTable<T extends ITableEntity>({
         <thead>
           <tr className="border-b bg-surface text-text-primary">
             {columns.map((col) => (
-              <th key={String(col.key)} className={`px-4 py-3 text-${col.align ?? 'left'} max-w-[${col.width}]`}>
+              <th
+                key={String(col.key)}
+                className={`truncate whitespace-nowrap px-4 py-3 text-${col.align ?? 'center'} max-w-[${col.width}]`}
+              >
                 {col.header}
               </th>
             ))}
-            {actions && <th className="px-4 py-3 font-semibold">{t('global.table.actions.title')}</th>}
+            {actions && <th className="truncate whitespace-nowrap px-4 py-3">{t('global.table.actions.title')}</th>}
           </tr>
         </thead>
         <tbody>
@@ -62,7 +65,7 @@ export default function AppTable<T extends ITableEntity>({
                   <td
                     key={String(col.key)}
                     title={String(row[col.key])}
-                    className={`px-4 py-3 text-${col.align ?? 'left'} max-w-[${col.width}] truncate whitespace-nowrap`}
+                    className={`px-4 py-3 text-${col.align ?? 'center'} max-w-[${col.width}] truncate whitespace-nowrap`}
                   >
                     {col.render?.(row[col.key], row) ?? String(row[col.key])}
                   </td>

@@ -8,47 +8,35 @@ import { AlertsContext } from '@contexts/AlertsContext';
 import { IToastInfo } from '@t/Toast';
 
 export function AlertsProvider({ children }: { children: React.ReactNode }) {
-  const [toasts, setToasts] = useState<Map<string, IToastInfo>>(() => new Map());
+  const [toasts, setToasts] = useState<IToastInfo[]>([]);
 
   // Cria um novo toast
   const showToast = useCallback((info: IToastInfo) => {
-    const toastId = nanoid();
-
-    setToasts((prev) => {
-      const next = new Map(prev);
-      next.set(toastId, info);
-      return next;
-    });
-
-    return toastId;
+    const id = info.id ?? nanoid();
+    setToasts((prev) => [...prev, { ...info, id }]);
   }, []);
 
   // Atualiza o progresso de um toast
   const updateToastProgress = useCallback((toastId: string, progress: number) => {
     setToasts((prev) => {
-      const toast = prev.get(toastId);
-      if (!toast || toast.type !== 'progress') return prev;
+      const index = prev.findIndex((toast) => toast.id === toastId);
+      if (index === -1) return prev;
 
-      const next = new Map(prev);
-      next.set(toastId, { ...toast, progress });
-
-      return next;
+      const copy = [...prev];
+      copy[index].progress = progress;
+      return copy;
     });
   }, []);
 
   // Remove um toast
   const removeToast = useCallback((toastId: string) => {
-    setToasts((prev) => {
-      const next = new Map(prev);
-      next.delete(toastId);
-      return next;
-    });
+    setToasts((prev) => prev.filter((toast) => toast.id !== toastId));
   }, []);
 
   return (
     <AlertsContext.Provider value={{ showToast, updateToastProgress, removeToast }}>
       <div className="fixed bottom-2 right-2 z-50 flex flex-col gap-2">
-        {[...toasts.values()].map((info) => (
+        {toasts.map((info) => (
           <Toast key={info.id} info={info} onClose={removeToast} />
         ))}
       </div>

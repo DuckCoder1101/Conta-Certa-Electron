@@ -15,18 +15,27 @@ datasource db {
 
 // prisma/schema.prisma
 
+enum DocumentType {
+  CPF // Brasil - Pessoa Física
+  CNPJ // Brasil - Pessoa Jurídica
+  PASSPORT // Internacional
+  SSN // EUA
+  VAT // Europa (IVA)
+  OTHER // Fallback
+}
+
 model Client {
   // PK
   id Int @id @default(autoincrement())
 
   // Fields
-  cpf       String?  @unique
-  cnpj      String?  @unique
-  name      String
-  phone     String  @unique
-  email     String? @unique
-  fee       Float
-  feeDueDay Int
+  document     String       @unique
+  documentType DocumentType
+  name         String
+  phone        String       @unique
+  email        String?      @unique
+  fee          Float
+  feeDueDay    Int
 
   // Relations
   billings Billing[]
@@ -35,9 +44,9 @@ model Client {
 }
 
 model Billing {
-  id      Int       @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   fee     Float
-  status  String    @default("Pending")
+  status  String  @default("Pending")
   dueDate String
   paidAt  String?
 
@@ -69,14 +78,13 @@ model Service {
 model ServiceBilling {
   id Int @id @default(autoincrement())
 
-  name            String
-  value           Float
-  quantity        Int
+  name     String
+  value    Float
+  quantity Int
 
   // FK -> Service
   serviceOriginId Int?
-  service Service? @relation(fields: [serviceOriginId], references: [id], onDelete: SetNull)
-  
+  service         Service? @relation(fields: [serviceOriginId], references: [id], onDelete: SetNull)
 
   // FK → Billing
   billingId Int?

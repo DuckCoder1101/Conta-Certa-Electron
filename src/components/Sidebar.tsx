@@ -19,20 +19,7 @@ import {
 
 import SettingsModal from '@modals/SettingsModal';
 
-interface MenuLink {
-  name: string;
-  link?: string;
-  action?: () => void;
-  icon: React.JSX.Element;
-}
-
-interface Submenu {
-  name: string;
-  icon: React.JSX.Element;
-  items: MenuLink[];
-}
-
-type MenuOption = MenuLink | Submenu;
+import { MenuOption } from '@t/Menu';
 
 const isSubmenu = (option: MenuOption) => 'items' in option;
 

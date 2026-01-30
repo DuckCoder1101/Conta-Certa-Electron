@@ -8,7 +8,14 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@app/shared-types/*": ["packages/shared-types/dist/*"],
+      "@controllers/*": ["electron/controllers/*"],
+      "@services/*": ["electron/services/*"],
+      "@handlers/*": ["electron/handlers/*"],
+      "@utils/*": ["electron/utils/*"]
+    }
   },
-  "include": ["electron/**/*", "electron/@types/*.ts"]
+  "include": ["electron/**/*", "electron/@types/*.ts"],
 }

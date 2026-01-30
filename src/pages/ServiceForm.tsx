@@ -62,7 +62,7 @@ export default function ServiceForm() {
                 title={t('service.form.value.tip')}
                 thousandSeparator="."
                 decimalSeparator=","
-                prefix={t('global.money-prefix')}
+                prefix={t('global.currency-prefix')}
                 decimalScale={2}
                 fixedDecimalScale={true}
                 allowNegative={false}

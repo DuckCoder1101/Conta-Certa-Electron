@@ -58,7 +58,7 @@ Conta-Certa/
 │  ├─ errors/
 │  ├─ services/
 │  ├─ utils/
-│  ├─ events.ts
+│  ├─ Events.ts
 │  ├─ main.ts
 │  └─ preload.ts
 │

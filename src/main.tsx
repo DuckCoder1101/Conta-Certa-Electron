@@ -3,10 +3,11 @@ import './i18n';
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 
 import { AlertsProvider } from '@contexts/AlertsProvider';
 import { SettingsProvider } from '@contexts/SettingsProvider';
+import { TasksProvider } from '@contexts/TasksProvider';
 
 import Dashboard from '@pages/Dashboard';
 
@@ -24,22 +25,24 @@ ReactDOM.createRoot(document.querySelector('#root')!).render(
   <React.StrictMode>
     <SettingsProvider>
       <AlertsProvider>
-        <HashRouter>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
+        <TasksProvider>
+          <HashRouter>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
 
-            <Route path="/clients/list" element={<ClientsList />} />
-            <Route path="/clients/new" element={<ClientForm />} />
+              <Route path="/clients/list" element={<ClientsList />} />
+              <Route path="/clients/new" element={<ClientForm />} />
 
-            <Route path="/billings/list" element={<BillingsList />} />
-            <Route path="/billings/new" element={<BillingForm />} />
+              <Route path="/billings/list" element={<BillingsList />} />
+              <Route path="/billings/new" element={<BillingForm />} />
 
-            <Route path="/services/list" element={<ServicesList />} />
-            <Route path="/services/new" element={<ServiceForm />} />
+              <Route path="/services/list" element={<ServicesList />} />
+              <Route path="/services/new" element={<ServiceForm />} />
 
-            <Route path="/backups" element={<BackupsList />} />
-          </Routes>
-        </HashRouter>
+              <Route path="/backups" element={<BackupsList />} />
+            </Routes>
+          </HashRouter>
+        </TasksProvider>
       </AlertsProvider>
     </SettingsProvider>
   </React.StrictMode>,
