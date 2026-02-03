@@ -3,14 +3,15 @@ import { Controller, useForm } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
 import { useTranslation } from 'react-i18next';
 
-import { IBillingFormDTO, IClientResumeDTO, IServiceBillingFormDTO } from '@t/DTOs';
+import { BillingFormDTO, ClientResumeDTO, ServiceBillingFormDTO } from '@shared/DTOs';
 
 import { ServicesSelector } from '@components/form/ServicesSelector';
 
 import { useClients } from '@hooks/useClients';
 import { useBillings } from '@hooks/useBillings';
-import AppLayout from '@/components/AppLayout';
-import SaveButton from '@/components/form/SaveButton';
+
+import AppLayout from '@components/AppLayout';
+import SaveButton from '@components/form/SaveButton';
 
 export default function BillingForm() {
   // Traduções
@@ -19,23 +20,24 @@ export default function BillingForm() {
   const { fetchResumes, fetchById } = useClients();
   const { prepareServices, save } = useBillings();
 
-  const { register, handleSubmit, reset, setValue, watch, control } = useForm<IBillingFormDTO>({
+  const { register, handleSubmit, reset, setValue, watch, control } = useForm<BillingFormDTO>({
     values: {
+      id: '',
       clientId: -1,
       fee: 1,
       status: 'pending',
       paidAt: null,
       dueDate: new Date().toISOString().split('T')[0],
-      serviceBillings: [],
+      serviceBillings: [] as ServiceBillingFormDTO[],
     },
   });
 
   const [formError, setFormError] = useState<string | null>(null);
-  const [clients, setClients] = useState<IClientResumeDTO[]>([]);
+  const [clients, setClients] = useState<ClientResumeDTO[]>([]);
   const [search, setSearch] = useState('');
   const status = watch('status');
   const clientId = watch('clientId');
-  const [servicesBilling, setServicesBilling] = useState<IServiceBillingFormDTO[]>([]);
+  const [servicesBilling, setServicesBilling] = useState<ServiceBillingFormDTO[]>([]);
   const filteredClients = clients.filter((c) => c.name.toLowerCase().startsWith(search.toLowerCase()));
 
   // Buscar cliente completo e atualizar campos

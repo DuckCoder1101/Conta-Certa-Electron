@@ -1,8 +1,9 @@
-import type { Billing as BaseBilling } from '@prisma/client';
+import type { Billing as BaseBilling, ServiceBilling } from '@prisma/client';
 import { ClientResumeDTO } from '@shared/DTOs';
 
 export type { Client, Service, ServiceBilling, DocumentType } from '@prisma/client';
-export type Billing = BaseBilling & {
+export interface Billing extends BaseBilling {
   client: ClientResumeDTO;
   totalFee: number;
-};
+  serviceBillings?: ServiceBilling[];
+}

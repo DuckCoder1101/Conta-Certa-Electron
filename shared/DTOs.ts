@@ -1,47 +1,60 @@
 import type { Billing, Client, Service, ServiceBilling } from './Types';
 
-export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-export type FormAction = 'create' | 'update';
+export type AllString<T> = {
+  [K in keyof T]: string;
+};
 
 // --- CLIENTE ---
 
-export type ClientFormDTO = Optional<Client, 'id'> & {
-  action: FormAction;
-};
+export type ClientFormDTO = {
+  id?: string;
+  name: string;
+  document: string;
+  documentType: DocumentType;
+  phone: string;
+  email?: string;
+  fee: number;
+  feeDueDay: number;
+}
 
 export type ClientResumeDTO = Pick<Client, 'id' | 'name'>;
-
-export type ClientTableDTO = Client & {
-  document: string;
-  documentType: string;
-  fee: string;
-};
+export type ClientTableDTO = AllString<Client>;
 
 // --- SERVIÇO DE FATURAMENTO ---
 
-export type ServiceBillingFormDTO = Optional<ServiceBilling, 'id'> & {
-  action: FormAction;
-};
-
-export type ServiceFormDTO = Optional<Service, 'id'> & {
-  action: FormAction;
-};
+export interface ServiceBillingFormDTO {
+  id?: string;
+  serviceBaseId: number;
+  billingId: number;
+  quantity: number;
+  value: number;
+}
 
 // --- SERVIÇO ---
 
-export type ServiceTableDTO = Service & {
-  value: string;
-};
+export interface ServiceFormDTO {
+  id?: string;
+  name: string;
+  value: number
+}
+
+export type ServiceTableDTO = AllString<Service>;
 
 // --- FATURAMENTO ---
 
-export type BillingFormDTO = Optional<Omit<Billing, 'totalFee'>, 'id'> & {
-  action: FormAction;
-};
+export interface BillingFormDTO {
+  id?: string;
+  clientId: number;
+  fee: number;
+  status: string;
+  paidAt: string | null;
+  dueDate: string;
+  serviceBillings: ServiceBillingFormDTO[];
+}
 
-export type BillingTableDTO = Billing & {
-  client: string;
-  totalFee: string;
+export type BillingTableDTO = AllString<Billing> & {
+  client: ClientResumeDTO;
+  serviceBillings: ServiceBilling[];
 };
 
 export type BillingResumeDTO = Pick<Billing, 'status' | 'fee' | 'totalFee' | 'dueDate' | 'paidAt'>;
