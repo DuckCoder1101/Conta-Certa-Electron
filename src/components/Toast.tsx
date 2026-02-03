@@ -12,7 +12,12 @@ interface Props {
 
 export default function Toast({ info, onClose }: Props) {
   const barRef = useRef<HTMLDivElement>(null);
-  const startRef = useRef<number>(performance.now());
+  const startRef = useRef<number>(0);
+
+  // Inicializa o start
+  useEffect(() => {
+    startRef.current = performance.now();
+  }, []);
 
   // Toast de progresso
   useEffect(() => {

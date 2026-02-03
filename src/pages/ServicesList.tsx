@@ -17,12 +17,12 @@ import { useInfiniteScroll } from '@/hooks/useInfinityScroll';
 
 import { SettingsContext } from '@/contexts/SettingsContext';
 
-import { IService } from '@t/Schemas';
-import { IServiceTableDTO } from '@t/DTOs';
-
 import { formatMoney } from '@/utils/formatters';
 
+import { Service } from '@shared/Types';
+
 import { IColumn } from '@t/Table';
+import { ServiceTableDTO } from '@shared/DTOs';
 
 export default function ServicesList() {
   // Traduções
@@ -41,16 +41,16 @@ export default function ServicesList() {
     loading,
     handleScroll,
     reload,
-  } = useInfiniteScroll<IService>((offset) => fetch(offset, 30, filter).then((r) => r.data ?? []));
+  } = useInfiniteScroll<Service>((offset) => fetch(offset, 30, filter).then((r) => r.data ?? []));
 
   // Colunas da tabela
-  const columns: IColumn<IServiceTableDTO>[] = [
-    { key: 'name', header: t('service.list.table.name'), width: '', align: 'center' },
-    { key: 'value', header: t('service.list.table.value'), width: '', align: 'center' },
+  const columns: IColumn<ServiceTableDTO>[] = [
+    { key: 'name', header: t('service.list.table.name'), width: '120px', align: 'center' },
+    { key: 'value', header: t('service.list.table.value'), width: '120px', align: 'center' },
   ];
 
   // Linhas da tabela
-  const rows = useMemo(() => {
+  const rows: ServiceTableDTO[] = useMemo(() => {
     return services.map((s) => ({
       id: s.id,
       name: s.name,
@@ -66,7 +66,7 @@ export default function ServicesList() {
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalClient, setModalClient] = useState<IService | null>(null);
+  const [modalClient, setModalClient] = useState<Service | null>(null);
   const openModal = (id?: number) => {
     setModalClient(services.find((s) => s.id === id) ?? null);
     setIsModalOpen(true);
@@ -84,7 +84,7 @@ export default function ServicesList() {
     <AppLayout>
       <ServiceModal
         open={isModalOpen}
-        client={modalClient}
+        service={modalClient}
         onClose={async (success) => {
           setIsModalOpen(false);
           if (success) {

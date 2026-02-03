@@ -9,7 +9,7 @@
     "strict": true,
     "skipLibCheck": true,
     "paths": {
-      "@app/shared-types/*": ["./packages/shared-types/dist/*"],
+      "@shared/*": ["./shared/*"],
       "@/*": ["./src/*"],
       "@utils/*": ["./src/utils/*"],
       "@t/*": ["./src/@types/*"],

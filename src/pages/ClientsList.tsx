@@ -1,7 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { formatCnpj, formatCpf, formatMoney, formatPhone } from '@utils/formatters';
+import { formatMoney, formatPhone } from '@utils/formatters';
 
 // Ícones
 import { IoMdSearch } from 'react-icons/io';
@@ -21,9 +21,10 @@ import DeleteHoldButton from '@components/form/DeleteHoldButton';
 
 import ClientModal from '@modals/ClientModal';
 
-import { IClient } from '@t/Schemas';
-import { IClientTableDTO } from '@t/DTOs';
+import { Client } from '@shared/Types';
+
 import { IColumn } from '@t/Table';
+import { ClientTableDTO } from '@shared/DTOs';
 
 export default function ClientsList() {
   // Traduções
@@ -43,13 +44,13 @@ export default function ClientsList() {
     loading,
     handleScroll,
     reload,
-  } = useInfiniteScroll<IClient>((offset) => fetch(offset, 30, filter).then((r) => r.data ?? []));
+  } = useInfiniteScroll<Client>((offset) => fetch(offset, 30, filter).then((r) => r.data ?? []));
 
   // Colunas da tabela
-  const columns: IColumn<IClientTableDTO>[] = [
+  const columns: IColumn<ClientTableDTO>[] = [
     { key: 'name', header: t('client.list.table.name'), width: '180px' },
-    { key: 'cpf', header: t('client.list.table.cpf'), width: '130px' },
-    { key: 'cnpj', header: t('client.list.table.cnpj'), width: '130px' },
+    { key: 'document', header: t('client.list.table.cpf'), width: '130px' },
+    { key: 'documentType', header: t('client.list.table.cnpj'), width: '130px' },
     { key: 'email', header: t('client.list.table.email'), width: '200px' },
     { key: 'phone', header: t('client.list.table.phone'), width: '130px' },
     { key: 'fee', header: t('client.list.table.fee'), width: '130px', align: 'center' },
@@ -57,12 +58,12 @@ export default function ClientsList() {
   ];
 
   // Linhas da tabela
-  const rows: IClientTableDTO[] = useMemo(() => {
+  const rows = useMemo(() => {
     return clients.map((c) => ({
       id: c.id,
       name: c.name,
-      cpf: formatCpf(c.cpf),
-      cnpj: formatCnpj(c.cnpj),
+      document: '',
+      documentType: '',
       email: c.email ?? '-',
       phone: formatPhone(c.phone),
       fee: formatMoney(c.fee, settings?.language ?? 'pt-BR', t('global.currency')),
@@ -72,7 +73,7 @@ export default function ClientsList() {
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalClient, setModalClient] = useState<IClient | null>(null);
+  const [modalClient, setModalClient] = useState<Client | null>(null);
   const openModal = (id?: number) => {
     setModalClient(clients.find((c) => c.id === id) ?? null);
     setIsModalOpen(true);

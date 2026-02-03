@@ -19,8 +19,9 @@ import { useInfiniteScroll } from '@hooks/useInfinityScroll';
 
 import { formatDate, formatMoney } from '@utils/formatters';
 
-import { IBilling } from '@t/Schemas';
-import { IBillingTableDTO } from '@t/DTOs';
+import { Billing } from '@shared/Types';
+import { BillingTableDTO } from '@shared/DTOs';
+
 import { IColumn } from '@t/Table';
 
 export default function BillingsList() {
@@ -42,9 +43,9 @@ export default function BillingsList() {
     loading,
     handleScroll,
     reload,
-  } = useInfiniteScroll<IBilling>((offset) => fetch(offset, 30, filter).then((r) => r.data ?? []));
+  } = useInfiniteScroll<Billing>((offset) => fetch(offset, 30, filter).then((r) => r.data ?? []));
 
-  const columns: IColumn<IBillingTableDTO>[] = [
+  const columns: IColumn<BillingTableDTO>[] = [
     { key: 'client', header: t('billing.list.table.client'), width: '180' },
     {
       key: 'status',
@@ -62,7 +63,7 @@ export default function BillingsList() {
   ];
 
   // Linhas da tabela
-  const rows: IBillingTableDTO[] = useMemo(() => {
+  const rows: BillingTableDTO[] = useMemo(() => {
     return billings.map((b) => ({
       id: b.id,
       client: b.client?.name ?? '-',
@@ -71,7 +72,7 @@ export default function BillingsList() {
       dueDate: formatDate(b.dueDate, settings?.language ?? 'pt-BR'),
       paidAt: formatDate(b.paidAt, settings?.language ?? 'pt-BR'),
     }));
-  }, [billings, settings]);
+  }, [billings, settings, t]);
 
   const deleteBilling = async (id: number) => {
     const { success } = await remove(id);
@@ -82,7 +83,7 @@ export default function BillingsList() {
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [modalBilling, setModalBilling] = useState<IBilling | null>(null);
+  const [modalBilling, setModalBilling] = useState<Billing | null>(null);
   const openModal = (id?: number) => {
     setModalBilling(billings.find((b) => b.id === id) ?? null);
     setIsModalOpen(true);

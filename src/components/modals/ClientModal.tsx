@@ -8,12 +8,12 @@ import SaveButton from '../form/SaveButton';
 
 import { useClients } from '@hooks/useClients';
 
-import { IClient } from '@t/Schemas';
-import { IClientFormDTO } from '@t/DTOs';
+import { Client } from '@shared/Types';
+import { ClientFormDTO } from '@shared/DTOs';
 
 interface Props {
   open: boolean;
-  client: IClient | null;
+  client: Client | null;
   onClose: (success: boolean) => void;
 }
 
@@ -24,7 +24,7 @@ export default function ClientModal({ open, onClose, client }: Props) {
   const { save } = useClients();
   const [formError, setFormError] = useState<string | null>(null);
 
-  const { register, handleSubmit, reset, control } = useForm<IClientFormDTO>({
+  const { register, handleSubmit, reset, control } = useForm<ClientFormDTO>({
     defaultValues: {
       document: '',
       name: '',

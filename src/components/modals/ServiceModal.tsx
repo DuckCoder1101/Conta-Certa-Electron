@@ -8,23 +8,23 @@ import SaveButton from '../form/SaveButton';
 
 import { useServices } from '@hooks/useServices';
 
-import { IService } from '@t/Schemas';
-import { IServiceFormDTO } from '@t/DTOs';
+import { Service } from '@shared/Types';
+import { ServiceFormDTO } from '@shared/DTOs';
 
 interface Props {
   open: boolean;
-  client: IService | null;
+  service: Service | null;
   onClose: (success: boolean) => void;
 }
 
-export default function ServiceModal({ open, onClose, client: service }: Props) {
+export default function ServiceModal({ open, onClose, service }: Props) {
   // Tradução
   const { t } = useTranslation();
 
   const { save } = useServices();
   const [formError, setFormError] = useState<string | null>(null);
 
-  const { register, handleSubmit, reset, control } = useForm<IServiceFormDTO>({
+  const { register, handleSubmit, reset, control } = useForm<ServiceFormDTO>({
     defaultValues: {
       name: '',
       value: 1,
@@ -39,7 +39,6 @@ export default function ServiceModal({ open, onClose, client: service }: Props) 
         value: 1,
       },
     );
-    setFormError(null);
   }, [open, service, reset]);
 
   const saveService = handleSubmit(async (data) => {

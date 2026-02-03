@@ -24,7 +24,7 @@ export default function BackupsList() {
   // Traduções
   const { t } = useTranslation();
 
-  // Configuracoes
+  // Configurações
   const { settings } = useContext(SettingsContext);
 
   // Contexto de tasks
